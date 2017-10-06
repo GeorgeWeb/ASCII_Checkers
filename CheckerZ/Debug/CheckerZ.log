@@ -1,0 +1,5 @@
+﻿  Game.cpp
+d:\game_projects_c++\checkerz\checkerz\game.hpp(3): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+d:\game_projects_c++\checkerz\checkerz\api\board.hpp(3): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+  CheckerZ.vcxproj -> D:\Game_Projects_C++\CheckerZ\Debug\CheckerZ.exe
+  CheckerZ.vcxproj -> D:\Game_Projects_C++\CheckerZ\Debug\CheckerZ.pdb (Partial PDB)
