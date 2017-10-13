@@ -4,29 +4,38 @@
 // std::includes
 #include <iostream>
 
-void Run(CheckerZ::Game &t_game);
+// simulate the game loop *Declaration*
+void runGame(CheckerZ::Game &t_game);
 
-int main()
+auto main() -> unsigned int
 {
-	CheckerZ::Game game;
-	Run(game);
-
+	// PLAY: (the game object's instantiated on the stack)
+	runGame(CheckerZ::Game());
+	
+	// the usual return value '0' for the invoked 'exit()'
 	return EXIT_SUCCESS;
 }
 
-void Run(CheckerZ::Game &t_game)
+// simulate the game loop *Definition*
+void runGame(CheckerZ::Game &t_game)
 {
-	t_game.Begin();
+	// create game board and assign players
+	t_game.begin();
 
+	// Game Loop!
 	while (t_game.getIsRunning())
 	{
-		t_game.Update();
+		// update the frames (game movement)
+		t_game.update();
 
+		// 
 		if (t_game.getNextTurn())
 		{
-			t_game.Draw();
+			// do the rendering (draw in console)
+			t_game.draw();
 		}
 		
-		t_game.End();
+		// check for win condition & exit the loop
+		t_game.end();
 	}
 }

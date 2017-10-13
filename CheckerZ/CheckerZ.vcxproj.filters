@@ -24,6 +24,9 @@
     <ClInclude Include="Parallelism\Parallel.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Common.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="API\Board.cpp">

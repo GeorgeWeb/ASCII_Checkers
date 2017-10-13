@@ -9,7 +9,7 @@
 
 namespace CheckerZ
 {
-	enum class Gameplay : char
+	enum class Gameplay : uchar
 	{
 		MOVE = '1',
 		TAKE = '2'
@@ -27,13 +27,13 @@ namespace CheckerZ
 			Game();
 			~Game();
 			
-			inline const bool &getIsRunning() const { return m_isRunning; }
-			inline const bool &getNextTurn() const { return m_nextTurn; }
+			inline bool getIsRunning() const { return m_isRunning; }
+			inline bool getNextTurn() const { return m_nextTurn; }
 
-			void Begin();
-			void End();
-			void Update();
-			void Draw();
+			void begin();
+			void end();
+			void update();
+			void draw();
 	};
 }
 

@@ -14,27 +14,25 @@ namespace CheckerZ
 	Game::~Game()
 	{ }
 
-	void Game::Begin()
+	void Game::begin()
 	{
-		// CREATE THE GAME BOARD
 		m_gameBoard->populate();
-		// START THE GAME LOOP
 		m_isRunning = true;
-		// DO THE FIRST BOARD DRAW
-		Draw();
+		// draw the board (initially)
+		draw();
 	}
 
-	void Game::End()
+	void Game::end()
 	{
-		// EXIT THE GAME LOOP ON WIN CONDITION
+		// TODO: Check for win condition (make event system and run on event being invoked)
 		bool win = false;
 		if(win) m_isRunning = false;
 	}
 
-	void Game::Update()
+	void Game::update()
 	{
 		// GAME/AI LOGIC IN HERE
-		unsigned char ch;
+		uchar ch;
 		std::cout << "1 - MOVE\n2 - TAKE\n";
 		std::cout << "Enter choice: ";
 		std::cin >> ch;
@@ -55,11 +53,13 @@ namespace CheckerZ
 		}
 	}
 
-	void Game::Draw()
+	void Game::draw()
 	{
-		// RENDERING IS DONE IN HERE
+		// clear screen after every turn
 		system("cls");
+		// TODO: add to Title function
 		std::cout << "\n\n\n\n\t\t\t\t\t       <A GAME OF CHEKERS>";
+
 		m_gameBoard->display();
 		m_nextTurn = false;
 	}

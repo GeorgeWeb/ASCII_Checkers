@@ -11,7 +11,7 @@
 **/
 
 namespace CheckerZ { namespace Parallelism {
-		template<class Type, const size_t Size>
+		template<class Type, const uint32 Size>
 		using parallel_arr = concurrency::array_view<Type, Size>;
 } }
 

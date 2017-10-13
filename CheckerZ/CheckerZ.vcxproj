@@ -112,6 +112,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="API\Board.hpp" />
+    <ClInclude Include="Common.hpp" />
     <ClInclude Include="Parallelism\Parallel.hpp" />
     <ClInclude Include="Game.hpp" />
   </ItemGroup>
