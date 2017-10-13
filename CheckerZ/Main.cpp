@@ -6,12 +6,10 @@
 
 void Run(CheckerZ::Game &t_game);
 
-int main(void)
+void main()
 {
 	CheckerZ::Game game;
 	Run(game);
-
-	return EXIT_SUCCESS;
 }
 
 void Run(CheckerZ::Game &t_game)
