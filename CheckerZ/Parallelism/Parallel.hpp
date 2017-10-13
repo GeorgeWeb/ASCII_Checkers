@@ -1,8 +1,5 @@
 #ifndef PARALLEL_HPP
 #define PARALLEL_HPP
-#ifdef PRAGMA ONCE
-#define pragma_once
-#endif
 
 // C++AMP include
 #include <amp.h>

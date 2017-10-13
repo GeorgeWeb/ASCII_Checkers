@@ -1,8 +1,5 @@
 #ifndef GAME_HPP
 #define GAME_HPP
-#ifdef PRAGMA ONCE
-#define pragma_once
-#endif
 
 // project includes
 #include "API/Board.hpp"

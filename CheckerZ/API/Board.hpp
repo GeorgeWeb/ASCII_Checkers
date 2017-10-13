@@ -1,8 +1,5 @@
 #ifndef BOARD_HPP
 #define BOARD_HPP
-#ifdef PRAGMA ONCE
-#define pragma_once
-#endif
 
 // project includes
 #include "../Parallelism/Parallel.hpp"
