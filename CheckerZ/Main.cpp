@@ -1,8 +1,10 @@
+// project includes
 #include "Game.hpp"
 
+// std::includes
 #include <iostream>
 
-void Run(CheckerZ::Game &game);
+void Run(CheckerZ::Game &t_game);
 
 int main(void)
 {
@@ -12,19 +14,19 @@ int main(void)
 	return EXIT_SUCCESS;
 }
 
-void Run(CheckerZ::Game &game)
+void Run(CheckerZ::Game &t_game)
 {
-	game.Begin();
+	t_game.Begin();
 
-	while (game.getIsRunning())
+	while (t_game.getIsRunning())
 	{
-		game.Update();
+		t_game.Update();
 
-		if (game.getNextTurn())
+		if (t_game.getNextTurn())
 		{
-			game.Draw();
+			t_game.Draw();
 		}
 		
-		game.End();
+		t_game.End();
 	}
 }

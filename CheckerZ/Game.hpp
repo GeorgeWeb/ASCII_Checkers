@@ -1,11 +1,13 @@
-#ifndef GAME_H
-#define GAME_H
+#ifndef GAME_HPP
+#define GAME_HPP
 #ifdef PRAGMA ONCE
 #define pragma_once
 #endif
 
+// project includes
 #include "API/Board.hpp"
 
+// std::includes
 #include <memory>
 
 namespace CheckerZ
@@ -38,4 +40,4 @@ namespace CheckerZ
 	};
 }
 
-#endif // !GAME_H
+#endif // !GAME_HPP

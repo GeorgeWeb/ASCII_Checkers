@@ -1,9 +1,13 @@
-#ifndef BOARD_H
-#define BOARD_H
+#ifndef BOARD_HPP
+#define BOARD_HPP
 #ifdef PRAGMA ONCE
 #define pragma_once
 #endif
 
+// project includes
+#include "../Parallelism/Parallel.hpp"
+
+// std::includes
 #include <array>
 
 namespace CheckerZ
@@ -38,4 +42,4 @@ namespace CheckerZ
 	};
 }
 
-#endif // !BOARD_H
+#endif // !BOARD_HPP
