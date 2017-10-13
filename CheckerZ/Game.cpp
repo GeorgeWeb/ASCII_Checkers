@@ -1,5 +1,7 @@
+// project includes
 #include "Game.hpp"
 
+// std::includes
 #include <iostream>
 #include <string>
 
