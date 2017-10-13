@@ -14,9 +14,9 @@ namespace CheckerZ
 	void Board::populate()
 	{
 		uint32 count = 0;
-		std::for_each(m_board.begin(), m_board.end(), [&](grid<s_boardY> &grid)
+		std::for_each(m_board.begin(), m_board.end(), [&](grid<s_boardY>& const grid)
 		{ 
-			std::for_each(grid.begin(), grid.end(), [&](square &square)
+			std::for_each(grid.begin(), grid.end(), [&](square& square)
 			{
 				if (count < 24) // PLAYER 1
 				{
@@ -48,7 +48,7 @@ namespace CheckerZ
 	{
 		std::cout << "\n\n\n\n";
 		uint32 count = 1;
-		std::for_each(m_board.begin(), m_board.end(), [&](grid<s_boardY> &grid)
+		std::for_each(m_board.begin(), m_board.end(), [&](grid<s_boardY>& const grid)
 		{
 			std::cout << "\t\t\t\t\t\t";
 			std::for_each(grid.begin(), grid.end(), [&](square &square)

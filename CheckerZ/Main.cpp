@@ -4,20 +4,22 @@
 // std::includes
 #include <iostream>
 
+using namespace CheckerZ;
+
 // simulate the game loop *Declaration*
-void runGame(CheckerZ::Game &t_game);
+void runGame(Game& t_game);
 
 auto main() -> unsigned int
 {
 	// PLAY: (the game object's instantiated on the stack)
-	runGame(CheckerZ::Game());
+	runGame(Game());
 	
 	// the usual return value '0' for the invoked 'exit()'
 	return EXIT_SUCCESS;
 }
 
 // simulate the game loop *Definition*
-void runGame(CheckerZ::Game &t_game)
+void runGame(Game& t_game)
 {
 	// create game board and assign players
 	t_game.begin();
