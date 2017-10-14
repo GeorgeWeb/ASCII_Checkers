@@ -7,8 +7,11 @@
 
 namespace CheckerZ
 {
+	using API::Logger;
+	using API::MessageType;
+
 	Game::Game() 
-		: m_gameBoard(std::make_unique<Board>())
+		: m_gameBoard(std::make_unique<API::Board>())
 	{ }
 
 	Game::~Game()
@@ -32,23 +35,23 @@ namespace CheckerZ
 	void Game::update()
 	{
 		// GAME/AI LOGIC IN HERE
-		uchar ch;
-		std::cout << "1 - MOVE\n2 - TAKE\n";
-		std::cout << "Enter choice: ";
+		char ch;
+		Logger::message(MessageType::INF, "1 - MOVE\n2 - TAKE\n");
+		Logger::message(MessageType::INF, "Enter choice: ");
 		std::cin >> ch;
 		
 		switch (ch)
 		{
-			case static_cast<char>(Gameplay::MOVE):
-				std::cout << "I am moving..." << std::endl;
+			case static_cast<const char>(Gameplay::MOVE) :
+				Logger::message(MessageType::INF, "I am moving...");
 				m_nextTurn = true;
 				break;
-			case static_cast<char>(Gameplay::TAKE):
-				std::cout << "I am taking..." << std::endl;
+			case static_cast<const char>(Gameplay::TAKE) :
+				Logger::message(MessageType::INF, "I am taking...");
 				m_nextTurn = true;
 				break;
 			default:
-				std::cout << "That's not a valid command, dawg... WTF?" << std::endl;
+				Logger::message(MessageType::ERR, "That's not a valid command, dawg... WTF?");
 				break;
 		}
 	}
@@ -58,7 +61,7 @@ namespace CheckerZ
 		// clear screen after every turn
 		system("cls");
 		// TODO: add to Title function
-		std::cout << "\n\n\n\n\t\t\t\t\t       <A GAME OF CHEKERS>";
+		Logger::message(MessageType::INF, "\n\n\n\t\t\t\t\t       <A GAME OF CHEKERS>");
 
 		m_gameBoard->display();
 		m_nextTurn = false;

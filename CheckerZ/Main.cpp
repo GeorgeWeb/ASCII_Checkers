@@ -1,9 +1,7 @@
 // project includes
 #include "Game.hpp"
 
-// std::includes
-#include <iostream>
-
+// our main game namespace
 using namespace CheckerZ;
 
 // simulate the game loop *Declaration*

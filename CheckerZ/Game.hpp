@@ -6,10 +6,11 @@
 
 // std::includes
 #include <memory>
+#include <vector>
 
 namespace CheckerZ
 {
-	enum class Gameplay : uchar
+	enum class Gameplay : const char
 	{
 		MOVE = '1',
 		TAKE = '2'
@@ -18,11 +19,11 @@ namespace CheckerZ
 	class Game
 	{
 		private:
-			std::unique_ptr<Board> m_gameBoard;
+			std::unique_ptr<API::Board> m_gameBoard;
 			
 			bool m_isRunning = false;
 			bool m_nextTurn = false;
-		
+			
 		public:
 			Game();
 			~Game();
