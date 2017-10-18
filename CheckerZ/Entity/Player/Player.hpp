@@ -11,8 +11,8 @@ namespace CheckerZ { namespace Entity { namespace Player {
 		Player();
 		~Player() = default;
 
-		void move(const vec2& t_pos) override;
-		void take(const vec2& t_pos) override;
+		void move(const vec2 &t_pos) override;
+		void take() override;
 	};
 
 } } }

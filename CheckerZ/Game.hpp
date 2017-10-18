@@ -4,6 +4,7 @@
 // project includes
 #include "API/Board.hpp"
 #include "API/Events/EventManager.hpp"
+#include "Entity/Player/Player.hpp"
 
 // std::includes
 #include <memory>
@@ -11,7 +12,7 @@
 
 namespace CheckerZ
 {
-	class Game
+	class Game final
 	{
 		enum class TurnState : uint8
 		{
@@ -24,14 +25,16 @@ namespace CheckerZ
 			std::string m_title;
 			
 			std::unique_ptr<API::Board> m_gameBoard;
-			API::Events::GameEventState m_gameState;
+			API::Events::GameSystemState m_gameState;
 			TurnState m_turnState;
+
+			std::shared_ptr<Entity::Player::Player> m_player;
 
 		public:
 			Game();
 			~Game();
 			
-			inline bool getIsRunning() const { return m_gameState == API::Events::GameEventState::RUN; }
+			inline bool getIsRunning() const { return m_gameState == API::Events::GameSystemState::RUN; }
 			inline bool getNextTurn() const { return m_turnState == TurnState::END; }
 			
 			inline void setTitle(const std::string& t_title = "") { m_title = !t_title.empty() ? t_title : m_title; }
@@ -42,14 +45,9 @@ namespace CheckerZ
 			void end();
 
 		private:
-			inline void setGameState(const API::Events::GameEventState& t_newState) { m_gameState = t_newState; }
+			inline void setGameState(const API::Events::GameSystemState& t_newState) { m_gameState = t_newState; }
 			inline void setTurnState(const TurnState& t_newState) { m_turnState = t_newState; }
-			
-			inline void printTitle() const
-			{
-				system("cls");
-				API::Logger::message(API::MessageType::INF, "\n\n\n\t\t\t\t\t       ", m_title);
-			}
+			inline void printTitle() const { system("cls"); API::Logger::message(API::MessageType::INF, "\n\n\n\t\t\t\t\t       ", m_title); }
 
 		private:
 			Game(const Game&) = delete;

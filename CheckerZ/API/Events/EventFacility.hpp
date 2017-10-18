@@ -2,6 +2,7 @@
 #define EVENT_FACILIY_HPP
 
 #include "../../Common.hpp"
+#include "../../Entity/Entity.hpp"
 
 // std::includes
 #include <functional>
@@ -17,10 +18,10 @@ namespace CheckerZ { namespace API { namespace Events {
 			explicit EventFacility() = default;
 			virtual ~EventFacility() = default;
 
-			virtual void invoke(const std::function<void()>& t_changeTitle = nullptr) const
-			{
-				std::invoke(t_changeTitle);
-			}
+			// templated body prototype
+			virtual void invoke() const { };
+			virtual void invoke(std::shared_ptr<Entity::Entity> t_entity) const { };
+			virtual void invoke(std::shared_ptr<Entity::Entity> t_entity, const vec2 &t_pos) const { };
 		
 		protected:
 			virtual void initialize() = 0;
@@ -30,6 +31,7 @@ namespace CheckerZ { namespace API { namespace Events {
 			EventFacility(EventFacility&&) = delete;
 	};
 
+	// used for parameter passing with clearer typename
 	using Event = std::shared_ptr<EventFacility>;
 
 } } }

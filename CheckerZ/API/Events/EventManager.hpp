@@ -22,28 +22,28 @@ namespace CheckerZ { namespace API { namespace Events {
 			// GAME STATE EVENTS
 			inline void winGame() const
 			{
-				EventFactory::create(GameEventState::WIN)->invoke();
+				EventFactory::create(GameSystemState::WIN)->invoke();
 			}
 
 			inline void loseGame() const
 			{
-				EventFactory::create(GameEventState::LOSE)->invoke();
+				EventFactory::create(GameSystemState::LOSE)->invoke();
 			}
 
 			inline void quitGame() const
 			{
-				EventFactory::create(GameEventState::QUIT)->invoke();
+				EventFactory::create(GameSystemState::QUIT)->invoke();
 			}
 
 			// ENTITY STATE EVENTS
-			inline void moveEntity() const
+			inline void moveEntity(const std::shared_ptr<Entity::Entity> &t_entity, const vec2 &t_pos) const
 			{
-				EventFactory::create(GameplayState::MOVE)->invoke();
+				EventFactory::create(GameplayState::MOVE)->invoke(t_entity, t_pos);
 			}
 
-			inline void takeEntityPawn() const
+			inline void takeEntityPawn(const std::shared_ptr<Entity::Entity> &t_entity) const
 			{
-				EventFactory::create(GameplayState::TAKE)->invoke();
+				EventFactory::create(GameplayState::TAKE)->invoke(t_entity);
 			}
 
 		private:

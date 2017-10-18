@@ -20,7 +20,7 @@ namespace CheckerZ { namespace API {
 	using board = std::array<grid<SizeY>, SizeX>;
 	#pragma endregion
 
-	class Board
+	class Board final
 	{
 		static constexpr uint16 s_boardX = 8;
 		static constexpr uint16 s_boardY = 8;
@@ -36,21 +36,6 @@ namespace CheckerZ { namespace API {
 
 			void populate();
 			void display() const;
-		
-		public:
-			void traverse(std::function<void(uint16)> t_action)
-			{
-				uint16 count{ 0 };
-				std::for_each(m_board.cbegin(), m_board.cend(), [&](const grid<s_boardY>& grid)
-				{
-					std::for_each(grid.cbegin(), grid.cend(), [&](const square square)
-					{
-						std::invoke(t_action, count);
-						// counts every square in the grid
-						count++;
-					});
-				});
-			}
 		
 		private:
 			Board(const Board&) = delete;

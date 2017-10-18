@@ -30,9 +30,6 @@
     <ClInclude Include="API\Logger.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="API\Events\Win.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="API\Events\EventFactory.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -48,6 +45,27 @@
     <ClInclude Include="Entity\Entity.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="API\Events\EventImpl\events.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="API\Events\EventImpl\LoseGame.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="API\Events\EventImpl\MoveEntity.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="API\Events\EventImpl\QuitGame.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="API\Events\EventImpl\TakeEntityPawn.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="API\Events\EventImpl\WinGame.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="API\Utils\GameHelper.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="API\Board.cpp">
@@ -59,10 +77,22 @@
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="API\Events\Win.cpp">
+    <ClCompile Include="Entity\Player\Player.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Entity\Player\Player.cpp">
+    <ClCompile Include="API\Events\EventImpl\LoseGame.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="API\Events\EventImpl\MoveEntity.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="API\Events\EventImpl\QuitGame.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="API\Events\EventImpl\TakeEntityPawn.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="API\Events\EventImpl\WinGame.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

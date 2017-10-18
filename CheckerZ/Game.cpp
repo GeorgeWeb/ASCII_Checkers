@@ -7,11 +7,9 @@
 
 namespace CheckerZ
 {
-	// TODO: MOVE EVENT STUFF IN EVENT MANAGER CLASS
-	// TODO: CALL MORE READLE FUNCTION NAMES HERE INSTEAD OF EVENTS CREATION/INVOKE
-
 	using namespace API;
 	using namespace Events;
+	using namespace Entity::Player;
 
 	Game::Game() :
 		m_title("<A GAME OF CHEKERS>"),
@@ -24,9 +22,10 @@ namespace CheckerZ
 	void Game::begin()
 	{
 		m_gameBoard->populate();
-		setGameState(GameEventState::RUN);
+		setGameState(GameSystemState::RUN);
 		
 		// TODO: initialise players ...
+		m_player = std::make_shared<Player>();
 		// get first turn
 		setTurnState(TurnState::FIRST);
 	}
@@ -48,11 +47,12 @@ namespace CheckerZ
 		switch (ch)
 		{
 			case static_cast<const char>(GameplayState::MOVE) :
-				EventManager::getInstance().moveEntity();
+				//vec2 newPos = { 'D', 1 }; ///> must be the exact position to place a pawn
+				//EventManager::getInstance().moveEntity(m_player, newPos);
 				setTurnState(TurnState::END);
 				break;
 			case static_cast<const char>(GameplayState::TAKE) :
-				EventManager::getInstance().takeEntityPawn();
+				//EventManager::getInstance().takeEntityPawn(entity);
 				setTurnState(TurnState::END);
 				break;
 			default:
@@ -72,7 +72,7 @@ namespace CheckerZ
 
 	void Game::end()
 	{
-		if (m_gameState == GameEventState::QUIT)
+		if (m_gameState == GameSystemState::QUIT)
 		{
 			// invoke the event that exits the game loop!
 			EventManager::getInstance().quitGame();
@@ -82,16 +82,16 @@ namespace CheckerZ
 			switch (m_gameState)
 			{
 				// Ask if the player wants to exit the game
-				// and set the m_gameState to GameEventState::QUIT
-				case GameEventState::WIN:
+				// and set the m_gameState to GameSystemState::QUIT
+				case GameSystemState::WIN:
 					EventManager::getInstance().winGame();
 					// temp:
-					setGameState(GameEventState::QUIT);
+					setGameState(GameSystemState::QUIT);
 					break;
-				case GameEventState::LOSE:
+				case GameSystemState::LOSE:
 					EventManager::getInstance().loseGame();
 					// temp:
-					setGameState(GameEventState::QUIT);
+					setGameState(GameSystemState::QUIT);
 					break;
 			}
 		}

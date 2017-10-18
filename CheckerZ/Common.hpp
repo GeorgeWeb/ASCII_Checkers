@@ -1,6 +1,8 @@
 #ifndef COMMON_HPP
 #define COMMON_HPP
 
+#include <unordered_map>
+
 namespace CheckerZ
 {
 	// 8, 16, 32, 64-bit singed integral types
@@ -13,6 +15,9 @@ namespace CheckerZ
 	using uint16 = unsigned short;
 	using uint32 = unsigned int;
 	using uint64 = unsigned long long;
+
+	// maths helpers
+	using vec2 = std::unordered_map<uint8, uint16>;
 }
 
 // project includes
