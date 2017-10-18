@@ -1,22 +1,24 @@
 // project includes
 #include "Game.hpp"
 
-// our main game namespace
 using namespace CheckerZ;
 
-// simulate the game loop *Declaration*
+#pragma region HELPERS DECLARATIONS
+
+// simulate the game loop
 void runGame(Game& t_game);
 
-auto main() -> unsigned int
+#pragma endregion
+
+auto main(void) -> uint32
 {
-	// PLAY: (the game object's instantiated on the stack)
 	runGame(Game());
 	
-	// the usual return value '0' for the invoked 'exit()'
 	return EXIT_SUCCESS;
 }
 
-// simulate the game loop *Definition*
+#pragma region HELPERS DEFINITIONS
+
 void runGame(Game& t_game)
 {
 	// create game board and assign players
@@ -28,14 +30,16 @@ void runGame(Game& t_game)
 		// update the frames (game movement)
 		t_game.update();
 
-		// 
+		// switch players and re-draw board each turn
 		if (t_game.getNextTurn())
 		{
 			// do the rendering (draw in console)
 			t_game.draw();
 		}
-		
+
 		// check for win condition & exit the loop
 		t_game.end();
 	}
 }
+
+#pragma endregion

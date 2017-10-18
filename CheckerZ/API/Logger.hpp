@@ -4,10 +4,11 @@
 // std::includes
 #include <iostream>
 #include <exception>
+#include <string>
 
 namespace CheckerZ { namespace API {
 	
-	enum MessageType
+	enum class MessageType : uint8
 	{
 		INF,	///> normal informational message
 		ERR		///> an error message
@@ -16,15 +17,15 @@ namespace CheckerZ { namespace API {
 	class Logger
 	{
 		public:
-			static void message(const MessageType& const t_msgType, const char* t_msg)
+			static void message(const MessageType& const t_msgType, const std::string& t_msg, const std::string& t_param = "")
 			{
 				if (t_msgType == MessageType::INF)
 				{
-					std::cout << t_msg << "\n";
+					std::cout << t_msg << t_param << "\n";
 				}
 				else if (t_msgType == MessageType::ERR)
 				{
-					std::cout << t_msg << "\n";
+					std::cout << t_msg << t_param << "\n";
 				}
 				else
 				{

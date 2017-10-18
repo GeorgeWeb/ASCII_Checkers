@@ -15,8 +15,8 @@ namespace CheckerZ { namespace API {
 
 	void Board::populate()
 	{
-		uint16 count = 0;
-		std::for_each(m_board.begin(), m_board.end(), [&](grid<s_boardY>& const grid)
+		uint16 count{ 0 };
+		std::for_each(m_board.begin(), m_board.end(), [&](grid<s_boardY>& grid)
 		{
 			std::for_each(grid.begin(), grid.end(), [&](square& square)
 			{
@@ -46,14 +46,14 @@ namespace CheckerZ { namespace API {
 		});
 	}
 
-	void Board::display()
+	void Board::display() const
 	{
 		std::cout << "\n\n\n\n";
-		uint16 count = 1;
-		std::for_each(m_board.begin(), m_board.end(), [&](grid<s_boardY>& const grid)
+		uint16 count{ 1 };
+		std::for_each(m_board.cbegin(), m_board.cend(), [&](const grid<s_boardY>& grid)
 		{
 			std::cout << "\t\t\t\t\t\t";
-			std::for_each(grid.begin(), grid.end(), [&](square &square)
+			std::for_each(grid.cbegin(), grid.cend(), [&](const square square)
 			{
 				std::cout << square << " ";
 				if (count++ % 8 == 0) std::cout << std::endl;

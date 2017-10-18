@@ -7,11 +7,15 @@
 
 namespace CheckerZ
 {
-	using API::Logger;
-	using API::MessageType;
+	// TODO: MOVE EVENT STUFF IN EVENT MANAGER CLASS
+	// TODO: CALL MORE READLE FUNCTION NAMES HERE INSTEAD OF EVENTS CREATION/INVOKE
 
-	Game::Game() 
-		: m_gameBoard(std::make_unique<API::Board>())
+	using namespace API;
+	using namespace Events;
+
+	Game::Game() :
+		m_title("<A GAME OF CHEKERS>"),
+		m_gameBoard(std::make_unique<Board>())
 	{ }
 
 	Game::~Game()
@@ -20,35 +24,36 @@ namespace CheckerZ
 	void Game::begin()
 	{
 		m_gameBoard->populate();
-		m_isRunning = true;
-		// draw the board (initially)
-		draw();
-	}
-
-	void Game::end()
-	{
-		// TODO: Check for win condition (make event system and run on event being invoked)
-		bool win = false;
-		if(win) m_isRunning = false;
+		setGameState(GameEventState::RUN);
+		
+		// TODO: initialise players ...
+		// get first turn
+		setTurnState(TurnState::FIRST);
 	}
 
 	void Game::update()
 	{
-		// GAME/AI LOGIC IN HERE
-		char ch;
-		Logger::message(MessageType::INF, "1 - MOVE\n2 - TAKE\n");
-		Logger::message(MessageType::INF, "Enter choice: ");
+		// Skip update and go to draw after if its the first turn
+		if (m_turnState == TurnState::FIRST)
+		{
+			setTurnState(TurnState::END);
+			return;
+		}
+
+		// GAMEPLAY LOGIC IN HERE
+		uint32 ch;
+		Logger::message(MessageType::INF, "1 - MOVE\n2 - TAKE\n", "Enter choice: ");
 		std::cin >> ch;
 		
 		switch (ch)
 		{
-			case static_cast<const char>(Gameplay::MOVE) :
-				Logger::message(MessageType::INF, "I am moving...");
-				m_nextTurn = true;
+			case static_cast<const char>(GameplayState::MOVE) :
+				EventManager::getInstance().moveEntity();
+				setTurnState(TurnState::END);
 				break;
-			case static_cast<const char>(Gameplay::TAKE) :
-				Logger::message(MessageType::INF, "I am taking...");
-				m_nextTurn = true;
+			case static_cast<const char>(GameplayState::TAKE) :
+				EventManager::getInstance().takeEntityPawn();
+				setTurnState(TurnState::END);
 				break;
 			default:
 				Logger::message(MessageType::ERR, "That's not a valid command, dawg... WTF?");
@@ -58,12 +63,37 @@ namespace CheckerZ
 
 	void Game::draw()
 	{
-		// clear screen after every turn
-		system("cls");
-		// TODO: add to Title function
-		Logger::message(MessageType::INF, "\n\n\n\t\t\t\t\t       <A GAME OF CHEKERS>");
-
+		printTitle();
+		// print the board grid
 		m_gameBoard->display();
-		m_nextTurn = false;
+
+		setTurnState(TurnState::BEGIN);
+	}
+
+	void Game::end()
+	{
+		if (m_gameState == GameEventState::QUIT)
+		{
+			// invoke the event that exits the game loop!
+			EventManager::getInstance().quitGame();
+		}
+		else
+		{
+			switch (m_gameState)
+			{
+				// Ask if the player wants to exit the game
+				// and set the m_gameState to GameEventState::QUIT
+				case GameEventState::WIN:
+					EventManager::getInstance().winGame();
+					// temp:
+					setGameState(GameEventState::QUIT);
+					break;
+				case GameEventState::LOSE:
+					EventManager::getInstance().loseGame();
+					// temp:
+					setGameState(GameEventState::QUIT);
+					break;
+			}
+		}
 	}
 }

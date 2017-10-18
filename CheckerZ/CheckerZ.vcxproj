@@ -112,14 +112,21 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="API\Board.hpp" />
-    <ClInclude Include="API\Events\IEvent.hpp" />
+    <ClInclude Include="API\Events\EventFacility.hpp" />
+    <ClInclude Include="API\Events\EventFactory.hpp" />
+    <ClInclude Include="API\Events\EventManager.hpp" />
+    <ClInclude Include="API\Events\Win.hpp" />
     <ClInclude Include="API\Logger.hpp" />
     <ClInclude Include="Common.hpp" />
+    <ClInclude Include="Entity\Entity.hpp" />
+    <ClInclude Include="Entity\Player\Player.hpp" />
     <ClInclude Include="Parallelism\Parallel.hpp" />
     <ClInclude Include="Game.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="API\Board.cpp" />
+    <ClCompile Include="API\Events\Win.cpp" />
+    <ClCompile Include="Entity\Player\Player.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
