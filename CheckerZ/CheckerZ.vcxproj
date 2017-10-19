@@ -116,13 +116,12 @@
     <ClInclude Include="API\Events\EventFactory.hpp" />
     <ClInclude Include="API\Events\EventImpl\events.h" />
     <ClInclude Include="API\Events\EventImpl\LoseGame.hpp" />
-    <ClInclude Include="API\Events\EventImpl\MoveEntity.hpp" />
+    <ClInclude Include="API\Events\EventImpl\MoveEntityPawn.hpp" />
     <ClInclude Include="API\Events\EventImpl\QuitGame.hpp" />
     <ClInclude Include="API\Events\EventImpl\TakeEntityPawn.hpp" />
     <ClInclude Include="API\Events\EventManager.hpp" />
     <ClInclude Include="API\Events\EventImpl\WinGame.hpp" />
     <ClInclude Include="API\Logger.hpp" />
-    <ClInclude Include="API\Utils\GameHelper.hpp" />
     <ClInclude Include="Common.hpp" />
     <ClInclude Include="Entity\Entity.hpp" />
     <ClInclude Include="Entity\Player\Player.hpp" />
@@ -132,7 +131,7 @@
   <ItemGroup>
     <ClCompile Include="API\Board.cpp" />
     <ClCompile Include="API\Events\EventImpl\LoseGame.cpp" />
-    <ClCompile Include="API\Events\EventImpl\MoveEntity.cpp" />
+    <ClCompile Include="API\Events\EventImpl\MoveEntityPawn.cpp" />
     <ClCompile Include="API\Events\EventImpl\QuitGame.cpp" />
     <ClCompile Include="API\Events\EventImpl\TakeEntityPawn.cpp" />
     <ClCompile Include="API\Events\EventImpl\WinGame.cpp" />

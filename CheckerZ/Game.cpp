@@ -7,26 +7,39 @@
 
 namespace CheckerZ
 {
+	// TODO: CREATE A CMake ASAP !!!
+	// TODO: SetState as a template function for all StateTypes
+
 	using namespace API;
 	using namespace Events;
 	using namespace Entity::Player;
 
 	Game::Game() :
-		m_title("<A GAME OF CHEKERS>"),
-		m_gameBoard(std::make_unique<Board>())
+		m_title("<A GAME OF CHEKERS>")
 	{ }
 
 	Game::~Game()
-	{ }
+	{ 
+		// TODO: free memory:
+		// board pointers in entities
+		// each entity
+	}
 
 	void Game::begin()
 	{
-		m_gameBoard->populate();
+		// initialise the players' data
+		m_player1 = std::make_shared<Player>("Black");
+		m_player2 = std::make_shared<Player>("Red");
+		// adding pointer to the game board for each player in order to control the movement over it.
+		m_player1->setBoard(&m_gameBoard);
+		m_player2->setBoard(&m_gameBoard);
+
+		// populate the game board with data/pawns
+		m_gameBoard.populate();
+
+		// start the game loop
 		setGameState(GameSystemState::RUN);
-		
-		// TODO: initialise players ...
-		m_player = std::make_shared<Player>();
-		// get first turn
+		// let the game loop know that it's the first turn
 		setTurnState(TurnState::FIRST);
 	}
 
@@ -44,15 +57,17 @@ namespace CheckerZ
 		Logger::message(MessageType::INF, "1 - MOVE\n2 - TAKE\n", "Enter choice: ");
 		std::cin >> ch;
 		
+		uint8  posKey = '\0'; uint16 posVal = 0;
 		switch (ch)
 		{
-			case static_cast<const char>(GameplayState::MOVE) :
-				//vec2 newPos = { 'D', 1 }; ///> must be the exact position to place a pawn
-				//EventManager::getInstance().moveEntity(m_player, newPos);
+		case static_cast<const char>(GameplayState::MOVE) :
+				std::cout << "Enter position: ";
+				std::cin >> posKey >> posVal;
+				EventManager::getInstance().moveEntityPawn(m_player1, 2, {{ posKey, posVal }});
 				setTurnState(TurnState::END);
 				break;
 			case static_cast<const char>(GameplayState::TAKE) :
-				//EventManager::getInstance().takeEntityPawn(entity);
+				//EventManager::getInstance().takeEntityPawn(m_player2, 3);
 				setTurnState(TurnState::END);
 				break;
 			default:
@@ -65,8 +80,8 @@ namespace CheckerZ
 	{
 		printTitle();
 		// print the board grid
-		m_gameBoard->display();
-
+		m_gameBoard.display();
+		// tell the game loop to continue (step in the update func)
 		setTurnState(TurnState::BEGIN);
 	}
 

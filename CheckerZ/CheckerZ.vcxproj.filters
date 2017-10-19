@@ -51,9 +51,6 @@
     <ClInclude Include="API\Events\EventImpl\LoseGame.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="API\Events\EventImpl\MoveEntity.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="API\Events\EventImpl\QuitGame.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -63,7 +60,7 @@
     <ClInclude Include="API\Events\EventImpl\WinGame.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="API\Utils\GameHelper.hpp">
+    <ClInclude Include="API\Events\EventImpl\MoveEntityPawn.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -83,9 +80,6 @@
     <ClCompile Include="API\Events\EventImpl\LoseGame.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="API\Events\EventImpl\MoveEntity.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="API\Events\EventImpl\QuitGame.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -93,6 +87,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="API\Events\EventImpl\WinGame.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="API\Events\EventImpl\MoveEntityPawn.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

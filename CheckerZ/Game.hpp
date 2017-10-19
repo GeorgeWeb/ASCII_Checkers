@@ -23,12 +23,17 @@ namespace CheckerZ
 
 		private:
 			std::string m_title;
-			
-			std::unique_ptr<API::Board> m_gameBoard;
+
+			// States
 			API::Events::GameSystemState m_gameState;
 			TurnState m_turnState;
+			
+			// Players
+			std::shared_ptr<Entity::Player::Player> m_player1;
+			std::shared_ptr<Entity::Player::Player> m_player2;
 
-			std::shared_ptr<Entity::Player::Player> m_player;
+			// Board
+			API::Board m_gameBoard;
 
 		public:
 			Game();

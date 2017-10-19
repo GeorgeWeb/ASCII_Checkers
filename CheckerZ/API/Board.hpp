@@ -8,38 +8,39 @@
 #include <array>
 
 namespace CheckerZ { namespace API {
-	
+
 	#pragma region Checkers Table Properties
 	// define a square of the grid
 	using square = uint8;
 	// define the grid of the board
-	template<const uint16 Size>
-	using grid = std::array<square, Size>;
+	template<class Type, const uint16 Size>
+	using grid = std::array<Type, Size>;
 	// define a board matrix
-	template<const uint16 SizeX, const uint16 SizeY>
-	using board = std::array<grid<SizeY>, SizeX>;
+	template<class Type, const uint16 SizeX, const uint16 SizeY>
+	using board = std::array<grid<Type, SizeY>, SizeX>;
 	#pragma endregion
 
 	class Board final
 	{
-		static constexpr uint16 s_boardX = 8;
-		static constexpr uint16 s_boardY = 8;
-
 		private:
-			board<s_boardX, s_boardY> m_board;
-		
+			// TODO: boardX and boardY should become boardSize since it is always going to be a SQUARE!
+			static constexpr uint16 s_boardLen = 8;
+			// initialize board
+			board<square, s_boardLen, s_boardLen> m_board;
+
 		public:
 			Board();
 			~Board();
 
-			inline const board<s_boardX, s_boardY>& const getBoard() const { return m_board; }
+			inline const board<square, s_boardLen, s_boardLen>& const getBoard() const { return m_board; }
+			std::array<square, 12> getPawnsByColor(const std::string& t_color);
 
+			// This will be called inside an entity
+			void setPos(vec2 t_pos);
+			// This function will be called after every move
 			void populate();
+			// This function will be called after every move
 			void display() const;
-		
-		private:
-			Board(const Board&) = delete;
-			Board(Board&&) = delete;
 	};
 
 } }

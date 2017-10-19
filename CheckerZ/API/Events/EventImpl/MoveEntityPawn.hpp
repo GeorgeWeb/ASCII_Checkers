@@ -5,13 +5,13 @@
 
 namespace CheckerZ { namespace API { namespace Events { namespace EventImpl {
 
-	class MoveEntity : public EventFacility
+	class MoveEntityPawn : public EventFacility
 	{
 		public:
-			explicit MoveEntity();
-			~MoveEntity() = default;
+			explicit MoveEntityPawn();
+			~MoveEntityPawn() = default;
 
-			void invoke(std::shared_ptr<Entity::Entity> t_entity, const vec2 &t_pos) const override;
+			void invoke(std::shared_ptr<Entity::Entity> t_entity, const uint16 t_pawnIdx, const vec2 &t_pos) const override;
 
 		private:
 			void initialize() override;

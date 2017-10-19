@@ -52,7 +52,7 @@ namespace CheckerZ { namespace API { namespace Events {
 				switch (t_state)
 				{
 					case GameplayState::MOVE:
-						return std::make_shared<EventImpl::MoveEntity>();
+						return std::make_shared<EventImpl::MoveEntityPawn>();
 						break;
 					case GameplayState::TAKE:
 						return std::make_shared<EventImpl::TakeEntityPawn>();

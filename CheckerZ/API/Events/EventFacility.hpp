@@ -1,6 +1,7 @@
 #ifndef EVENT_FACILIY_HPP
 #define EVENT_FACILIY_HPP
 
+// project includes
 #include "../../Common.hpp"
 #include "../../Entity/Entity.hpp"
 
@@ -10,18 +11,17 @@
 
 namespace CheckerZ { namespace API { namespace Events {
 
-	// TODO: CREATE A CMake ASAP !!!
-
 	class EventFacility
 	{
 		public:
 			explicit EventFacility() = default;
 			virtual ~EventFacility() = default;
 
-			// templated body prototype
+			// not all of the three overloads will require definition, but at least one will be need to be,
+			// so I can choose for the type of event
 			virtual void invoke() const { };
-			virtual void invoke(std::shared_ptr<Entity::Entity> t_entity) const { };
-			virtual void invoke(std::shared_ptr<Entity::Entity> t_entity, const vec2 &t_pos) const { };
+			virtual void invoke(std::shared_ptr<Entity::Entity> t_entity, const uint16 t_pawnIdx) const { };
+			virtual void invoke(std::shared_ptr<Entity::Entity> t_entity, const uint16 t_pawnIdx, const vec2 &t_pos) const { };
 		
 		protected:
 			virtual void initialize() = 0;
