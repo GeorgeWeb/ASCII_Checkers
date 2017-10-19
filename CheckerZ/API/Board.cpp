@@ -8,74 +8,57 @@
 namespace CheckerZ { namespace API {
 	
 	Board::Board()
-	{ }
+	{ 
+		m_emptySlots.reserve(40);
+		m_blackPawns.reserve(12);
+		m_redPawns.reserve(12);
+	}
 
 	Board::~Board()
 	{ }
 
-	std::array<square, 12> Board::getPawnsByColor(const std::string& t_color)
+	const std::vector<square>& Board::getEmptySlots()
 	{
-		// Throw error for invalid argument
-		if (t_color == "") return std::array<square, 12>();
-		
+		return m_emptySlots;
+	}
+
+	const std::vector<square>& Board::getPawnsByColor(const std::string& t_color)
+	{		
 		// TODO: return all pawns from the chosen color
 		if (t_color == "Black")
 		{
-			return std::array<square, 12>();
+			return m_blackPawns;
 		}
 		else if (t_color == "Red")
 		{
-			return std::array<square, 12>();
+			return m_redPawns;
 		}
 	}
 	
-	void Board::setPos(vec2 t_pos)
+	void Board::translate(const vec2& t_posFrom, const vec2 &t_posTo)
 	{
-		for (const auto &pos : t_pos)
+		for (const auto &posFrom : t_posFrom)
 		{
-			switch (pos.first)
+			// get the entity's own picked pawn
+			auto&& pawnPick = m_board['H' - posFrom.first][posFrom.second - 1];
+			for (const auto &posTo : t_posTo)
 			{
-				case 'A':
-					switch (pos.second)
-					{
-						case 1:
-							break;
-						case 2:
-							m_board[0][1] = 'X';
-							break;
-						case 3:
-							break;
-						case 4:
-							break;
-						case 5:
-							break;
-						case 6:
-							break;
-						case 7:
-							break;
-						case 8:
-							break;
-					}
-				break;
+				// get the other pawn picked for action by the entity
+				auto&& actionPick = m_board['H' - posTo.first][posTo.second - 1];
 				
-				default:
-					break;
+				// Do the movement
+				std::swap(pawnPick, actionPick);
 			}
 		}
 	}
 
+	void Board::erase(const vec2& t_posFrom, const vec2 &t_posTo)
+	{
+		// TODO: ...
+	}
+
 	void Board::populate()
 	{
-		// TODO:
-		// Board will accept squares
-		// Pawn meshes will be assigned as 'B' or 'R' in specific cases
-		// Array of empty slots will be init in Board.hpp
-		// Squares will equal pawn meshes but those supposed to be empty or '.' will be stored in the empty vector
-		// The squares will be equal to all the pawn meshes and to all the empty vectors
-		// 1. When a pawn mesh is taken it will go to the empty vector
-		// 2. When a pawn mesh moves it will swap with a point from the empty vector on the position it is going
-		// 3. If a pawn mesh wants to move and there's another pawn mesh on that position(diagonally) then return;
-
 		uint16 count{ 0 };
 		std::for_each(m_board.begin(), m_board.end(), [&](auto& grid)
 		{
@@ -119,7 +102,14 @@ namespace CheckerZ { namespace API {
 					square = '.';
 				}
 
-				// ...
+				// Construct arrays to be assigned to each player's pawns
+				if (square == 'B')
+					m_blackPawns.push_back(square);
+				else if (square == 'R')
+					m_redPawns.push_back(square);
+				else
+					m_emptySlots.push_back(square);
+
 				count++;
 			});
 		});
@@ -129,15 +119,18 @@ namespace CheckerZ { namespace API {
 	{
 		std::cout << "\n\n\n\n";
 		uint16 count{ 1 };
+		uint16 numberLabel{ 8 };
 		std::for_each(m_board.cbegin(), m_board.cend(), [&](auto& grid)
 		{
-			std::cout << "\t\t\t\t\t\t";
+			std::cout << "\t\t\t\t\t\t" << numberLabel-- << "| ";
 			std::for_each(grid.cbegin(), grid.cend(), [&](const auto square)
 			{
 				std::cout << square << " ";
 				if (count++ % 8 == 0) std::cout << "\n";
 			});
 		});
+		std::cout << "\t\t\t\t\t\t" << "-------------------" << "\n";
+		std::cout << "\t\t\t\t\t\t" << "   A B C D E F G H" << "\n";
 	}
 
 } }

@@ -4,7 +4,6 @@
 #include "WinGame.hpp"
 #include "LoseGame.hpp"
 #include "QuitGame.hpp"
-#include "MoveEntityPawn.hpp"
-#include "TakeEntityPawn.hpp" 
+#include "EntityPawnAction.hpp"
 
 #endif

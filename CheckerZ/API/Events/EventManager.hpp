@@ -19,7 +19,6 @@ namespace CheckerZ { namespace API { namespace Events {
 				return theInstance;
 			}
 
-			// GAME STATE EVENTS
 			inline void winGame() const
 			{
 				EventFactory::create(GameSystemState::WIN)->invoke();
@@ -35,15 +34,9 @@ namespace CheckerZ { namespace API { namespace Events {
 				EventFactory::create(GameSystemState::QUIT)->invoke();
 			}
 
-			// ENTITY STATE EVENTS
-			inline void moveEntityPawn(std::shared_ptr<Entity::Entity> t_entity, const uint16 t_pawnIdx, const vec2& t_pos) const
+			inline void entityPawnAction(std::shared_ptr<Entity::Entity> t_entity, const vec2& t_posFrom, const vec2 &t_posTo) const
 			{
-				EventFactory::create(GameplayState::MOVE)->invoke(t_entity, t_pawnIdx, t_pos);
-			}
-
-			inline void takeEntityPawn(std::shared_ptr<Entity::Entity> t_entity, const uint16 t_pawnIdx) const
-			{
-				EventFactory::create(GameplayState::TAKE)->invoke(t_entity, t_pawnIdx);
+				EventFactory::create(GameSystemState::ACTION)->invoke(t_entity, t_posFrom, t_posTo);
 			}
 
 		private:

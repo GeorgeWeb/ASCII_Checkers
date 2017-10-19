@@ -12,22 +12,33 @@ namespace CheckerZ { namespace Entity {
 	class Entity
 	{
 		public:
-			Entity() { m_pawns.reserve(12); }
+			Entity(const std::string& t_name) : m_name(t_name) { m_pawns.reserve(12); }
 			virtual ~Entity() = default;
 
-			virtual void movePawn(const uint16 t_pawnIdx, const vec2 &t_pos) = 0;
-			virtual void takePawn(const uint16 t_pawnIdx) = 0;
-			
-			virtual std::vector<API::square>& getPawns() { return m_pawns; };
-			// TODO: Assert that index is less than 16 ...
-			virtual const API::square getPawn(uint16 t_index) { return m_pawns[t_index]; };
+			virtual void firePawnAction(const vec2& t_posFrom, const vec2 &t_posTo) = 0;
 
-			virtual const API::Board* getBoard() { return m_board; }
+			virtual const std::string& getName() { return m_name; }
+			// assign the game board to the entity
 			virtual void setBoard(API::Board* t_board) { m_board = t_board; }
+			// regulate turn states
+			virtual bool hasTurn() { return m_hasTurn; }
+			virtual void setTurn(bool t_hasTurn) { m_hasTurn = t_hasTurn; }
+			// assign pawns to the entity from the game board
+			void assignPawns(const std::string& t_color)
+			{
+				auto pawnsFromBoard = m_board->getPawnsByColor(t_color);;
+				// copy pawn data generated from the board
+				std::copy(pawnsFromBoard.begin(), pawnsFromBoard.end(), std::back_inserter(m_pawns));
+			}
 
 		protected:
+			std::string m_name;
 			API::Board* m_board;
 			std::vector<API::square> m_pawns;
+			bool m_hasTurn = false;
+		
+		protected: ///> force creation with name parameter
+			Entity() = delete;
 	};
 
 } }

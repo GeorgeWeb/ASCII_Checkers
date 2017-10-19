@@ -9,6 +9,7 @@
 // std::includes
 #include <memory>
 #include <vector>
+#include <utility>
 
 namespace CheckerZ
 {
@@ -48,11 +49,13 @@ namespace CheckerZ
 			void update();
 			void draw();
 			void end();
-
+				
 		private:
 			inline void setGameState(const API::Events::GameSystemState& t_newState) { m_gameState = t_newState; }
 			inline void setTurnState(const TurnState& t_newState) { m_turnState = t_newState; }
 			inline void printTitle() const { system("cls"); API::Logger::message(API::MessageType::INF, "\n\n\n\t\t\t\t\t       ", m_title); }
+
+			void swapEntityTurns(const std::shared_ptr<Entity::Entity>& t_entityOnTurn);
 
 		private:
 			Game(const Game&) = delete;

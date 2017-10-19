@@ -54,13 +54,10 @@
     <ClInclude Include="API\Events\EventImpl\QuitGame.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="API\Events\EventImpl\TakeEntityPawn.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="API\Events\EventImpl\WinGame.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="API\Events\EventImpl\MoveEntityPawn.hpp">
+    <ClInclude Include="API\Events\EventImpl\EntityPawnAction.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -83,13 +80,10 @@
     <ClCompile Include="API\Events\EventImpl\QuitGame.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="API\Events\EventImpl\TakeEntityPawn.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="API\Events\EventImpl\WinGame.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="API\Events\EventImpl\MoveEntityPawn.cpp">
+    <ClCompile Include="API\Events\EventImpl\EntityPawnAction.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
