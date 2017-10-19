@@ -39,12 +39,12 @@ namespace CheckerZ { namespace API {
 	{
 		for (const auto &posFrom : t_posFrom)
 		{
-			// get the entity's own picked pawn
-			auto&& pawnPick = m_board['H' - posFrom.first][posFrom.second - 1];
 			for (const auto &posTo : t_posTo)
 			{
+				// get the entity's own picked pawn
+				auto&& pawnPick = m_board[posFrom.first - 'A'][posFrom.second - 1];
 				// get the other pawn picked for action by the entity
-				auto&& actionPick = m_board['H' - posTo.first][posTo.second - 1];
+				auto&& actionPick = m_board[posTo.first - 'A'][posTo.second - 1];
 				
 				// Do the movement
 				std::swap(pawnPick, actionPick);
@@ -119,10 +119,10 @@ namespace CheckerZ { namespace API {
 	{
 		std::cout << "\n\n\n\n";
 		uint16 count{ 1 };
-		uint16 numberLabel{ 8 };
+		uint16 sideLbl{ 0 };
 		std::for_each(m_board.cbegin(), m_board.cend(), [&](auto& grid)
 		{
-			std::cout << "\t\t\t\t\t\t" << numberLabel-- << "| ";
+			std::cout << "\t\t\t\t\t\t" << char(sideLbl++ + 'A') << "| ";
 			std::for_each(grid.cbegin(), grid.cend(), [&](const auto square)
 			{
 				std::cout << square << " ";
@@ -130,7 +130,7 @@ namespace CheckerZ { namespace API {
 			});
 		});
 		std::cout << "\t\t\t\t\t\t" << "-------------------" << "\n";
-		std::cout << "\t\t\t\t\t\t" << "   A B C D E F G H" << "\n";
+		std::cout << "\t\t\t\t\t\t" << "   1 2 3 4 5 6 7 8" << "\n";
 	}
 
 } }

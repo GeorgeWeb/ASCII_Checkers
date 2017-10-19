@@ -10,7 +10,6 @@ namespace CheckerZ { namespace API { namespace Events {
 		RUN,  ///> non-callable
 		ACTION,
 		WIN,
-		LOSE,
 		QUIT,
 	};
 
@@ -26,9 +25,6 @@ namespace CheckerZ { namespace API { namespace Events {
 						break;
 					case GameSystemState::WIN:
 						return std::make_shared<EventImpl::WinGame>();
-						break;
-					case GameSystemState::LOSE:
-						return std::make_shared<EventImpl::LoseGame>();
 						break;
 					case GameSystemState::QUIT:
 						return std::make_shared<EventImpl::QuitGame>();

@@ -24,11 +24,6 @@ namespace CheckerZ { namespace API { namespace Events {
 				EventFactory::create(GameSystemState::WIN)->invoke();
 			}
 
-			inline void loseGame() const
-			{
-				EventFactory::create(GameSystemState::LOSE)->invoke();
-			}
-
 			inline void quitGame() const
 			{
 				EventFactory::create(GameSystemState::QUIT)->invoke();

@@ -117,28 +117,19 @@ namespace CheckerZ
 
 	void Game::end()
 	{
+		// call quit event if there's a win
 		if (m_gameState == GameSystemState::QUIT)
-		{
-			// invoke the event that exits the game loop!
 			EventManager::getInstance().quitGame();
-		}
-		else
+
+		// check game states
+		switch (m_gameState)
 		{
-			switch (m_gameState)
-			{
-				// ask if the player wants to exit the game,
-				// then set the m_gameState to GameSystemState::QUIT
-				case GameSystemState::WIN:
-					EventManager::getInstance().winGame();
-					// temp:
-					setGameState(GameSystemState::QUIT);
-					break;
-				case GameSystemState::LOSE:
-					EventManager::getInstance().loseGame();
-					// temp:
-					setGameState(GameSystemState::QUIT);
-					break;
-			}
+			// ask if the player wants to exit the game,
+			// then set the m_gameState to GameSystemState::QUIT
+			case GameSystemState::WIN:
+				EventManager::getInstance().winGame();
+				setGameState(GameSystemState::QUIT);
+				break;
 		}
 	}
 
