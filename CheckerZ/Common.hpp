@@ -1,7 +1,8 @@
 #ifndef COMMON_HPP
 #define COMMON_HPP
 
-#include <unordered_map>
+// std::includes
+#include <utility>
 
 namespace CheckerZ
 {
@@ -17,7 +18,7 @@ namespace CheckerZ
 	using uint64 = unsigned long long;
 
 	// maths helpers
-	using vec2 = std::unordered_map<uint8, uint16>;
+	using vec2 = std::pair<uint8, uint16>;
 }
 
 // project includes

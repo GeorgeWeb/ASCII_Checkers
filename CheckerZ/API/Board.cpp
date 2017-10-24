@@ -8,129 +8,126 @@
 namespace CheckerZ { namespace API {
 	
 	Board::Board()
-	{ 
+	{
 		m_emptySlots.reserve(40);
 		m_blackPawns.reserve(12);
 		m_redPawns.reserve(12);
 	}
 
 	Board::~Board()
-	{ }
+	{ 
+		// TODO: Free memory from pawns
+	}
 
-	const std::vector<square>& Board::getEmptySlots()
+	const std::vector<Pawn>& Board::getEmptySlots()
 	{
 		return m_emptySlots;
 	}
 
-	const std::vector<square>& Board::getPawnsByColor(const std::string& t_color)
+	const std::vector<Pawn>& Board::getPawnsByColor(const std::string& t_color)
 	{		
 		// TODO: return all pawns from the chosen color
 		if (t_color == "Black")
-		{
 			return m_blackPawns;
-		}
 		else if (t_color == "Red")
-		{
 			return m_redPawns;
-		}
 	}
 	
-	void Board::translate(const vec2& t_posFrom, const vec2 &t_posTo)
+	void Board::translate(const vec2& t_posFrom, const vec2& t_posTo)
 	{
-		for (const auto &posFrom : t_posFrom)
-		{
-			for (const auto &posTo : t_posTo)
-			{
-				// get the entity's own picked pawn
-				auto&& pawnPick = m_board[posFrom.first - 'A'][posFrom.second - 1];
-				// get the other pawn picked for action by the entity
-				auto&& actionPick = m_board[posTo.first - 'A'][posTo.second - 1];
+		// get the entity's own picked pawn
+		auto&& pawnPick = m_board[t_posFrom.first - 'A'][t_posFrom.second - 1];
+		// get the other pawn picked for action by the entity
+		auto&& actionPick = m_board[t_posTo.first - 'A'][t_posTo.second - 1];
 				
-				// Do the movement
-				std::swap(pawnPick, actionPick);
-			}
-		}
+		// Do the movement
+		std::swap(pawnPick, actionPick);
 	}
 
-	void Board::erase(const vec2& t_posFrom, const vec2 &t_posTo)
+	void Board::erase(const vec2& t_posFrom, const vec2& t_posTo)
 	{
 		// TODO: ...
 	}
 
 	void Board::populate()
 	{
-		uint16 count{ 0 };
-		std::for_each(m_board.begin(), m_board.end(), [&](auto& grid)
+		for(size_t row = 0; row < m_board.size(); row++)
 		{
-			std::for_each(grid.begin(), grid.end(), [&](auto& square)
+			for (size_t col = 0; col < m_board.size(); col++)
 			{
-				// Player1's pawns
-				if (count < 24)
+				auto& pawn = m_board[row][col];
+
+				if (((row + col) % 2) == 0)
 				{
-					if (count < 8)
-					{
-						square = (count % 2) ? 'B' : '.';
-					}
-					else if (count >= 8 && count < 16)
-					{
-						square = !(count % 2) ? 'B' : '.';
-					}
-					else if (count >= 16 && count < 24)
-					{
-						square = (count % 2) ? 'B' : '.';
-					}
+					pawn.mesh = '.';
+					pawn.color = "White";
 				}
-				// Player2's pawns
-				else if (count >= 40)
-				{
-					if (count < 48)
-					{
-						square = !(count % 2) ? 'R' : '.';
-					}
-					else if (count >= 48 && count < 56)
-					{
-						square = (count % 2) ? 'R' : '.';
-					}
-					else if (count >= 56 && count < 64)
-					{
-						square = !(count % 2) ? 'R' : '.';
-					}
-				}
-				// Rest of the grid
 				else
 				{
-					square = '.';
+					// Entity1's pawns
+					if (row < 3)
+					{
+						pawn.mesh = 'B';
+						pawn.color = "Black";
+					}
+					// Entity2's pawns
+					else if (row > 4)
+					{
+						pawn.mesh = 'R';
+						pawn.color = "Red";
+					}
+					// Empty space
+					else
+					{
+						pawn.mesh = '.';
+						pawn.color = "White";
+					}
 				}
 
-				// Construct arrays to be assigned to each player's pawns
-				if (square == 'B')
-					m_blackPawns.push_back(square);
-				else if (square == 'R')
-					m_redPawns.push_back(square);
+				// Construct arrays to be assigned to each entity's pawns
+				if (pawn.color == "Black")
+					m_blackPawns.push_back(pawn);
+				else if (pawn.color == "Red")
+					m_redPawns.push_back(pawn);
 				else
-					m_emptySlots.push_back(square);
-
-				count++;
-			});
-		});
+					m_emptySlots.push_back(pawn);
+			}
+		}
 	}
 	
 	void Board::display() const
 	{
-		std::cout << "\n\n\n\n";
+		std::cout << "\n";
+		std::cout << "\t" << "      +===+===+===+===+===+===+===+===+===+===+" << "\n";
+		std::cout << "\t" << "      | / | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | \\ |" << "\n";
+		std::cout << "\t" << "      +===+===+===+===+===+===+===+===+===+===+" << "\n";
+		
 		uint16 count{ 1 };
 		uint16 sideLbl{ 0 };
-		std::for_each(m_board.cbegin(), m_board.cend(), [&](auto& grid)
+		std::for_each(m_board.cbegin(), m_board.cend(), [&](auto grid)
 		{
-			std::cout << "\t\t\t\t\t\t" << char(sideLbl++ + 'A') << "| ";
-			std::for_each(grid.cbegin(), grid.cend(), [&](const auto square)
+			std::cout << "\t" << "      [ " << char(sideLbl + 'A') << " ] ";
+			std::for_each(grid.cbegin(), grid.cend(), [&](const auto pawn)
 			{
-				std::cout << square << " ";
-				if (count++ % 8 == 0) std::cout << "\n";
+				std::cout << pawn.mesh;
+				(count % 8 == 0) ? std::cout << " [ " : std::cout << " | ";
+
+				if (count % 8 == 0)
+				{
+					std::cout << char(sideLbl + 'A') << " ]\n";
+					if(count < 64)
+						std::cout << "\t" << "      +---+-------------------------------+---+" << "\n";
+					else
+						std::cout << "\t" << "      +===+===+===+===+===+===+===+===+===+===+" << "\n";
+				}
+
+				count++;
 			});
+			sideLbl++;
 		});
-		std::cout << "\t\t\t\t\t\t" << "-------------------" << "\n";
-		std::cout << "\t\t\t\t\t\t" << "   1 2 3 4 5 6 7 8" << "\n";
+		
+		std::cout << "\t" << "      | \\ | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | / |" << "\n";
+		std::cout << "\t" << "      +===+===+===+===+===+===+===+===+===+===+" << "\n";
 	}
 
 } }

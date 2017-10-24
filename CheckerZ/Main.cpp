@@ -10,9 +10,12 @@ void runGame(Game& t_game);
 
 #pragma endregion
 
-auto main(void) -> uint32
+auto main(void) -> int32
 {
-	runGame(Game());
+	Game game;
+	game.setTitle("<A GAME OF CHECKERS>");
+	
+	runGame(game);
 	
 	return EXIT_SUCCESS;
 }

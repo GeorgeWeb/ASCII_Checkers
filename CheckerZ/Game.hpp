@@ -43,7 +43,7 @@ namespace CheckerZ
 			inline bool getIsRunning() const { return m_gameState == API::Events::GameSystemState::RUN; }
 			inline bool getNextTurn() const { return m_turnState == TurnState::END; }
 			
-			inline void setTitle(const std::string& t_title = "") { m_title = !t_title.empty() ? t_title : m_title; }
+			inline void setTitle(const std::string& t_title) { m_title = t_title; }
 
 			void begin();
 			void update();
@@ -53,7 +53,7 @@ namespace CheckerZ
 		private:
 			inline void setGameState(const API::Events::GameSystemState& t_newState) { m_gameState = t_newState; }
 			inline void setTurnState(const TurnState& t_newState) { m_turnState = t_newState; }
-			inline void printTitle() const { system("cls"); API::Logger::message(API::MessageType::INF, "\n\n\n\t\t\t\t\t       ", m_title); }
+			inline void printTitle() const { system("cls"); API::Logger::message(API::MessageType::INF, "\n\t\t\t", m_title); }
 
 			void swapEntityTurns(const std::shared_ptr<Entity::Entity>& t_entityOnTurn);
 

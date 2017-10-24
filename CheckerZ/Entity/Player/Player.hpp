@@ -1,6 +1,7 @@
 #ifndef PLAYER_HPP
 #define PLAYER_HPP
 
+// project includes
 #include "../Entity.hpp"
 
 namespace CheckerZ { namespace Entity { namespace Player {
@@ -12,8 +13,6 @@ namespace CheckerZ { namespace Entity { namespace Player {
 		~Player() = default;
 
 		void firePawnAction(const vec2& t_posFrom, const vec2 &t_posTo) override;
-
-		
 	};
 
 } } }

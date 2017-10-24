@@ -15,7 +15,7 @@ namespace CheckerZ
 	using namespace Entity::Player;
 
 	Game::Game() :
-		m_title("<A GAME OF CHEKERS>"),
+		m_title("Checkers"),
 		m_player1(std::make_shared<Player>("Player1")),
 		m_player2(std::make_shared<Player>("Player2"))
 	{ }
@@ -61,36 +61,34 @@ namespace CheckerZ
 		// ---------------------- //
 		// GAMEPLAY LOGIC IN HERE //
 		// ---------------------- //
-		
+		std::cout << "\n";
 		// get the entity who is on turn
 		auto entityOnTurn = m_player1->hasTurn() ? m_player1 : m_player2->hasTurn() ? m_player2 : nullptr;
 		if (entityOnTurn == nullptr)
 		{
-			Logger::message(MessageType::ERR, "There's problem with reckognizing the entity that is on turn.");
+			Logger::message(MessageType::ERR, "\t      There's problem with reckognizing the entity that is on turn.");
 			return;
 		}
 		// print the entity who is on turn
-		Logger::message(MessageType::INF, entityOnTurn->getName(), " is on turn");
+		Logger::message(MessageType::INF, "\t      " + entityOnTurn->getName(), "'s turn!");
 
 		// read the input for movement/action:
 				
 		// entity picks the pawn
-		Logger::message(MessageType::INF, "Pick command:", EndingDelimiter::SPACE);
-		// init reading values
+		Logger::message(MessageType::INF, "\t      Pick command:", EndingDelimiter::SPACE);
+		// init readers & read from input
 		uint8 key = '\0'; uint16 value = 0;
-		// read the input
 		std::cin >> key >> value;
 		// save the input as a typdef unordered_map
-		vec2 fromPos = { { key, value } };
+		vec2 fromPos = std::make_pair(key, value);
 		
 		// entity chooses an action with the picked pawn
-		Logger::message(MessageType::INF, "Action command:", EndingDelimiter::SPACE);
-		// init reading values
+		Logger::message(MessageType::INF, "\t      Action command:", EndingDelimiter::SPACE);
+		// reset readers & read again
 		key = '\0'; value = 0;
-		// read the input
 		std::cin >> key >> value;
 		// save the input as a typdef unordered_map
-		vec2 toPos = { { key, value } };
+		vec2 toPos = std::make_pair(key, value);
 		
 		/*
 		// TODO: check if command is in the valid range... if not return with this error msg:
