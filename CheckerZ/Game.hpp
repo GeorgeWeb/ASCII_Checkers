@@ -34,7 +34,7 @@ namespace CheckerZ
 			std::shared_ptr<Entity::Player::Player> m_player2;
 
 			// Board
-			API::Board m_gameBoard;
+			std::shared_ptr<API::Board> m_gameBoard;
 
 		public:
 			Game();

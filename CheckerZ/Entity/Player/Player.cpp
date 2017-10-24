@@ -2,8 +2,6 @@
 
 namespace CheckerZ { namespace Entity { namespace Player {
 
-	using namespace API;
-
 	void Player::firePawnAction(const vec2& t_posFrom, const vec2 &t_posTo)
 	{	
 		// check from board if you only need to translate or translate + erase:
@@ -13,7 +11,7 @@ namespace CheckerZ { namespace Entity { namespace Player {
 		auto& action = m_board->getPawnGrid(t_posTo);
 		
 		// check if it's this player's turn
-		if (myPawn.color == m_pawns[0].color)
+		if (myPawn.getColor() == m_pawns[0].getColor())
 		{
 			// swap the grid positions
 			m_board->swapBoardGrids(myPawn, action);

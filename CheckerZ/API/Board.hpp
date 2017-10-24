@@ -6,6 +6,7 @@
 
 // std::includes
 #include <array>
+#include <algorithm>
 
 namespace CheckerZ { namespace API {
 
@@ -34,11 +35,8 @@ namespace CheckerZ { namespace API {
 			const std::vector<Pawn>& getEmptySlots();
 			const std::vector<Pawn>& getPawnsByColor(const std::string& t_color);
 
-			inline void swapBoardGrids(Pawn& t_lhs, Pawn& t_rhs) { std::swap(t_lhs.mesh, t_rhs.mesh); }
+			void swapBoardGrids(Pawn& t_lhs, Pawn& t_rhs);
 
-			// This will be called inside an entity
-			void translate(const vec2& t_posFrom, const vec2& t_posTo);
-			void erase(const vec2& t_posFrom, const vec2& t_posTo);
 			// This function will be called after every move
 			void populate();
 			// This function will be called after every move

@@ -32,21 +32,11 @@ namespace CheckerZ { namespace API {
 		else if (t_color == "Red")
 			return m_redPawns;
 	}
-	
-	void Board::translate(const vec2& t_posFrom, const vec2& t_posTo)
-	{
-		// get the entity's own picked pawn
-		auto&& pawnPick = m_board[t_posFrom.first - 'A'][t_posFrom.second - 1];
-		// get the other pawn picked for action by the entity
-		auto&& actionPick = m_board[t_posTo.first - 'A'][t_posTo.second - 1];
-				
-		// Do the movement
-		std::swap(pawnPick, actionPick);
-	}
 
-	void Board::erase(const vec2& t_posFrom, const vec2& t_posTo)
+	void Board::swapBoardGrids(Pawn& t_lhs, Pawn& t_rhs)
 	{
-		// TODO: ...
+		std::swap(t_lhs.getMesh(), t_rhs.getMesh());
+		std::swap(t_lhs.getColor(), t_rhs.getColor());
 	}
 
 	void Board::populate()
@@ -58,36 +48,24 @@ namespace CheckerZ { namespace API {
 				auto& pawn = m_board[row][col];
 
 				if (((row + col) % 2) == 0)
-				{
-					pawn.mesh = '.';
-					pawn.color = "White";
-				}
+					pawn.setValues('.', "White");
 				else
 				{
 					// Entity1's pawns
 					if (row < 3)
-					{
-						pawn.mesh = 'B';
-						pawn.color = "Black";
-					}
+						pawn.setValues('B', "Black");
 					// Entity2's pawns
 					else if (row > 4)
-					{
-						pawn.mesh = 'R';
-						pawn.color = "Red";
-					}
+						pawn.setValues('R', "Red");
 					// Empty space
 					else
-					{
-						pawn.mesh = '.';
-						pawn.color = "White";
-					}
+						pawn.setValues('.', "White");
 				}
 
 				// Construct arrays to be assigned to each entity's pawns
-				if (pawn.color == "Black")
+				if (pawn.getColor() == "Black")
 					m_blackPawns.push_back(pawn);
-				else if (pawn.color == "Red")
+				else if (pawn.getColor() == "Red")
 					m_redPawns.push_back(pawn);
 				else
 					m_emptySlots.push_back(pawn);
@@ -107,9 +85,9 @@ namespace CheckerZ { namespace API {
 		std::for_each(m_board.cbegin(), m_board.cend(), [&](auto grid)
 		{
 			std::cout << "\t" << "      [ " << char(sideLbl + 'A') << " ] ";
-			std::for_each(grid.cbegin(), grid.cend(), [&](const auto pawn)
+			std::for_each(grid.cbegin(), grid.cend(), [&](auto pawn)
 			{
-				std::cout << pawn.mesh;
+				std::cout << pawn.getMesh();
 				(count % 8 == 0) ? std::cout << " [ " : std::cout << " | ";
 
 				if (count % 8 == 0)

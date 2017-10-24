@@ -16,6 +16,7 @@ namespace CheckerZ
 
 	Game::Game() :
 		m_title("Checkers"),
+		m_gameBoard(std::make_shared<Board>()),
 		m_player1(std::make_shared<Player>("Player1")),
 		m_player2(std::make_shared<Player>("Player2"))
 	{ }
@@ -30,11 +31,11 @@ namespace CheckerZ
 	void Game::begin()
 	{
 		// populate the game board with data(squares)
-		m_gameBoard.populate();
+		m_gameBoard->populate();
 
 		// adding pointer to the game board for each player in order to control the movement over it.
-		m_player1->setBoard(&m_gameBoard);
-		m_player2->setBoard(&m_gameBoard);
+		m_player1->setBoard(m_gameBoard);
+		m_player2->setBoard(m_gameBoard);
 
 		// choose player's pawns color
 		m_player1->assignPawns("Black");
@@ -73,7 +74,7 @@ namespace CheckerZ
 		Logger::message(MessageType::INF, "\t      " + entityOnTurn->getName(), "'s turn!");
 
 		// read the input for movement/action:
-				
+		
 		// entity picks the pawn
 		Logger::message(MessageType::INF, "\t      Pick command:", EndingDelimiter::SPACE);
 		// init readers & read from input
@@ -108,7 +109,7 @@ namespace CheckerZ
 	{
 		printTitle();
 		// print the board grid
-		m_gameBoard.display();
+		m_gameBoard->display();
 		// tell the game loop to continue (step in the update func)
 		setTurnState(TurnState::BEGIN);
 	}
