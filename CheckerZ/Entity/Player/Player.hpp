@@ -12,7 +12,7 @@ namespace CheckerZ { namespace Entity { namespace Player {
 		Player(const std::string& t_name) : Entity(t_name) { };
 		~Player() = default;
 
-		void firePawnAction(const vec2& t_posFrom, const vec2 &t_posTo) override;
+		bool firePawnAction(const vec2& t_posFrom, vec2&& t_posTo) override;
 	};
 
 } } }

@@ -19,12 +19,12 @@ namespace CheckerZ { namespace API {
 		// TODO: Free memory from pawns
 	}
 
-	const std::vector<Pawn>& Board::getEmptySlots()
+	std::vector<Pawn>& Board::getEmptySlots()
 	{
 		return m_emptySlots;
 	}
 
-	const std::vector<Pawn>& Board::getPawnsByColor(const std::string& t_color)
+	std::vector<Pawn>& Board::getPawnsByColor(const std::string& t_color)
 	{		
 		// TODO: return all pawns from the chosen color
 		if (t_color == "Black")

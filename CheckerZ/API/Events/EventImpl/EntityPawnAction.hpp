@@ -11,10 +11,11 @@ namespace CheckerZ { namespace API { namespace Events { namespace EventImpl {
 			explicit EntityPawnAction();
 			~EntityPawnAction() = default;
 
-			void invoke(std::shared_ptr<Entity::Entity> t_entity, const vec2& t_posFrom, const vec2 &t_posTo) const override;
+			void invoke(std::shared_ptr<Entity::Entity> t_entity, const vec2& t_posFrom, vec2&& t_posTo) const override;
 
 		private:
 			void initialize() override;
+			
 	};
 
 } } } }

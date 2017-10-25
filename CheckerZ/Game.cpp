@@ -74,35 +74,42 @@ namespace CheckerZ
 		Logger::message(MessageType::INF, "\t      " + entityOnTurn->getName(), "'s turn!");
 
 		// read the input for movement/action:
-		
 		// entity picks the pawn
 		Logger::message(MessageType::INF, "\t      Pick command:", EndingDelimiter::SPACE);
 		// init readers & read from input
 		uint8 key = '\0'; uint16 value = 0;
 		std::cin >> key >> value;
 		// save the input as a typdef unordered_map
-		vec2 fromPos = std::make_pair(key, value);
-		
+		vec2 fromPos{ key, value };
+
 		// entity chooses an action with the picked pawn
 		Logger::message(MessageType::INF, "\t      Action command:", EndingDelimiter::SPACE);
 		// reset readers & read again
 		key = '\0'; value = 0;
 		std::cin >> key >> value;
 		// save the input as a typdef unordered_map
-		vec2 toPos = std::make_pair(key, value);
-		
-		/*
-		// TODO: check if command is in the valid range... if not return with this error msg:
-		Logger::message(MessageType::ERR, "That's not a valid command, dawg... WTF?");
-		*/
+		vec2 toPos{ key, value };
 
-		// TODO: check for possible case...
-		EventManager::getInstance().entityPawnAction(entityOnTurn, fromPos, toPos);
-		
-		// swap entities' turn states
-		swapEntityTurns(entityOnTurn);
-		// Set next turn
-		setTurnState(TurnState::END);
+		bool canMoveAgain = false;
+		// Do the ACTION
+		try
+		{
+			EventManager::getInstance().entityPawnAction(entityOnTurn, fromPos, std::move(toPos));
+			canMoveAgain = true;
+		}
+		catch (const std::exception& t_excep)
+		{
+			Logger::message(MessageType::ERR, "\t      ", t_excep.what(), EndingDelimiter::NLINE);
+			canMoveAgain = false;
+		}
+		// manage next turn
+		if (canMoveAgain)
+		{
+			// swap entities' turn states
+			swapEntityTurns(entityOnTurn);
+			// Set next turn
+			setTurnState(TurnState::END);
+		}
 	}
 
 	void Game::draw()

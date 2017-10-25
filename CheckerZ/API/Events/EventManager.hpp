@@ -1,7 +1,11 @@
 #ifndef EVENT_MANAGER_HPP
 #define EVENT_MANAGER_HPP
 
+// project includes
 #include "EventFactory.hpp"
+
+// std::includes
+#include <exception>
 
 namespace CheckerZ { namespace API { namespace Events {
 	
@@ -29,9 +33,9 @@ namespace CheckerZ { namespace API { namespace Events {
 				EventFactory::create(GameSystemState::QUIT)->invoke();
 			}
 
-			inline void entityPawnAction(std::shared_ptr<Entity::Entity> t_entity, const vec2& t_posFrom, const vec2 &t_posTo) const
+			inline void entityPawnAction(std::shared_ptr<Entity::Entity> t_entity, const vec2& t_posFrom, vec2&& t_posTo) const
 			{
-				EventFactory::create(GameSystemState::ACTION)->invoke(t_entity, t_posFrom, t_posTo);
+				EventFactory::create(GameSystemState::ACTION)->invoke(t_entity, t_posFrom, std::move(t_posTo));
 			}
 
 		private:

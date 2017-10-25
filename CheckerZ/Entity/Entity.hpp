@@ -22,7 +22,7 @@ namespace CheckerZ { namespace Entity {
 			virtual ~Entity() = default;
 
 			// the only overridable func from player and AI
-			virtual void firePawnAction(const vec2& t_posFrom, const vec2 &t_posTo) = 0;
+			virtual bool firePawnAction(const vec2& t_posFrom, vec2&& t_posTo) = 0;
 
 		public:
 			inline const std::string& getName() { return m_name; }

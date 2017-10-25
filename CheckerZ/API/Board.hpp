@@ -29,11 +29,11 @@ namespace CheckerZ { namespace API {
 			Board();
 			~Board();
 
-			inline const board<Pawn, s_boardLen>& getBoard() const { return m_board; }
-			inline Pawn& getPawnGrid(const vec2& t_pos) { return m_board[t_pos.first - 'A'][t_pos.second - 1]; }
+			inline board<Pawn, s_boardLen>& getBoard() { return m_board; }
+			inline Pawn& getPawnFromInput(const vec2& t_pos) { return m_board[t_pos.first - 'A'][t_pos.second - 1]; }
 
-			const std::vector<Pawn>& getEmptySlots();
-			const std::vector<Pawn>& getPawnsByColor(const std::string& t_color);
+			std::vector<Pawn>& getEmptySlots();
+			std::vector<Pawn>& getPawnsByColor(const std::string& t_color);
 
 			void swapBoardGrids(Pawn& t_lhs, Pawn& t_rhs);
 
