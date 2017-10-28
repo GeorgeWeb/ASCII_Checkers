@@ -5,6 +5,7 @@
 #include "API/Board.hpp"
 #include "API/Events/EventManager.hpp"
 #include "Entity/Player/Player.hpp"
+#include "Entity/AI/AI.hpp"
 
 // std::includes
 #include <memory>
@@ -36,11 +37,15 @@ namespace CheckerZ
 			// Board
 			std::shared_ptr<API::Board> m_gameBoard;
 
+			// Moves generator
+			std::shared_ptr<API::Utils::MovesGenerator> m_moveGenerator;
+
 		public:
 			Game();
 			~Game();
 			
-			inline bool getIsRunning() const { return m_gameState == API::Events::GameSystemState::RUN; }
+			inline bool getIsRunning() const { return m_gameState == API::Events::GameSystemState::RUN 
+												   || m_gameState == API::Events::GameSystemState::WIN; }
 			inline bool getNextTurn() const { return m_turnState == TurnState::END; }
 			
 			inline void setTitle(const std::string& t_title) { m_title = t_title; }
@@ -53,7 +58,7 @@ namespace CheckerZ
 		private:
 			inline void setGameState(const API::Events::GameSystemState& t_newState) { m_gameState = t_newState; }
 			inline void setTurnState(const TurnState& t_newState) { m_turnState = t_newState; }
-			inline void printTitle() const { system("cls"); API::Logger::message(API::MessageType::INF, "\n\t\t\t", m_title); }
+			inline void printTitle() const { system("cls"); API::Utils::Logger::message(API::Utils::MessageType::INF, "\n\t\t\t", m_title); }
 
 			void swapEntityTurns(const std::shared_ptr<Entity::Entity>& t_entityOnTurn);
 

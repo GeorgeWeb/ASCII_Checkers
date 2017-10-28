@@ -14,7 +14,7 @@ namespace CheckerZ { namespace API { namespace Events { namespace EventImpl {
 
 	void QuitGame::invoke() const
 	{
-
+		// exit(EXIT_FAILURE);
 	}
 
 } } } }

@@ -6,37 +6,52 @@
 #include <algorithm>
 
 namespace CheckerZ { namespace API {
-	
-	Board::Board()
+
+	bool operator==(Pawn& t_lhs, Pawn& t_rhs);
+	bool operator!=(Pawn& t_lhs, Pawn& t_rhs);
+
+	void Board::move(const Position &t_posFrom, Position&& t_posTo)
 	{
-		m_emptySlots.reserve(40);
-		m_blackPawns.reserve(12);
-		m_redPawns.reserve(12);
+		// check for jumps
+		// if | getBoardPawn(t_posFrom).getCoordX() - getBoardPawn(t_posTo).getCoordX() | + 
+		//	  | getBoardPawn(t_posFrom).getCoordY() - getBoardPawn(t_posTo).getCoordY() | == 4
+		// => Jump: auto pawnToKill = 
+		//				m_board[getBoardPawn(t_posFrom).getCoordX() + getBoardPawn(t_posTo).getCoordX() / 2] 
+		//					   [getBoardPawn(t_posFrom).getCoordY() + getBoardPawn(t_posTo).getCoordY() / 2];
+		//			pawnToKill.getMesh() = ' '; pawnToKill.getColor() = 'Empty'
+		// ...
+		throw std::runtime_error("Moved");
 	}
 
-	Board::~Board()
-	{ 
-		// TODO: Free memory from pawns
-	}
-
-	std::vector<Pawn>& Board::getEmptySlots()
+	void Board::evolve(Pawn& t_pawn)
 	{
-		return m_emptySlots;
 	}
 
-	std::vector<Pawn>& Board::getPawnsByColor(const std::string& t_color)
-	{		
-		// TODO: return all pawns from the chosen color
-		if (t_color == "Black")
-			return m_blackPawns;
-		else if (t_color == "Red")
-			return m_redPawns;
-	}
-
-	void Board::swapBoardGrids(Pawn& t_lhs, Pawn& t_rhs)
+	void Board::swapPawns(Pawn& t_lhs, Pawn& t_rhs)
 	{
+		// Swap values between of your pawn left pawn and the one you will take / jump on
 		std::swap(t_lhs.getMesh(), t_rhs.getMesh());
 		std::swap(t_lhs.getColor(), t_rhs.getColor());
+		std::swap(t_lhs.getCoordX(), t_rhs.getCoordX());
+		std::swap(t_lhs.getCoordY(), t_rhs.getCoordY());
+	}
+
+	void Board::killPawn(Pawn& t_pawn)
+	{
+		// TODO: ...
+	}
+
+	GridInfo Board::getGridInfo(int t_row, int t_col)
+	{
+		GridInfo gridInfo = GridInfo::EOB;
+		// check if the coordinates get out of bounds & return
+		if (t_row < 0 || t_col < 0 || t_row >= m_board.size() || t_col >= m_board.size())
+			return gridInfo;
+		
+		// return the color of the pawn by the coordinates
+		auto colorPick = m_board[t_row][t_col].getColor();
+		return gridInfo = colorPick == "Black" ? GridInfo::BLACK : colorPick == "Red" ? GridInfo::RED 
+			: colorPick == "Empty" ? GridInfo::EMPTY : GridInfo::EOB;
 	}
 
 	void Board::populate()
@@ -48,27 +63,19 @@ namespace CheckerZ { namespace API {
 				auto& pawn = m_board[row][col];
 
 				if (((row + col) % 2) == 0)
-					pawn.setValues('.', "White");
+					pawn.setValues(' ', "Empty", std::move(row), std::move(col));
 				else
 				{
 					// Entity1's pawns
 					if (row < 3)
-						pawn.setValues('B', "Black");
+						pawn.setValues('b', "Black", std::move(row), std::move(col));
 					// Entity2's pawns
 					else if (row > 4)
-						pawn.setValues('R', "Red");
+						pawn.setValues('r', "Red", std::move(row), std::move(col));
 					// Empty space
 					else
-						pawn.setValues('.', "White");
+						pawn.setValues(' ', "Empty", std::move(row), std::move(col));
 				}
-
-				// Construct arrays to be assigned to each entity's pawns
-				if (pawn.getColor() == "Black")
-					m_blackPawns.push_back(pawn);
-				else if (pawn.getColor() == "Red")
-					m_redPawns.push_back(pawn);
-				else
-					m_emptySlots.push_back(pawn);
 			}
 		}
 	}
@@ -106,6 +113,24 @@ namespace CheckerZ { namespace API {
 		
 		std::cout << "\t" << "      | \\ | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | / |" << "\n";
 		std::cout << "\t" << "      +===+===+===+===+===+===+===+===+===+===+" << "\n";
+	}
+
+	bool operator==(API::Pawn& t_lhs, API::Pawn& t_rhs)
+	{
+		return (
+			// x coordinates check
+			t_lhs.getCoordX() == t_rhs.getCoordX() &&
+			// y coordinates check
+			t_lhs.getCoordY() == t_rhs.getCoordY());/* &&
+			// mesh check
+			t_lhs.getMesh() == t_rhs.getMesh() &&
+			// color check
+			t_lhs.getColor() == t_rhs.getColor());*/
+	}
+
+	bool operator!=(API::Pawn& t_lhs, API::Pawn& t_rhs)
+	{
+		return !(t_lhs == t_rhs);
 	}
 
 } }

@@ -17,12 +17,13 @@ namespace CheckerZ
 	using uint32 = unsigned int;
 	using uint64 = unsigned long long;
 
-	// maths helpers
-	using vec2 = std::pair<uint8, uint16>;
+	// helper data structs
+	using Position = std::pair<size_t, size_t>;
+	using Movement = std::pair<Position, Position>;
 }
 
 // project includes
-#include "API/Logger.hpp"
+#include "API/Utils/Logger.hpp"
 // concurrent programming lib - C++AMP
 #include "Parallelism/Parallel.hpp"
 

@@ -10,6 +10,14 @@
 
 namespace CheckerZ { namespace API {
 
+	enum GridInfo
+	{
+		BLACK,
+		RED,
+		EMPTY,
+		EOB
+	};
+
 	class Board final
 	{
 		template<class Type, const size_t Size>
@@ -21,26 +29,29 @@ namespace CheckerZ { namespace API {
 			// initialize board
 			board<Pawn, s_boardLen> m_board;
 
-			std::vector<Pawn> m_emptySlots;
-			std::vector<Pawn> m_blackPawns;
-			std::vector<Pawn> m_redPawns;
-
 		public:
-			Board();
-			~Board();
+			Board() = default;
+			~Board() = default;
 
-			inline board<Pawn, s_boardLen>& getBoard() { return m_board; }
-			inline Pawn& getPawnFromInput(const vec2& t_pos) { return m_board[t_pos.first - 'A'][t_pos.second - 1]; }
+			inline const board<Pawn, s_boardLen>& getBoard() const { return m_board; }
+			
+			// easy fast getter
+			inline Pawn& getBoardPawn(size_t t_row, size_t t_col) { return m_board[t_row][t_col]; }
 
-			std::vector<Pawn>& getEmptySlots();
-			std::vector<Pawn>& getPawnsByColor(const std::string& t_color);
-
-			void swapBoardGrids(Pawn& t_lhs, Pawn& t_rhs);
+			GridInfo getGridInfo(int t_row, int t_col);
 
 			// This function will be called after every move
 			void populate();
 			// This function will be called after every move
 			void display() const;
+			// ...
+			void move(const Position& t_posFrom, Position&& t_posTo);
+			// ...
+			void evolve(Pawn& t_pawn);
+
+		private:
+			void swapPawns(Pawn& t_lhs, Pawn& t_rhs);
+			void killPawn(Pawn& t_pawn);
 	};
 
 } }

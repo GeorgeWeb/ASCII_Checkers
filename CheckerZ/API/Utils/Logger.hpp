@@ -6,8 +6,8 @@
 #include <exception>
 #include <string>
 
-namespace CheckerZ { namespace API {
-	
+namespace CheckerZ { namespace API { namespace Utils {
+
 	enum class MessageType : uint8
 	{
 		INF,	///> normal informational message
@@ -62,6 +62,6 @@ namespace CheckerZ { namespace API {
 			}
 	};
 
-} }
+} } }
 
 #endif !S_LOGGER_HPP

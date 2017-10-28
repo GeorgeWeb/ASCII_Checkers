@@ -8,11 +8,11 @@ namespace CheckerZ { namespace Entity { namespace Player {
 
 	class Player : public Entity
 	{
-	public:
-		Player(const std::string& t_name) : Entity(t_name) { };
-		~Player() = default;
+		public:
+			Player(const std::string& t_name, const std::string& t_pawnColor) : Entity(t_name, t_pawnColor) { };
+			~Player() = default;
 
-		bool firePawnAction(const vec2& t_posFrom, vec2&& t_posTo) override;
+			void firePawnAction(const Position& t_posFrom, Position&& t_posTo, std::shared_ptr<API::Utils::MovesGenerator> moveGenerator) override;
 	};
 
 } } }

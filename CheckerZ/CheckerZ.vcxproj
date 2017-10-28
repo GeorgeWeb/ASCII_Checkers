@@ -119,10 +119,11 @@
     <ClInclude Include="API\Events\EventImpl\QuitGame.hpp" />
     <ClInclude Include="API\Events\EventManager.hpp" />
     <ClInclude Include="API\Events\EventImpl\WinGame.hpp" />
-    <ClInclude Include="API\King.hpp" />
-    <ClInclude Include="API\Logger.hpp" />
+    <ClInclude Include="API\Utils\MovesGenerator.hpp" />
+    <ClInclude Include="API\Utils\Logger.hpp" />
     <ClInclude Include="API\Pawn.hpp" />
     <ClInclude Include="Common.hpp" />
+    <ClInclude Include="Entity\AI\AI.hpp" />
     <ClInclude Include="Entity\Entity.hpp" />
     <ClInclude Include="Entity\Player\Player.hpp" />
     <ClInclude Include="Parallelism\Parallel.hpp" />
@@ -133,6 +134,9 @@
     <ClCompile Include="API\Events\EventImpl\EntityPawnAction.cpp" />
     <ClCompile Include="API\Events\EventImpl\QuitGame.cpp" />
     <ClCompile Include="API\Events\EventImpl\WinGame.cpp" />
+    <ClCompile Include="API\Utils\MovesGenerator.cpp" />
+    <ClCompile Include="Entity\AI\MinMaxAI.cpp" />
+    <ClCompile Include="Entity\AI\SimpleAI.cpp" />
     <ClCompile Include="Entity\Player\Player.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Main.cpp" />

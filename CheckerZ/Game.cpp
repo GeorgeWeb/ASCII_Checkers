@@ -11,14 +11,17 @@ namespace CheckerZ
 	// TODO: SetState as a template function for all StateTypes
 
 	using namespace API;
+	using namespace Utils;
 	using namespace Events;
 	using namespace Entity::Player;
+	using namespace Entity::AI;
 
 	Game::Game() :
 		m_title("Checkers"),
 		m_gameBoard(std::make_shared<Board>()),
-		m_player1(std::make_shared<Player>("Player1")),
-		m_player2(std::make_shared<Player>("Player2"))
+		m_player1(std::make_shared<Player>("Player1", "Black")),
+		m_player2(std::make_shared<Player>("Player2", "Red")),
+		m_moveGenerator(std::make_shared<MovesGenerator>())
 	{ }
 
 	Game::~Game()
@@ -36,10 +39,6 @@ namespace CheckerZ
 		// adding pointer to the game board for each player in order to control the movement over it.
 		m_player1->setBoard(m_gameBoard);
 		m_player2->setBoard(m_gameBoard);
-
-		// choose player's pawns color
-		m_player1->assignPawns("Black");
-		m_player2->assignPawns("Red");
 
 		// Choose first entity to begin
 		m_player1->setTurn(true);
@@ -73,42 +72,59 @@ namespace CheckerZ
 		// print the entity who is on turn
 		Logger::message(MessageType::INF, "\t      " + entityOnTurn->getName(), "'s turn!");
 
+		m_moveGenerator->generatePossibleMoves(m_gameBoard, entityOnTurn->getPawnColor(), nullptr);
+		if (m_moveGenerator->getPossibleMoves().empty())
+		{
+			// ------------//
+			// LOSE / WIN //
+			// -----------//
+			m_gameState = GameSystemState::WIN;
+			return;
+		}
+
 		// read the input for movement/action:
 		// entity picks the pawn
-		Logger::message(MessageType::INF, "\t      Pick command:", EndingDelimiter::SPACE);
+		Logger::message(MessageType::INF, "\t      Pick pawn:", EndingDelimiter::SPACE);
 		// init readers & read from input
-		uint8 key = '\0'; uint16 value = 0;
+		uint8 key = '\0'; uint32 value = 0;
 		std::cin >> key >> value;
 		// save the input as a typdef unordered_map
-		vec2 fromPos{ key, value };
+		Position fromPos{ key - 'A', value - 1 };
 
 		// entity chooses an action with the picked pawn
-		Logger::message(MessageType::INF, "\t      Action command:", EndingDelimiter::SPACE);
+		Logger::message(MessageType::INF, "\t      Move pawn:", EndingDelimiter::SPACE);
 		// reset readers & read again
 		key = '\0'; value = 0;
 		std::cin >> key >> value;
 		// save the input as a typdef unordered_map
-		vec2 toPos{ key, value };
+		Position toPos{ key - 'A' , value - 1 };
+		
+		// ----- //
+		// DEBUG //
+		// ----- //
+		/*std::cout << "\t      " << fromPos.first << " , " << fromPos.second;
+		std::cout << "\t      " << toPos.first << " , " << toPos.second;
+		return;*/
 
-		bool canMoveAgain = false;
-		// Do the ACTION
+		// TRY MOVEMENT
 		try
 		{
-			EventManager::getInstance().entityPawnAction(entityOnTurn, fromPos, std::move(toPos));
-			canMoveAgain = true;
-		}
-		catch (const std::exception& t_excep)
-		{
-			Logger::message(MessageType::ERR, "\t      ", t_excep.what(), EndingDelimiter::NLINE);
-			canMoveAgain = false;
-		}
-		// manage next turn
-		if (canMoveAgain)
-		{
+			// m_moveGenerator->generatePossibleMoves(m_gameBoard, entityOnTurn->getPawnColor(), nullptr);
+			EventManager::getInstance().entityPawnAction(entityOnTurn, fromPos, std::move(toPos), m_moveGenerator);
+
+			// manage next turn
 			// swap entities' turn states
 			swapEntityTurns(entityOnTurn);
 			// Set next turn
 			setTurnState(TurnState::END);
+		}
+		catch (const std::exception& t_excep)
+		{
+			printTitle();
+			// print the board grid
+			m_gameBoard->display();
+
+			Logger::message(MessageType::ERR, "\t      ", t_excep.what(), EndingDelimiter::NLINE);
 		}
 	}
 

@@ -14,7 +14,8 @@ namespace CheckerZ { namespace API { namespace Events { namespace EventImpl {
 
 	void WinGame::invoke() const
 	{
-		// All the MAGIC happens in here :)
+		Utils::Logger::message(Utils::MessageType::INF, "\t      There aren't any possible move variants. You're losing, pal!\n");
+		system("PAUSE");
 	}
 
 } } } }
