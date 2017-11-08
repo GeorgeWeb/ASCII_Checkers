@@ -5,7 +5,7 @@
 
 namespace CheckerZ { namespace API { namespace Events {
 
-	enum class GameSystemState : uint8
+	enum class GameSystemState
 	{
 		RUN,  ///> non-callable
 		ACTION,

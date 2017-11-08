@@ -92,16 +92,19 @@
     <ClCompile Include="API\Events\EventImpl\EntityPawnAction.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Entity\AI\SimpleAI.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="API\Utils\MovesGenerator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Entity\AI\AdvancedAI.cpp">
+    <ClCompile Include="API\Utils\MovesEvaluator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="API\Utils\MovesEvaluator.cpp">
+    <ClCompile Include="Entity\AI\EasyAI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity\AI\MediumAI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity\AI\HardAI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

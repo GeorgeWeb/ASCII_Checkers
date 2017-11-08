@@ -51,6 +51,7 @@ namespace CheckerZ { namespace API {
 			void populate();
 			// This function will be called after every move
 			void display() const;
+			
 			// ...
 			ActionState move(const Position& t_posFrom, const Position& t_posTo);
 			// ...

@@ -15,20 +15,16 @@ namespace CheckerZ { namespace API { namespace Utils {
 			{
 				if (t_lastPlayedPawn->isKing())
 				{
-					// TODO: ...
+					checkLeftJump(tempBoard, x, y, "Top");
+					checkRightJump(tempBoard, x, y, "Top");
+
+					checkLeftJump(tempBoard, x, y, "Bottom");
+					checkRightJump(tempBoard, x, y, "Bottom");
 				}
 				else
 				{
-					// top-left-jump
-					if (tempBoard.getGridInfo(x + 1, y - 1) == GridInfo::RED && tempBoard.getGridInfo(x + 2, y - 2) == GridInfo::EMPTY)
-					{
-						m_possibleMoves.insert({ std::make_pair(x, y), std::make_pair(x + 2, y - 2) });
-					}
-					// top-right-jump
-					if (tempBoard.getGridInfo(x + 1, y + 1) == GridInfo::RED && tempBoard.getGridInfo(x + 2, y + 2) == GridInfo::EMPTY)
-					{
-						m_possibleMoves.insert({ std::make_pair(x, y), std::make_pair(x + 2, y + 2) });
-					}
+					checkLeftJump(tempBoard, x, y, "Top");
+					checkRightJump(tempBoard, x, y, "Top");
 				}
 			}
 			// Red player was on turn
@@ -36,20 +32,15 @@ namespace CheckerZ { namespace API { namespace Utils {
 			{
 				if (t_lastPlayedPawn->isKing())
 				{
-					// TODO: ...
+					checkLeftJump(tempBoard, x, y, "Top");
+					checkRightJump(tempBoard, x, y, "Top");
+					checkLeftJump(tempBoard, x, y, "Bottom");
+					checkRightJump(tempBoard, x, y, "Bottom");
 				}
 				else
 				{
-					// bottom-left-jump
-					if (tempBoard.getGridInfo(x - 1, y - 1) == GridInfo::BLACK && tempBoard.getGridInfo(x - 2, y - 2) == GridInfo::EMPTY)
-					{
-						m_possibleMoves.insert({ std::make_pair(x, y), std::make_pair(x - 2, y - 2) });
-					}
-					// bottom-right-jump
-					if (tempBoard.getGridInfo(x - 1, y + 1) == GridInfo::BLACK && tempBoard.getGridInfo(x - 2, y + 2) == GridInfo::EMPTY)
-					{
-						m_possibleMoves.insert({ std::make_pair(x, y), std::make_pair(x - 2, y + 2) });
-					}
+					checkLeftJump(tempBoard, x, y, "Bottom");
+					checkRightJump(tempBoard, x, y, "Bottom");
 				}
 			}
 		}
@@ -65,37 +56,22 @@ namespace CheckerZ { namespace API { namespace Utils {
 						{
 							if (tempBoard.getBoardPawn(x, y).isKing())
 							{
-								// Do king checks
-								// if( tempBoard.getGridInfo (x-1,y-1) == 0 ; -> 
-								// if == 1 -> 
-								// for King ( i=0;i<3;i++)
-								// { tembBoard.getGridInfo (x + pick.x[i]) , y + pick.y[i]) == 0 ->
-								// if == 1 ->
-								// if getgridinfo = red -> if (get grid info (x + 2* pick.x[i], y + 2*pick.y[i])== empty then add move
+								checkLeftMove(tempBoard, x, y, "Top");
+								checkRightMove(tempBoard, x, y, "Top");
+								checkLeftJump(tempBoard, x, y, "Top");
+								checkRightJump(tempBoard, x, y, "Top");
+
+								checkLeftMove(tempBoard, x, y, "Bottom");
+								checkRightMove(tempBoard, x, y, "Bottom");
+								checkLeftJump(tempBoard, x, y, "Bottom");
+								checkRightJump(tempBoard, x, y, "Bottom");
 							}
 							else
 							{
-								// X is COL, Y is ROW !!!
-								// top-left-move
-								if (tempBoard.getGridInfo(x + 1, y - 1) == GridInfo::EMPTY)
-								{
-									m_possibleMoves.insert({ std::make_pair(x, y), std::make_pair(x + 1, y - 1) });
-								}
-								// top-right-move
-								if (tempBoard.getGridInfo(x + 1, y + 1) == GridInfo::EMPTY)
-								{
-									m_possibleMoves.insert({ std::make_pair(x, y), std::make_pair(x + 1, y + 1) });
-								}
-								// top-left-jump
-								if (tempBoard.getGridInfo(x + 1, y - 1) == GridInfo::RED && tempBoard.getGridInfo(x + 2, y - 2) == GridInfo::EMPTY)
-								{
-									m_possibleMoves.insert({ std::make_pair(x, y), std::make_pair(x + 2, y - 2) });
-								}
-								// top-right-jump
-								if (tempBoard.getGridInfo(x + 1, y + 1) == GridInfo::RED && tempBoard.getGridInfo(x + 2, y + 2) == GridInfo::EMPTY)
-								{
-									m_possibleMoves.insert({ std::make_pair(x, y), std::make_pair(x + 2, y + 2) });
-								}
+								checkLeftMove(tempBoard, x, y, "Top");
+								checkRightMove(tempBoard, x, y, "Top");
+								checkLeftJump(tempBoard, x, y, "Top");
+								checkRightJump(tempBoard, x, y, "Top");
 							}
 						}
 					}
@@ -110,37 +86,22 @@ namespace CheckerZ { namespace API { namespace Utils {
 						{
 							if (tempBoard.getBoardPawn(x, y).isKing())
 							{
-								// Do king checks
-								// if( tempBoard.getGridInfo (x-1,y-1) == 0 ; -> 
-								// if == 1 -> 
-								// for King ( i=0;i<3;i++)
-								// { tembBoard.getGridInfo (x + pick.x[i]) , y + pick.y[i]) == 0 ->
-								// if == 1 ->
-								// if getgridinfo = red -> if (get grid info (x + 2* pick.x[i], y + 2*pick.y[i])== empty then add move
+								checkLeftMove(tempBoard, x, y, "Top");
+								checkRightMove(tempBoard, x, y, "Top");
+								checkLeftJump(tempBoard, x, y, "Top");
+								checkRightJump(tempBoard, x, y, "Top");
+
+								checkLeftMove(tempBoard, x, y, "Bottom");
+								checkRightMove(tempBoard, x, y, "Bottom");
+								checkLeftJump(tempBoard, x, y, "Bottom");
+								checkRightJump(tempBoard, x, y, "Bottom");
 							}
 							else
 							{
-								// X is COL, Y is ROW !!!
-								// bottom-left-move
-								if (tempBoard.getGridInfo(x - 1, y - 1) == GridInfo::EMPTY)
-								{
-									m_possibleMoves.insert({ std::make_pair(x, y), std::make_pair(x - 1, y - 1) });
-								}
-								// bottom-right-move
-								if (tempBoard.getGridInfo(x - 1, y + 1) == GridInfo::EMPTY)
-								{
-									m_possibleMoves.insert({ std::make_pair(x, y), std::make_pair(x - 1, y + 1) });
-								}
-								// bottom-left-jump
-								if (tempBoard.getGridInfo(x - 1, y - 1) == GridInfo::BLACK && tempBoard.getGridInfo(x - 2, y - 2) == GridInfo::EMPTY)
-								{
-									m_possibleMoves.insert({ std::make_pair(x, y), std::make_pair(x - 2, y - 2) });
-								}
-								// bottom-right-jump
-								if (tempBoard.getGridInfo(x - 1, y + 1) == GridInfo::BLACK && tempBoard.getGridInfo(x - 2, y + 2) == GridInfo::EMPTY)
-								{
-									m_possibleMoves.insert({ std::make_pair(x, y), std::make_pair(x - 2, y + 2) });
-								}
+								checkLeftMove(tempBoard, x, y, "Bottom");
+								checkRightMove(tempBoard, x, y, "Bottom");
+								checkLeftJump(tempBoard, x, y, "Bottom");
+								checkRightJump(tempBoard, x, y, "Bottom");
 							}
 						}
 					}
@@ -156,6 +117,85 @@ namespace CheckerZ { namespace API { namespace Utils {
 	{
 		m_possibleMoves.clear();
 		generatePossibleMoves(t_board, t_color, t_lastPlayedPawn);
+	}
+	
+	// ------------------- //
+	// check moves helpers //
+	// ------------------- //
+	void MovesGenerator::checkLeftMove(Board& t_board, int x, int y, const std::string &t_pos)
+	{		
+		if (t_pos == "Top")
+		{
+			if (t_board.getGridInfo(x + 1, y - 1) == GridInfo::EMPTY)
+			{
+				m_possibleMoves.insert({ std::make_pair(x, y), std::make_pair(x + 1, y - 1) });
+			}
+		}
+
+		if (t_pos == "Bottom")
+		{
+			if (t_board.getGridInfo(x - 1, y - 1) == GridInfo::EMPTY)
+			{
+				m_possibleMoves.insert({ std::make_pair(x, y), std::make_pair(x - 1, y - 1) });
+			}
+		}
+	}
+
+	void MovesGenerator::checkRightMove(Board& t_board, int x, int y, const std::string &t_pos)
+	{
+		if (t_pos == "Top")
+		{
+			if (t_board.getGridInfo(x + 1, y + 1) == GridInfo::EMPTY)
+			{
+				m_possibleMoves.insert({ std::make_pair(x, y), std::make_pair(x + 1, y + 1) });
+			}
+		}
+
+		if (t_pos == "Bottom")
+		{
+			if (t_board.getGridInfo(x - 1, y + 1) == GridInfo::EMPTY)
+			{
+				m_possibleMoves.insert({ std::make_pair(x, y), std::make_pair(x - 1, y + 1) });
+			}
+		}
+	}
+
+	void MovesGenerator::checkLeftJump(Board& t_board, int x, int y, const std::string &t_pos)
+	{
+		if (t_pos == "Top")
+		{
+			if (t_board.getGridInfo(x + 1, y - 1) == GridInfo::RED && t_board.getGridInfo(x + 2, y - 2) == GridInfo::EMPTY)
+			{
+				m_possibleMoves.insert({ std::make_pair(x, y), std::make_pair(x + 2, y - 2) });
+			}
+		}
+
+		if (t_pos == "Bottom")
+		{
+			if (t_board.getGridInfo(x - 1, y - 1) == GridInfo::BLACK && t_board.getGridInfo(x - 2, y - 2) == GridInfo::EMPTY)
+			{
+				m_possibleMoves.insert({ std::make_pair(x, y), std::make_pair(x - 2, y - 2) });
+			}
+		}
+	}
+
+	void MovesGenerator::checkRightJump(Board& t_board, int x, int y, const std::string &t_pos)
+	{
+		if (t_pos == "Top")
+		{
+			if (t_board.getGridInfo(x + 1, y + 1) == GridInfo::RED && t_board.getGridInfo(x + 2, y + 2) == GridInfo::EMPTY)
+			{
+				m_possibleMoves.insert({ std::make_pair(x, y), std::make_pair(x + 2, y + 2) });
+			}
+		}
+
+		if (t_pos == "Bottom")
+		{
+			if (t_board.getGridInfo(x - 1, y + 1) == GridInfo::BLACK && t_board.getGridInfo(x - 2, y + 2) == GridInfo::EMPTY)
+			{
+				m_possibleMoves.insert({ std::make_pair(x, y), std::make_pair(x - 2, y + 2) });
+			}
+		}
 	}
 
 } } }

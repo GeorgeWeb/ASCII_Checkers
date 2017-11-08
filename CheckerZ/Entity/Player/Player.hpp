@@ -6,7 +6,7 @@
 
 namespace CheckerZ { namespace Entity { namespace Player {
 
-	class Player : public Entity
+	class Player final : public Entity
 	{
 		public:
 			Player(const std::string& t_name, const std::string& t_pawnColor) : Entity(t_name, t_pawnColor) { };

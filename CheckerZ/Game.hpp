@@ -12,12 +12,13 @@
 #include <vector>
 #include <utility>
 #include <stack>
+#include <queue>
 
 namespace CheckerZ
 {
 	class Game final
 	{
-		enum class TurnState : uint8
+		enum class TurnState
 		{
 			FIRST,
 			BEGIN,
@@ -32,8 +33,8 @@ namespace CheckerZ
 			TurnState m_turnState;
 			
 			// Players
-			std::shared_ptr<Entity::Player::Player> m_player1;
-			std::shared_ptr<Entity::Player::Player> m_player2;
+			std::shared_ptr<Entity::Entity> m_player1;
+			std::shared_ptr<Entity::Entity> m_player2;
 
 			// Board
 			std::shared_ptr<API::Board> m_gameBoard;
@@ -41,8 +42,12 @@ namespace CheckerZ
 			// Moves generator
 			std::shared_ptr<API::Utils::MovesGenerator> m_moveGenerator;
 
-			// moves holder for undo/replay
-			std::stack<Movement> m_savedGame;
+			// moves holder for undo
+			std::stack<Movement> m_undo;
+			// moves holder for redo
+			std::stack<Movement> m_redo;
+			// moves holder for saved game
+			std::queue<Movement> m_save;
 
 		public:
 			Game();

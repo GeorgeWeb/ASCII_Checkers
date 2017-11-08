@@ -11,22 +11,39 @@ namespace CheckerZ { namespace Entity { namespace AI {
 		public: 
 			AI(const std::string& t_name, const std::string& t_pawnColor) : Entity(t_name, t_pawnColor) { }
 			virtual ~AI() = default;
+
+			virtual void firePawnAction(const Position& t_posFrom, const Position& t_posTo, std::shared_ptr<API::Utils::MovesGenerator> t_moveGenerator) { }
 	};
 	
 	// This AI type will simply pick a random possible move
-	class SimpleAI : public AI
-	{
-		SimpleAI(const std::string& t_name, const std::string& t_pawnColor) : AI(t_name, t_pawnColor) { }
-		~SimpleAI() = default;
-	};
-
-	// This AI type class implements the MinMax algorithm with AB-Pruning optimization
-	class AdvancedAI : public AI
+	class EasyAI final : public AI
 	{
 		public:
-			AdvancedAI(const std::string& t_name, const std::string& t_pawnColor) : AI(t_name, t_pawnColor) { }
-			~AdvancedAI() = default;
+			EasyAI(const std::string& t_name, const std::string& t_pawnColor) : AI(t_name, t_pawnColor) { }
+			~EasyAI() = default;
+
+			void firePawnAction(const Position& t_posFrom, const Position& t_posTo, std::shared_ptr<API::Utils::MovesGenerator> t_moveGenerator) override;
+	};
+
+	// This AI type class implements a custom greedy action picking algorithm
+	class MediumAI final : public AI
+	{
+		public:
+			MediumAI(const std::string& t_name, const std::string& t_pawnColor) : AI(t_name, t_pawnColor) { }
+			~MediumAI() = default;
+
+			void firePawnAction(const Position& t_posFrom, const Position& t_posTo, std::shared_ptr<API::Utils::MovesGenerator> t_moveGenerator) override;
 	};
 	
+	// This AI type class implements the MinMax algorithm with AB-Pruning optimization
+	class HardAI final : public AI
+	{
+		public:
+			HardAI(const std::string& t_name, const std::string& t_pawnColor) : AI(t_name, t_pawnColor) { }
+			~HardAI() = default;
+
+			void firePawnAction(const Position& t_posFrom, const Position& t_posTo, std::shared_ptr<API::Utils::MovesGenerator> t_moveGenerator) override;
+	};
+
 } } }
 #endif !MINMAX_AI_HPP
