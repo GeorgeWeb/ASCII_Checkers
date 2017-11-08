@@ -14,6 +14,7 @@ namespace CheckerZ { namespace Entity {
 			std::string m_pawnColor;
 			// pointer to the game board -> used for movement checks
 			std::shared_ptr<API::Board> m_board;
+			std::shared_ptr<API::Pawn> m_lastPlayedPawn = nullptr;
 			// entity's turn state
 			bool m_hasTurn = false;
 		
@@ -25,8 +26,10 @@ namespace CheckerZ { namespace Entity {
 			virtual ~Entity() = default;
 
 			// does the player action - move or take
-			virtual void firePawnAction(const Position& t_posFrom, Position&& t_posTo, std::shared_ptr<API::Utils::MovesGenerator> moveGenerator) = 0;
+			virtual void firePawnAction(const Position& t_posFrom, const Position& t_posTo, std::shared_ptr<API::Utils::MovesGenerator> t_moveGenerator) = 0;
 			
+			inline std::shared_ptr<API::Pawn>& getLastPlayedPawn() { return m_lastPlayedPawn; }
+
 			// turn regulation accessors (get/set)
 			inline bool hasTurn() { return m_hasTurn; }
 			inline void setTurn(bool t_hasTurn) { m_hasTurn = t_hasTurn; }

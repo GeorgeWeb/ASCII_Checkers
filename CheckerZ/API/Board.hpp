@@ -10,7 +10,13 @@
 
 namespace CheckerZ { namespace API {
 
-	enum GridInfo
+	enum class ActionState
+	{
+		MOVE,
+		JUMP
+	};
+
+	enum class GridInfo
 	{
 		BLACK,
 		RED,
@@ -36,6 +42,7 @@ namespace CheckerZ { namespace API {
 			inline const board<Pawn, s_boardLen>& getBoard() const { return m_board; }
 			
 			// easy fast getter
+			inline Pawn& getBoardPawn(const Position &position) { return m_board[position.first][position.second]; }
 			inline Pawn& getBoardPawn(size_t t_row, size_t t_col) { return m_board[t_row][t_col]; }
 
 			GridInfo getGridInfo(int t_row, int t_col);
@@ -45,12 +52,12 @@ namespace CheckerZ { namespace API {
 			// This function will be called after every move
 			void display() const;
 			// ...
-			void move(const Position& t_posFrom, Position&& t_posTo);
+			ActionState move(const Position& t_posFrom, const Position& t_posTo);
 			// ...
 			void evolve(Pawn& t_pawn);
 
 		private:
-			void swapPawns(Pawn& t_lhs, Pawn& t_rhs);
+			void swapPawns(Pawn& t_lhs, Pawn& t_rhs, bool canKill);
 			void killPawn(Pawn& t_pawn);
 	};
 

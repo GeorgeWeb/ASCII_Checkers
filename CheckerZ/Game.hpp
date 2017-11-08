@@ -11,6 +11,7 @@
 #include <memory>
 #include <vector>
 #include <utility>
+#include <stack>
 
 namespace CheckerZ
 {
@@ -40,6 +41,9 @@ namespace CheckerZ
 			// Moves generator
 			std::shared_ptr<API::Utils::MovesGenerator> m_moveGenerator;
 
+			// moves holder for undo/replay
+			std::stack<Movement> m_savedGame;
+
 		public:
 			Game();
 			~Game();
@@ -59,7 +63,10 @@ namespace CheckerZ
 			inline void setGameState(const API::Events::GameSystemState& t_newState) { m_gameState = t_newState; }
 			inline void setTurnState(const TurnState& t_newState) { m_turnState = t_newState; }
 			inline void printTitle() const { system("cls"); API::Utils::Logger::message(API::Utils::MessageType::INF, "\n\t\t\t", m_title); }
-
+			inline void clearDraw() const { printTitle(); m_gameBoard->display(); }
+			
+			void displayEntityData(std::shared_ptr<Entity::Entity> t_entity);
+			void initMovesGenerator(std::shared_ptr<API::Utils::MovesGenerator> t_moveGenerator, std::shared_ptr<Entity::Entity> t_entity);
 			void swapEntityTurns(const std::shared_ptr<Entity::Entity>& t_entityOnTurn);
 
 		private:

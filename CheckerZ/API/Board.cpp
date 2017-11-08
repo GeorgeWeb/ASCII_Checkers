@@ -10,35 +10,45 @@ namespace CheckerZ { namespace API {
 	bool operator==(Pawn& t_lhs, Pawn& t_rhs);
 	bool operator!=(Pawn& t_lhs, Pawn& t_rhs);
 
-	void Board::move(const Position &t_posFrom, Position&& t_posTo)
+	ActionState Board::move(const Position &t_posFrom, const Position& t_posTo)
 	{
-		// check for jumps
-		// if | getBoardPawn(t_posFrom).getCoordX() - getBoardPawn(t_posTo).getCoordX() | + 
-		//	  | getBoardPawn(t_posFrom).getCoordY() - getBoardPawn(t_posTo).getCoordY() | == 4
-		// => Jump: auto pawnToKill = 
-		//				m_board[getBoardPawn(t_posFrom).getCoordX() + getBoardPawn(t_posTo).getCoordX() / 2] 
-		//					   [getBoardPawn(t_posFrom).getCoordY() + getBoardPawn(t_posTo).getCoordY() / 2];
-		//			pawnToKill.getMesh() = ' '; pawnToKill.getColor() = 'Empty'
-		// ...
-		throw std::runtime_error("Moved");
+		ActionState state;
+
+		// check if a killing jump is happening
+		bool canKill = (std::abs(static_cast<int>(t_posFrom.first - t_posTo.first)) + std::abs(static_cast<int>(t_posFrom.second - t_posTo.second)) == 4);
+		// move pawn
+		swapPawns(m_board[t_posFrom.first][t_posFrom.second], m_board[t_posTo.first][t_posTo.second], canKill);
+
+		return canKill ? ActionState::JUMP : ActionState::MOVE;
 	}
 
 	void Board::evolve(Pawn& t_pawn)
 	{
+		// TODO: Evolve a man pawn into a king pawn...
 	}
 
-	void Board::swapPawns(Pawn& t_lhs, Pawn& t_rhs)
+	void Board::swapPawns(Pawn& t_lhs, Pawn& t_rhs, bool canKill)
 	{
-		// Swap values between of your pawn left pawn and the one you will take / jump on
+		// check if kill on jump is possible
+		if (canKill)
+		{
+			killPawn(m_board[(t_lhs.getCoordX() + t_rhs.getCoordX()) / 2][(t_lhs.getCoordY() + t_rhs.getCoordY()) / 2]);
+		}
+
+		// swap pawns values on move
 		std::swap(t_lhs.getMesh(), t_rhs.getMesh());
 		std::swap(t_lhs.getColor(), t_rhs.getColor());
-		std::swap(t_lhs.getCoordX(), t_rhs.getCoordX());
-		std::swap(t_lhs.getCoordY(), t_rhs.getCoordY());
+		t_lhs.getPos().swap(t_rhs.getPos());
 	}
 
 	void Board::killPawn(Pawn& t_pawn)
 	{
-		// TODO: ...
+		uint8 emptyMesh = ' ';
+		std::string emptyColor = "Empty";
+		
+		// swap pawns values on kill/take
+		std::swap(t_pawn.getMesh(), emptyMesh);
+		std::swap(t_pawn.getColor(), emptyColor);
 	}
 
 	GridInfo Board::getGridInfo(int t_row, int t_col)
@@ -63,18 +73,18 @@ namespace CheckerZ { namespace API {
 				auto& pawn = m_board[row][col];
 
 				if (((row + col) % 2) == 0)
-					pawn.setValues(' ', "Empty", std::move(row), std::move(col));
+					pawn.setValues(' ', "Empty", row, col);
 				else
 				{
 					// Entity1's pawns
 					if (row < 3)
-						pawn.setValues('b', "Black", std::move(row), std::move(col));
+						pawn.setValues('b', "Black", row, col);
 					// Entity2's pawns
 					else if (row > 4)
-						pawn.setValues('r', "Red", std::move(row), std::move(col));
+						pawn.setValues('r', "Red", row, col);
 					// Empty space
 					else
-						pawn.setValues(' ', "Empty", std::move(row), std::move(col));
+						pawn.setValues(' ', "Empty", row, col);
 				}
 			}
 		}

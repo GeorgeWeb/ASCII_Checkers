@@ -20,12 +20,12 @@ namespace CheckerZ { namespace Entity { namespace AI {
 		~SimpleAI() = default;
 	};
 
-	// This AI type class implements the MinMax algorithm
-	class MinMaxAI : public AI
+	// This AI type class implements the MinMax algorithm with AB-Pruning optimization
+	class AdvancedAI : public AI
 	{
 		public:
-			MinMaxAI(const std::string& t_name, const std::string& t_pawnColor) : AI(t_name, t_pawnColor) { }
-			~MinMaxAI() = default;
+			AdvancedAI(const std::string& t_name, const std::string& t_pawnColor) : AI(t_name, t_pawnColor) { }
+			~AdvancedAI() = default;
 	};
 	
 } } }

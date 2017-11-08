@@ -119,6 +119,7 @@
     <ClInclude Include="API\Events\EventImpl\QuitGame.hpp" />
     <ClInclude Include="API\Events\EventManager.hpp" />
     <ClInclude Include="API\Events\EventImpl\WinGame.hpp" />
+    <ClInclude Include="API\Utils\MovesEvaluator.hpp" />
     <ClInclude Include="API\Utils\MovesGenerator.hpp" />
     <ClInclude Include="API\Utils\Logger.hpp" />
     <ClInclude Include="API\Pawn.hpp" />
@@ -134,8 +135,9 @@
     <ClCompile Include="API\Events\EventImpl\EntityPawnAction.cpp" />
     <ClCompile Include="API\Events\EventImpl\QuitGame.cpp" />
     <ClCompile Include="API\Events\EventImpl\WinGame.cpp" />
+    <ClCompile Include="API\Utils\MovesEvaluator.cpp" />
     <ClCompile Include="API\Utils\MovesGenerator.cpp" />
-    <ClCompile Include="Entity\AI\MinMaxAI.cpp" />
+    <ClCompile Include="Entity\AI\AdvancedAI.cpp" />
     <ClCompile Include="Entity\AI\SimpleAI.cpp" />
     <ClCompile Include="Entity\Player\Player.cpp" />
     <ClCompile Include="Game.cpp" />

@@ -69,70 +69,77 @@ namespace CheckerZ
 			Logger::message(MessageType::ERR, "\t      There's problem with reckognizing the entity that is on turn.");
 			return;
 		}
-		// print the entity who is on turn
-		Logger::message(MessageType::INF, "\t      " + entityOnTurn->getName(), "'s turn!");
 
-		m_moveGenerator->generatePossibleMoves(m_gameBoard, entityOnTurn->getPawnColor(), nullptr);
-		if (m_moveGenerator->getPossibleMoves().empty())
-		{
-			// ------------//
-			// LOSE / WIN //
-			// -----------//
-			m_gameState = GameSystemState::WIN;
-			return;
-		}
+		displayEntityData(entityOnTurn);
+		initMovesGenerator(m_moveGenerator, entityOnTurn);
 
 		// read the input for movement/action:
-		// entity picks the pawn
-		Logger::message(MessageType::INF, "\t      Pick pawn:", EndingDelimiter::SPACE);
+		Logger::message(MessageType::INF, "\t      Command:", EndingDelimiter::SPACE);
 		// init readers & read from input
-		uint8 key = '\0'; uint32 value = 0;
-		std::cin >> key >> value;
-		// save the input as a typdef unordered_map
-		Position fromPos{ key - 'A', value - 1 };
-
-		// entity chooses an action with the picked pawn
-		Logger::message(MessageType::INF, "\t      Move pawn:", EndingDelimiter::SPACE);
-		// reset readers & read again
-		key = '\0'; value = 0;
-		std::cin >> key >> value;
-		// save the input as a typdef unordered_map
-		Position toPos{ key - 'A' , value - 1 };
-		
-		// ----- //
-		// DEBUG //
-		// ----- //
-		/*std::cout << "\t      " << fromPos.first << " , " << fromPos.second;
-		std::cout << "\t      " << toPos.first << " , " << toPos.second;
-		return;*/
-
-		// TRY MOVEMENT
-		try
+		std::string command = "";
+		uint8 keyFrom{ '\0' }, keyTo { '\0' };
+		uint32 valueFrom { 0 }, valueTo{ 0 };
+		std::cin >> command >> keyFrom >> valueFrom >> keyTo >> valueTo;
+		// discard any case sensitivity ...
+		keyFrom = islower(keyFrom) ? toupper(keyFrom) : keyFrom;
+		keyTo = islower(keyTo) ? toupper(keyTo) : keyTo;
+		// input command correctness check
+		if (command.size() > 4)
 		{
-			// m_moveGenerator->generatePossibleMoves(m_gameBoard, entityOnTurn->getPawnColor(), nullptr);
-			EventManager::getInstance().entityPawnAction(entityOnTurn, fromPos, std::move(toPos), m_moveGenerator);
-
-			// manage next turn
-			// swap entities' turn states
-			swapEntityTurns(entityOnTurn);
-			// Set next turn
-			setTurnState(TurnState::END);
+			clearDraw();
+			Logger::message(MessageType::INF, "\t      Invalid input. Try again(4 chars: e.g. MOVE or UNDO or REDO!");
+			return;
 		}
-		catch (const std::exception& t_excep)
+		// check if input's in the valid character and numeric boundary
+		if (keyFrom < 'A' || keyFrom > 'H' || valueFrom < 1 || valueTo > 8)
 		{
-			printTitle();
-			// print the board grid
-			m_gameBoard->display();
+			clearDraw();
+			// read the input for movement/action:
+			Logger::message(MessageType::INF, "\t      Invalid input. Try again (A-H and 1-8)!");
+			return;
+		}
+		// save the input in Position pairs
+		Position&& fromPos{ keyFrom - 'A', valueFrom - 1 };
+		Position&& toPos{ keyTo - 'A' , valueTo - 1 };
 
-			Logger::message(MessageType::ERR, "\t      ", t_excep.what(), EndingDelimiter::NLINE);
+		// capitalize command (for case sensitivity purposes)
+		for (auto& cmd : command) cmd = toupper(cmd);
+		// do action based on command
+		switch (command[0])
+		{
+			default:
+				Logger::message(MessageType::ERR, "\t      Unkown command.");
+				break;
+			case 'M':
+				// TRY MOVEMENT
+				try
+				{
+					EventManager::getInstance().entityPawnAction(entityOnTurn, fromPos, toPos, m_moveGenerator);
+					m_savedGame.push({ fromPos, toPos });
+
+					m_moveGenerator->reset(m_gameBoard, entityOnTurn->getPawnColor(), entityOnTurn->getLastPlayedPawn());
+					// swap entities' turn states
+					if (!entityOnTurn->getLastPlayedPawn() || m_moveGenerator->getPossibleMoves().empty())
+					{
+						swapEntityTurns(entityOnTurn);
+					}
+					m_moveGenerator->clear();
+
+					// Set next turn
+					setTurnState(TurnState::END);
+				}
+				catch (const std::exception& t_excep)
+				{
+					clearDraw();
+					Logger::message(MessageType::ERR, "\t      ", t_excep.what(), EndingDelimiter::NLINE);
+				}
+				break;
 		}
 	}
 
 	void Game::draw()
 	{
-		printTitle();
-		// print the board grid
-		m_gameBoard->display();
+		clearDraw();
 		// tell the game loop to continue (step in the update func)
 		setTurnState(TurnState::BEGIN);
 	}
@@ -152,6 +159,27 @@ namespace CheckerZ
 				EventManager::getInstance().winGame();
 				setGameState(GameSystemState::QUIT);
 				break;
+		}
+	}
+
+	void Game::displayEntityData(std::shared_ptr<Entity::Entity> t_entity)
+	{
+		Logger::message(MessageType::INF, "\t      ", t_entity->getName() + " |", EndingDelimiter::NONE);
+		Logger::message(MessageType::INF, "Color: ", t_entity->getPawnColor() + " |", EndingDelimiter::NONE);
+	}
+
+	void Game::initMovesGenerator(std::shared_ptr<API::Utils::MovesGenerator> t_moveGenerator, std::shared_ptr<Entity::Entity> t_entity)
+	{
+		Logger::message(MessageType::INF, "Possible moves: ", std::to_string(m_moveGenerator->getPossibleMoves().size()));
+		m_moveGenerator->generatePossibleMoves(m_gameBoard, t_entity->getPawnColor());
+		
+		if (m_moveGenerator->getPossibleMoves().empty())
+		{
+			// ----------- //
+			// LOSE / WIN //
+			// ---------- //
+			m_gameState = GameSystemState::WIN;
+			return;
 		}
 	}
 

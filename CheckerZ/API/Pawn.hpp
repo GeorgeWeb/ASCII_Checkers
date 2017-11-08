@@ -24,7 +24,7 @@ namespace CheckerZ { namespace API {
 
 		public:
 			Pawn() = default;
-			Pawn(uint8&& t_mesh, std::string&& t_color, size_t&& t_x, size_t&& t_y) :
+			Pawn(uint8 t_mesh, const std::string& t_color, size_t t_x, size_t t_y) :
 				m_mesh(t_mesh),
 				m_color(t_color),
 				m_x(t_x),
@@ -32,7 +32,7 @@ namespace CheckerZ { namespace API {
 			{ }
 
 			// manual setting
-			void setValues(uint8&& t_mesh, std::string&& t_color, size_t&& t_x, size_t&& t_y)
+			void setValues(uint8&& t_mesh, const std::string&& t_color, size_t t_x, size_t t_y)
 			{
 				m_mesh = t_mesh;
 				m_color = t_color;
@@ -47,9 +47,9 @@ namespace CheckerZ { namespace API {
 			inline uint8& getMesh() { return m_mesh; }
 			inline std::string& getColor() { return m_color; }
 
-			inline Position& getPos()& { return std::make_pair(m_x, m_y); }
-			inline size_t& getCoordX() { return m_x; }
-			inline size_t& getCoordY() { return m_y; }
+			inline Position& getPos() { return std::make_pair(m_x, m_y); }
+			inline size_t getCoordX() { return m_x; }
+			inline size_t getCoordY() { return m_y; }
 
 			inline bool isKing() const { return m_mesh == 'B' || m_mesh == 'R'; }
 	};

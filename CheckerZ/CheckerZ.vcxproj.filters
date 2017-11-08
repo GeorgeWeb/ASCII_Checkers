@@ -66,6 +66,9 @@
     <ClInclude Include="Entity\AI\AI.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="API\Utils\MovesEvaluator.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="API\Board.cpp">
@@ -89,13 +92,16 @@
     <ClCompile Include="API\Events\EventImpl\EntityPawnAction.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Entity\AI\MinMaxAI.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Entity\AI\SimpleAI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="API\Utils\MovesGenerator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity\AI\AdvancedAI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="API\Utils\MovesEvaluator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -12,7 +12,7 @@ namespace CheckerZ { namespace API { namespace Events { namespace EventImpl {
 
 	}
 
-	void EntityPawnAction::invoke(std::shared_ptr<Entity::Entity> t_entity, const Position& t_posFrom, Position&& t_posTo, 
+	void EntityPawnAction::invoke(std::shared_ptr<Entity::Entity> t_entity, const Position& t_posFrom, const Position& t_posTo,
 		std::shared_ptr<Utils::MovesGenerator> moveGenerator)
 	{
 		// TODO: return value type PawnState so I can manage it better from the Game class
@@ -24,7 +24,7 @@ namespace CheckerZ { namespace API { namespace Events { namespace EventImpl {
 		
 		try
 		{
-			t_entity->firePawnAction(t_posFrom, std::move(t_posTo), moveGenerator);
+			t_entity->firePawnAction(t_posFrom, t_posTo, moveGenerator);
 		}
 		catch (const std::exception& t_excep)
 		{

@@ -16,7 +16,7 @@ namespace CheckerZ { namespace API { namespace Utils {
 
 	enum class EndingDelimiter : uint8
 	{
-		NONE = '\0',
+		NONE = 0,
 		SPACE = ' ',
 		NLINE = '\n'
 	};
