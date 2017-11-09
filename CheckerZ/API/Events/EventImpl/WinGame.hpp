@@ -5,7 +5,7 @@
 
 namespace CheckerZ { namespace API { namespace Events { namespace EventImpl {
 
-	class WinGame : public EventFacility
+	class WinGame final : public EventFacility
 	{
 		public:
 			explicit WinGame();

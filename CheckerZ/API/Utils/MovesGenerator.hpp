@@ -1,9 +1,11 @@
 #ifndef MOVE_GENERATOR_HPP
 #define MOVE_GENERATOR_HPP
 
+// project includes
+#include "../Board.hpp"
+
 // std::includes
 #include <set>
-#include "../Board.hpp"
 
 namespace CheckerZ { namespace API { namespace Utils {
 

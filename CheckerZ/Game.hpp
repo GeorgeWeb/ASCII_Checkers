@@ -42,19 +42,11 @@ namespace CheckerZ
 			// Moves generator
 			std::shared_ptr<API::Utils::MovesGenerator> m_moveGenerator;
 
-			// moves holder for undo
-			std::stack<Movement> m_undo;
-			// moves holder for redo
-			std::stack<Movement> m_redo;
-			// moves holder for saved game
-			std::queue<Movement> m_save;
-
 		public:
 			Game();
 			~Game();
 			
-			inline bool getIsRunning() const { return m_gameState == API::Events::GameSystemState::RUN 
-												   || m_gameState == API::Events::GameSystemState::WIN; }
+			inline bool getIsRunning() const { return m_gameState == API::Events::GameSystemState::RUN || m_gameState == API::Events::GameSystemState::WIN; }
 			inline bool getNextTurn() const { return m_turnState == TurnState::END; }
 			
 			inline void setTitle(const std::string& t_title) { m_title = t_title; }
@@ -73,6 +65,9 @@ namespace CheckerZ
 			void displayEntityData(std::shared_ptr<Entity::Entity> t_entity);
 			void initMovesGenerator(std::shared_ptr<API::Utils::MovesGenerator> t_moveGenerator, std::shared_ptr<Entity::Entity> t_entity);
 			void swapEntityTurns(const std::shared_ptr<Entity::Entity>& t_entityOnTurn);
+
+			void undoHelper(std::shared_ptr<Entity::Entity> t_entityOnTurn, Position fromPos, Position toPos);
+			void redoHelper(std::shared_ptr<Entity::Entity> t_entityOnTurn, Position fromPos, Position toPos);
 
 		private:
 			Game(const Game&) = delete;

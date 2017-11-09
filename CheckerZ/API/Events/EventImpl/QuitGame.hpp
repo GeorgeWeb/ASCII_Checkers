@@ -5,7 +5,7 @@
 
 namespace CheckerZ { namespace API { namespace Events { namespace EventImpl{
 
-	class QuitGame : public EventFacility
+	class QuitGame final : public EventFacility
 	{
 		public:
 			explicit QuitGame();

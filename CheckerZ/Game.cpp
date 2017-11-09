@@ -72,50 +72,79 @@ namespace CheckerZ
 
 		displayEntityData(entityOnTurn);
 		initMovesGenerator(m_moveGenerator, entityOnTurn);
-
-		// read the input for movement/action:
-		Logger::message(MessageType::INF, "\t      Command:", EndingDelimiter::SPACE);
-		// init readers & read from input
-		std::string command = "";
-		uint8 keyFrom{ '\0' }, keyTo { '\0' };
-		uint32 valueFrom { 0 }, valueTo{ 0 };
-		std::cin >> command >> keyFrom >> valueFrom >> keyTo >> valueTo;
-		// discard any case sensitivity ...
-		keyFrom = islower(keyFrom) ? toupper(keyFrom) : keyFrom;
-		keyTo = islower(keyTo) ? toupper(keyTo) : keyTo;
-		// input command correctness check
-		if (command.size() > 4)
+		if (entityOnTurn->getName() == "EasyAI") // TODO: ...
 		{
-			clearDraw();
-			Logger::message(MessageType::INF, "\t      Invalid input. Try again(4 chars: e.g. MOVE or UNDO or REDO!");
-			return;
+			// TODO: Do AI movement action here
 		}
-		// check if input's in the valid character and numeric boundary
-		if (keyFrom < 'A' || keyFrom > 'H' || valueFrom < 1 || valueTo > 8)
+		else
 		{
-			clearDraw();
 			// read the input for movement/action:
-			Logger::message(MessageType::INF, "\t      Invalid input. Try again (A-H and 1-8)!");
-			return;
-		}
-		// save the input in Position pairs
-		Position&& fromPos{ keyFrom - 'A', valueFrom - 1 };
-		Position&& toPos{ keyTo - 'A' , valueTo - 1 };
+			Logger::message(MessageType::INF, "\t      Command:", EndingDelimiter::SPACE);
+			// init readers & read from input
+			std::string command = "";
+			std::cin >> command;
+			// input command correctness check
+			if (command.size() > 4)
+			{
+				clearDraw();
+				Logger::message(MessageType::INF, "\t      Invalid input. Try again(4 chars: e.g. MOVE or UNDO or REDO!");
+				return;
+			}
 
-		// capitalize command (for case sensitivity purposes)
-		for (auto& cmd : command) cmd = toupper(cmd);
-		// do action based on command
-		switch (command[0])
-		{
+			// readers for input Position pairs
+			uint8 keyFrom{ '\0' }, keyTo{ '\0' };
+			uint32 valueFrom{ 0 }, valueTo{ 0 };
+
+			command[0] = islower(command[0]) ? toupper(command[0]) : command[0];
+			if (toupper(command[0]) == 'M')
+			{
+				std::cin >> keyFrom >> valueFrom >> keyTo >> valueTo;
+				// discard any case sensitivity ...
+				keyFrom = islower(keyFrom) ? toupper(keyFrom) : keyFrom;
+				keyTo = islower(keyTo) ? toupper(keyTo) : keyTo;
+				// check if input's in the valid character and numeric boundary
+				if (keyFrom < 'A' || keyFrom > 'H' || valueFrom < 1 || valueTo > 8)
+				{
+					clearDraw();
+					// read the input for movement/action:
+					Logger::message(MessageType::INF, "\t      Invalid input. Try again (A-H and 1-8)!");
+					return;
+				}
+			}
+
+			// save the input in Position pairs
+			Position&& fromPos{ keyFrom - 'A', valueFrom - 1 };
+			Position&& toPos{ keyTo - 'A' , valueTo - 1 };
+
+			// insert first move on empty undo stack - always
+			if (EventManager::getInstance().undoStack.empty())
+				EventManager::getInstance().undoStack.push({ fromPos, toPos });
+
+			// capitalize command (for case sensitivity purposes)
+			for (auto& cmd : command) cmd = toupper(cmd);
+			// do action based on command
+			switch (command[0])
+			{
 			default:
+				clearDraw();
 				Logger::message(MessageType::ERR, "\t      Unkown command.");
 				break;
+			// TRY MOVEMENT
 			case 'M':
-				// TRY MOVEMENT
 				try
 				{
-					EventManager::getInstance().entityPawnAction(entityOnTurn, fromPos, toPos, m_moveGenerator);
-					m_savedGame.push({ fromPos, toPos });
+					Movement doMove;
+					try
+					{
+						doMove = EventManager::getInstance().handleState({ fromPos, toPos });
+					}
+					catch (const std::exception& t_excep)
+					{
+						clearDraw();
+						Logger::message(MessageType::ERR, "\t      ", t_excep.what(), EndingDelimiter::NLINE);
+					}
+
+					EventManager::getInstance().entityPawnAction(entityOnTurn, doMove.first, doMove.second, m_moveGenerator);
 
 					m_moveGenerator->reset(m_gameBoard, entityOnTurn->getPawnColor(), entityOnTurn->getLastPlayedPawn());
 					// swap entities' turn states
@@ -134,6 +163,66 @@ namespace CheckerZ
 					Logger::message(MessageType::ERR, "\t      ", t_excep.what(), EndingDelimiter::NLINE);
 				}
 				break;
+			// TRY UNDO
+			case 'U':
+				try
+				{
+					Movement undoedMove = EventManager::getInstance().handleState({/*Empty*/}, GameHistoryState::UNDO);
+					fromPos = undoedMove.first;
+					toPos = undoedMove.second;
+
+					// call undo function
+					undoHelper(entityOnTurn, fromPos, toPos);
+
+					// Set next turn
+					setTurnState(TurnState::END);
+				}
+				catch (const std::exception& t_excep)
+				{
+					clearDraw();
+					Logger::message(MessageType::ERR, "\t      ", t_excep.what(), EndingDelimiter::NLINE);
+				}
+				break;
+			// TRY REDO
+			case 'R':
+				clearDraw();
+				Logger::message(MessageType::ERR, "\t      Redoing", std::to_string(EventManager::getInstance().redoStack.size()), EndingDelimiter::NLINE);
+				while (!EventManager::getInstance().redoStack.empty())
+				{
+					auto redo = EventManager::getInstance().redoStack.top();
+					auto redoFirst = std::to_string(redo.first.first) + std::to_string(redo.first.second);
+					auto redoSecond = std::to_string(redo.second.first) + std::to_string(redo.second.second);
+					Logger::message(MessageType::ERR, "\t      ", redoFirst + redoSecond, EndingDelimiter::NLINE);
+					EventManager::getInstance().redoStack.pop();
+				}
+				try
+				{
+					Movement redoedMove = EventManager::getInstance().handleState({ }, GameHistoryState::REDO);
+					fromPos = redoedMove.first;
+					toPos = redoedMove.second;
+
+					auto tempPawn = m_gameBoard->getBoardPawn(fromPos.first, fromPos.second);
+					m_gameBoard->getBoardPawn(fromPos.first, fromPos.second) = m_gameBoard->getBoardPawn(toPos.first, toPos.second);
+					m_gameBoard->getBoardPawn(toPos.first, toPos.second) = tempPawn;
+
+					m_moveGenerator->reset(m_gameBoard, entityOnTurn->getPawnColor(), entityOnTurn->getLastPlayedPawn());
+					// swap entities' turn states
+					if (!entityOnTurn->getLastPlayedPawn() || m_moveGenerator->getPossibleMoves().empty())
+					{
+						swapEntityTurns(entityOnTurn);
+					}
+					m_moveGenerator->clear();
+
+					// Set next turn
+					setTurnState(TurnState::END);
+				}
+				catch (const std::exception& t_excep)
+				{
+					clearDraw();
+					Logger::message(MessageType::ERR, "\t      ", t_excep.what(), EndingDelimiter::NLINE);
+				}
+				break;
+			}
 		}
 	}
 
@@ -195,5 +284,46 @@ namespace CheckerZ
 			m_player1->setTurn(m_player2->hasTurn());
 			m_player2->setTurn(!m_player2->hasTurn());
 		}
+	}
+
+	void Game::undoHelper(std::shared_ptr<Entity::Entity> t_entityOnTurn, Position fromPos, Position toPos)
+	{
+		// swapping
+		auto tempPawn = m_gameBoard->getBoardPawn(toPos.first, toPos.second);
+		m_gameBoard->getBoardPawn(toPos.first, toPos.second) = m_gameBoard->getBoardPawn(fromPos.first, fromPos.second);
+		m_gameBoard->getBoardPawn(fromPos.first, fromPos.second) = tempPawn;
+
+		// undo again to get to my turn
+		if (EventManager::getInstance().undoStack.size() > 1)
+		{
+			Movement undoedMove = EventManager::getInstance().handleState({}, GameHistoryState::UNDO);
+			fromPos = undoedMove.first;
+			toPos = undoedMove.second;
+
+			// swapping
+			auto tempPawn = m_gameBoard->getBoardPawn(toPos.first, toPos.second);
+			m_gameBoard->getBoardPawn(toPos.first, toPos.second) = m_gameBoard->getBoardPawn(fromPos.first, fromPos.second);
+			m_gameBoard->getBoardPawn(fromPos.first, fromPos.second) = tempPawn;
+
+			m_moveGenerator->reset(m_gameBoard, t_entityOnTurn->getPawnColor(), t_entityOnTurn->getLastPlayedPawn());
+			// swap entities' turn states
+			if (!t_entityOnTurn->getLastPlayedPawn() || m_moveGenerator->getPossibleMoves().empty())
+			{
+				swapEntityTurns(t_entityOnTurn);
+			}
+			m_moveGenerator->clear();
+		}
+		m_moveGenerator->reset(m_gameBoard, t_entityOnTurn->getPawnColor(), t_entityOnTurn->getLastPlayedPawn());
+		// swap entities' turn states
+		if (!t_entityOnTurn->getLastPlayedPawn() || m_moveGenerator->getPossibleMoves().empty())
+		{
+			swapEntityTurns(t_entityOnTurn);
+		}
+		m_moveGenerator->clear();
+	}
+
+	void Game::redoHelper(std::shared_ptr<Entity::Entity> t_entityOnTurn, Position fromPos, Position toPos)
+	{
+
 	}
 }

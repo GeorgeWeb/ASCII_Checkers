@@ -21,7 +21,7 @@ namespace CheckerZ { namespace API { namespace Utils {
 		NLINE = '\n'
 	};
 
-	class Logger
+	class Logger final
 	{
 		public:
 			// Without parameter
