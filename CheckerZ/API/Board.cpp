@@ -1,61 +1,154 @@
+// project includes
 #include "Board.hpp"
 
+// std::includes
 #include <iostream>
 #include <algorithm>
 
-namespace CheckerZ
-{
-	Board::Board() 
-	{ }
+namespace CheckerZ { namespace API {
 
-	Board::~Board()
-	{ }
+	bool operator==(Pawn& t_lhs, Pawn& t_rhs);
+	bool operator!=(Pawn& t_lhs, Pawn& t_rhs);
+
+	ActionState Board::move(const Position &t_posFrom, const Position& t_posTo)
+	{
+		ActionState state;
+
+		// check if a killing jump is happening
+		bool canKill = (std::abs(static_cast<int>(t_posFrom.first - t_posTo.first)) + std::abs(static_cast<int>(t_posFrom.second - t_posTo.second)) == 4);
+		// move pawn
+		swapPawns(m_board[t_posFrom.first][t_posFrom.second], m_board[t_posTo.first][t_posTo.second], canKill);
+
+		return canKill ? ActionState::JUMP : ActionState::MOVE;
+	}
+
+	void Board::evolve(Pawn& t_pawn)
+	{
+		t_pawn.getMesh() = toupper(t_pawn.getMesh());
+	}
+
+	void Board::swapPawns(Pawn& t_lhs, Pawn& t_rhs, bool canKill)
+	{
+		bool canEvolve = (t_lhs.getColor() == "Black" && t_lhs.getCoordY() == s_boardLen - 1) || (t_lhs.getColor() == "Red" && t_lhs.getCoordY() == 0);
+
+		// check if kill on jump is possible
+		if (canKill)
+		{
+			killPawn(m_board[(t_lhs.getCoordX() + t_rhs.getCoordX()) / 2][(t_lhs.getCoordY() + t_rhs.getCoordY()) / 2]);
+		}
+
+		// swap pawns values on move
+		std::swap(t_lhs.getMesh(), t_rhs.getMesh());
+		std::swap(t_lhs.getColor(), t_rhs.getColor());
+		t_lhs.getPos().swap(t_rhs.getPos());
+
+		// check if evolving is possible after the move
+		if (canEvolve)
+		{
+			evolve(t_lhs);
+		}
+	}
+
+	void Board::killPawn(Pawn& t_pawn)
+	{
+		uint8 emptyMesh = ' ';
+		std::string emptyColor = "Empty";
+		
+		// swap pawns values on kill/take
+		std::swap(t_pawn.getMesh(), emptyMesh);
+		std::swap(t_pawn.getColor(), emptyColor);
+	}
+
+	GridInfo Board::getGridInfo(int t_row, int t_col)
+	{
+		GridInfo gridInfo = GridInfo::EOB;
+		// check if the coordinates get out of bounds & return
+		if (t_row < 0 || t_col < 0 || t_row >= m_board.size() || t_col >= m_board.size())
+			return gridInfo;
+		
+		// return the color of the pawn by the coordinates
+		auto colorPick = m_board[t_row][t_col].getColor();
+		return gridInfo = colorPick == "Black" ? GridInfo::BLACK : colorPick == "Red" ? GridInfo::RED 
+			: colorPick == "Empty" ? GridInfo::EMPTY : GridInfo::EOB;
+	}
 
 	void Board::populate()
 	{
-		uint32 count = 0;
-		std::for_each(m_board.begin(), m_board.end(), [&](grid<s_boardY>& const grid)
-		{ 
-			std::for_each(grid.begin(), grid.end(), [&](square& square)
+		for(size_t row = 0; row < m_board.size(); row++)
+		{
+			for (size_t col = 0; col < m_board.size(); col++)
 			{
-				if (count < 24) // PLAYER 1
+				auto& pawn = m_board[row][col];
+				
+				if (((row + col) % 2) == 0)
+					pawn.setValues(' ', "Empty", row, col);
+				else
 				{
-					if (count < 8)
-						square = (count % 2) ? 'B' : '.';
-					else if (count >= 8 && count < 16)
-						square = !(count % 2) ? 'B' : '.';
-					else if (count >= 16 && count < 24)
-						square = (count % 2) ? 'B' : '.';
+					// Entity1's pawns
+					if (row < 3)
+						pawn.setValues('b', "Black", row, col);
+					// Entity2's pawns
+					else if (row > 4)
+						pawn.setValues('r', "Red", row, col);
+					// Empty space
+					else
+						pawn.setValues(' ', "Empty", row, col);
 				}
-				else if (count >= 40) // PLAYER 2
+			}
+		}
+	}
+	
+	void Board::display() const
+	{
+		std::cout << "\n";
+		std::cout << "\t" << "      +===+===+===+===+===+===+===+===+===+===+" << "\n";
+		std::cout << "\t" << "      | / | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | \\ |" << "\n";
+		std::cout << "\t" << "      +===+===+===+===+===+===+===+===+===+===+" << "\n";
+		
+		uint16 count{ 1 };
+		uint16 sideLbl{ 0 };
+		std::for_each(m_board.cbegin(), m_board.cend(), [&](auto grid)
+		{
+			std::cout << "\t" << "      [ " << char(sideLbl + 'A') << " ] ";
+			std::for_each(grid.cbegin(), grid.cend(), [&](auto pawn)
+			{
+				std::cout << pawn.getMesh();
+				(count % 8 == 0) ? std::cout << " [ " : std::cout << " | ";
+
+				if (count % 8 == 0)
 				{
-					if (count < 48)
-						square = !(count % 2) ? 'R' : '.';
-					else if (count >= 48 && count < 56)
-						square = (count % 2) ? 'R' : '.';
-					else if (count >= 56 && count < 64)
-						square = !(count % 2) ? 'R' : '.';
+					std::cout << char(sideLbl + 'A') << " ]\n";
+					if(count < 64)
+						std::cout << "\t" << "      +---+-------------------------------+---+" << "\n";
+					else
+						std::cout << "\t" << "      +===+===+===+===+===+===+===+===+===+===+" << "\n";
 				}
-				else 
-					square = '.';
 
 				count++;
 			});
+			sideLbl++;
 		});
+		
+		std::cout << "\t" << "      | \\ | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | / |" << "\n";
+		std::cout << "\t" << "      +===+===+===+===+===+===+===+===+===+===+" << "\n";
 	}
 
-	void Board::display()
+	bool operator==(API::Pawn& t_lhs, API::Pawn& t_rhs)
 	{
-		std::cout << "\n\n\n\n";
-		uint32 count = 1;
-		std::for_each(m_board.begin(), m_board.end(), [&](grid<s_boardY>& const grid)
-		{
-			std::cout << "\t\t\t\t\t\t";
-			std::for_each(grid.begin(), grid.end(), [&](square &square)
-			{
-				std::cout << square << " ";
-				if (count++ % 8 == 0) std::cout << std::endl;
-			});
-		});
+		return (
+			// x coordinates check
+			t_lhs.getCoordX() == t_rhs.getCoordX() &&
+			// y coordinates check
+			t_lhs.getCoordY() == t_rhs.getCoordY());/* &&
+			// mesh check
+			t_lhs.getMesh() == t_rhs.getMesh() &&
+			// color check
+			t_lhs.getColor() == t_rhs.getColor());*/
 	}
-}
+
+	bool operator!=(API::Pawn& t_lhs, API::Pawn& t_rhs)
+	{
+		return !(t_lhs == t_rhs);
+	}
+
+} }

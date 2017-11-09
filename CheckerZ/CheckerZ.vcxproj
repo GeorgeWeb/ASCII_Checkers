@@ -112,12 +112,36 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="API\Board.hpp" />
+    <ClInclude Include="API\Events\EventFacility.hpp" />
+    <ClInclude Include="API\Events\EventFactory.hpp" />
+    <ClInclude Include="API\Events\EventImpl\events.h" />
+    <ClInclude Include="API\Events\EventImpl\EntityPawnAction.hpp" />
+    <ClInclude Include="API\Events\EventImpl\QuitGame.hpp" />
+    <ClInclude Include="API\Events\EventManager.hpp" />
+    <ClInclude Include="API\Events\EventImpl\WinGame.hpp" />
+    <ClInclude Include="API\Utils\MovesEvaluator.hpp" />
+    <ClInclude Include="API\Utils\MovesGenerator.hpp" />
+    <ClInclude Include="API\Utils\Logger.hpp" />
+    <ClInclude Include="API\Pawn.hpp" />
     <ClInclude Include="Common.hpp" />
+    <ClInclude Include="Entity\AI\AI.hpp" />
+    <ClInclude Include="Entity\Entity.hpp" />
+    <ClInclude Include="Entity\Player\Player.hpp" />
     <ClInclude Include="Parallelism\Parallel.hpp" />
     <ClInclude Include="Game.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="API\Board.cpp" />
+    <ClCompile Include="API\Events\EventImpl\EntityPawnAction.cpp" />
+    <ClCompile Include="API\Events\EventImpl\QuitGame.cpp" />
+    <ClCompile Include="API\Events\EventImpl\WinGame.cpp" />
+    <ClCompile Include="API\Events\EventManager.cpp" />
+    <ClCompile Include="API\Utils\MovesEvaluator.cpp" />
+    <ClCompile Include="API\Utils\MovesGenerator.cpp" />
+    <ClCompile Include="Entity\AI\HardAI.cpp" />
+    <ClCompile Include="Entity\AI\MediumAI.cpp" />
+    <ClCompile Include="Entity\AI\EasyAI.cpp" />
+    <ClCompile Include="Entity\Player\Player.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
