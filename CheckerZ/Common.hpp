@@ -1,6 +1,9 @@
 #ifndef COMMON_HPP
 #define COMMON_HPP
 
+// std::includes
+#include <utility>
+
 namespace CheckerZ
 {
 	// 8, 16, 32, 64-bit singed integral types
@@ -13,10 +16,14 @@ namespace CheckerZ
 	using uint16 = unsigned short;
 	using uint32 = unsigned int;
 	using uint64 = unsigned long long;
+
+	// helper data structs
+	using Position = std::pair<size_t, size_t>;
+	using Movement = std::pair<Position, Position>;
 }
 
 // project includes
-#include "API/Logger.hpp"
+#include "API/Utils/Logger.hpp"
 // concurrent programming lib - C++AMP
 #include "Parallelism/Parallel.hpp"
 

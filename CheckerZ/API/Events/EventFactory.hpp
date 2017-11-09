@@ -1,62 +1,33 @@
 #ifndef EVENT_FACTORY_HPP
 #define EVENT_FACTORY_HPP
 
-#include "EventFacility.hpp"
-#include "Win.hpp"
+#include "EventImpl/events.h"
 
 namespace CheckerZ { namespace API { namespace Events {
 
-	#pragma region EVENT ENUM CLASSES
-	// comment...
-	enum class GameEventState : uint8
+	enum class GameSystemState
 	{
 		RUN,  ///> non-callable
+		ACTION,
 		WIN,
-		LOSE,
 		QUIT,
 	};
-	// comment...
-	enum class GameplayState : uint8
-	{
-		MOVE = 1,
-		TAKE = 2
-	};
-	#pragma endregion
 
-	class EventFactory
+	class EventFactory final
 	{
 		public:
-			// templated body prototype
-			template<class StateType>
-			static Event create(const StateType& t_state) { }
-
-			template<>
-			static Event create<GameEventState>(const GameEventState& t_state)
+			static Event create(const GameSystemState& t_state)
 			{
 				switch (t_state)
 				{
-					case GameEventState::WIN:
-						return std::make_shared<Win>(); ///> class WinGame
+					case GameSystemState::ACTION:
+						return std::make_shared<EventImpl::EntityPawnAction>();
 						break;
-					case GameEventState::LOSE:
-						return std::make_shared<Win>(); ///> class LoseGame
+					case GameSystemState::WIN:
+						return std::make_shared<EventImpl::WinGame>();
 						break;
-					case GameEventState::QUIT:
-						return std::make_shared<Win>(); ///> class QuitGame
-						break;
-				}
-			}
-
-			template<>
-			static Event create<GameplayState>(const GameplayState& t_state)
-			{
-				switch (t_state)
-				{
-					case GameplayState::MOVE:
-						return std::make_shared<Win>(); ///> class MoveEntity
-						break;
-					case GameplayState::TAKE:
-						return std::make_shared<Win>(); ///> class TakeEntityPawn
+					case GameSystemState::QUIT:
+						return std::make_shared<EventImpl::QuitGame>();
 						break;
 				}
 			}

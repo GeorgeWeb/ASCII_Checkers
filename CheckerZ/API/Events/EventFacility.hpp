@@ -1,7 +1,9 @@
 #ifndef EVENT_FACILIY_HPP
 #define EVENT_FACILIY_HPP
 
+// project includes
 #include "../../Common.hpp"
+#include "../../Entity/Entity.hpp"
 
 // std::includes
 #include <functional>
@@ -9,18 +11,15 @@
 
 namespace CheckerZ { namespace API { namespace Events {
 
-	// TODO: CREATE A CMake ASAP !!!
-
 	class EventFacility
 	{
 		public:
 			explicit EventFacility() = default;
 			virtual ~EventFacility() = default;
 
-			virtual void invoke(const std::function<void()>& t_changeTitle = nullptr) const
-			{
-				std::invoke(t_changeTitle);
-			}
+			virtual void invoke() const { };
+			virtual void invoke(std::shared_ptr<Entity::Entity> t_entity, const Position& t_posFrom, const Position& t_posTo,
+				std::shared_ptr<API::Utils::MovesGenerator> moveGenerator) { };
 		
 		protected:
 			virtual void initialize() = 0;
@@ -30,6 +29,7 @@ namespace CheckerZ { namespace API { namespace Events {
 			EventFacility(EventFacility&&) = delete;
 	};
 
+	// used for parameter passing with clearer typename
 	using Event = std::shared_ptr<EventFacility>;
 
 } } }

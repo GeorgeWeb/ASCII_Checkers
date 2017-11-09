@@ -1,7 +1,14 @@
 #ifndef EVENT_MANAGER_HPP
 #define EVENT_MANAGER_HPP
 
+// project includes
 #include "EventFactory.hpp"
+
+// std::includes
+#include <exception>
+#include <stack>
+#include <queue>
+#include <deque>
 
 namespace CheckerZ { namespace API { namespace Events {
 	
@@ -10,8 +17,22 @@ namespace CheckerZ { namespace API { namespace Events {
 	* Used as an API for events creation and invoking/calling.
 	*/
 
+	enum class GameHistoryState
+	{
+		DO,
+		UNDO,
+		REDO,
+		REPLAY
+	};
+
 	class EventManager final
 	{
+		public:
+			std::deque<Movement> gameHistory;
+
+			std::stack<Movement> undoStack;
+			std::stack<Movement> redoStack;
+
 		public:
 			static EventManager &getInstance()
 			{
@@ -19,32 +40,28 @@ namespace CheckerZ { namespace API { namespace Events {
 				return theInstance;
 			}
 
-			// GAME STATE EVENTS
 			inline void winGame() const
 			{
-				EventFactory::create(GameEventState::WIN)->invoke();
-			}
-
-			inline void loseGame() const
-			{
-				EventFactory::create(GameEventState::LOSE)->invoke();
+				EventFactory::create(GameSystemState::WIN)->invoke();
 			}
 
 			inline void quitGame() const
 			{
-				EventFactory::create(GameEventState::QUIT)->invoke();
+				EventFactory::create(GameSystemState::QUIT)->invoke();
 			}
 
-			// ENTITY STATE EVENTS
-			inline void moveEntity() const
+			inline void entityPawnAction(std::shared_ptr<Entity::Entity> t_entity, const Position& t_posFrom, const Position& t_posTo,
+				std::shared_ptr<API::Utils::MovesGenerator> moveGenerator)
 			{
-				EventFactory::create(GameplayState::MOVE)->invoke();
+				EventFactory::create(GameSystemState::ACTION)->invoke(t_entity, t_posFrom, t_posTo, moveGenerator);
 			}
 
-			inline void takeEntityPawn() const
-			{
-				EventFactory::create(GameplayState::TAKE)->invoke();
-			}
+			Movement handleState(Movement t_move, GameHistoryState t_historyState = GameHistoryState::DO);
+		
+		private:
+			Movement manageUndo();
+			Movement manageRedo();
+			void manageReplay();
 
 		private:
 			EventManager() = delete;
