@@ -19,8 +19,9 @@ namespace CheckerZ
 	Game::Game() :
 		m_title("Checkers"),
 		m_gameBoard(std::make_shared<Board>()),
-		m_player1(std::make_shared<Player>("Player1", "Black")),
-		m_player2(std::make_shared<Player>("Player2", "Red")),
+		m_player1(std::make_shared<Player>("Gecata", "Black")),
+		//m_player2(std::make_shared<Player>("Player2", "Red")),
+		m_player2(std::make_shared<MediumAI>("NormBot", "Red")),
 		m_moveGenerator(std::make_shared<MovesGenerator>())
 	{ }
 
@@ -69,12 +70,33 @@ namespace CheckerZ
 			Logger::message(MessageType::ERR, "\t      There's problem with reckognizing the entity that is on turn.");
 			return;
 		}
-
+		
 		displayEntityData(entityOnTurn);
 		initMovesGenerator(m_moveGenerator, entityOnTurn);
-		if (entityOnTurn->getName() == "EasyAI") // TODO: ...
+		if (entityOnTurn->getClassType() == "AI")
 		{
 			// TODO: Do AI movement action here
+			// ...
+			try
+			{
+				EventManager::getInstance().entityPawnAction(entityOnTurn, m_moveGenerator);
+
+				m_moveGenerator->reset(m_gameBoard, entityOnTurn->getPawnColor(), entityOnTurn->getLastPlayedPawn());
+				// swap entities' turn states
+				if (!entityOnTurn->getLastPlayedPawn() || m_moveGenerator->getPossibleMoves().empty())
+				{
+					swapEntityTurns(entityOnTurn);
+				}
+				m_moveGenerator->clear();
+
+				// Set next turn
+				setTurnState(TurnState::END);
+			}
+			catch (const std::exception& t_excep)
+			{
+				clearDraw();
+				Logger::message(MessageType::ERR, "\t      ", t_excep.what(), EndingDelimiter::NLINE);
+			}
 		}
 		else
 		{
@@ -125,102 +147,102 @@ namespace CheckerZ
 			// do action based on command
 			switch (command[0])
 			{
-			default:
-				clearDraw();
-				Logger::message(MessageType::ERR, "\t      Unkown command.");
+				default:
+					clearDraw();
+					Logger::message(MessageType::ERR, "\t      Unkown command.");
 				break;
-			// TRY MOVEMENT
-			case 'M':
-				try
-				{
-					Movement doMove;
+				// TRY MOVEMENT
+				case 'M':
 					try
 					{
-						doMove = EventManager::getInstance().handleState({ fromPos, toPos });
+						Movement doMove;
+						try
+						{
+							doMove = EventManager::getInstance().handleState({ fromPos, toPos });
+						}
+						catch (const std::exception& t_excep)
+						{
+							clearDraw();
+							Logger::message(MessageType::ERR, "\t      ", t_excep.what(), EndingDelimiter::NLINE);
+						}
+
+						EventManager::getInstance().entityPawnAction(entityOnTurn, doMove.first, doMove.second, m_moveGenerator);
+
+						m_moveGenerator->reset(m_gameBoard, entityOnTurn->getPawnColor(), entityOnTurn->getLastPlayedPawn());
+						// swap entities' turn states
+						if (!entityOnTurn->getLastPlayedPawn() || m_moveGenerator->getPossibleMoves().empty())
+						{
+							swapEntityTurns(entityOnTurn);
+						}
+						m_moveGenerator->clear();
+
+						// Set next turn
+						setTurnState(TurnState::END);
 					}
 					catch (const std::exception& t_excep)
 					{
 						clearDraw();
 						Logger::message(MessageType::ERR, "\t      ", t_excep.what(), EndingDelimiter::NLINE);
 					}
-
-					EventManager::getInstance().entityPawnAction(entityOnTurn, doMove.first, doMove.second, m_moveGenerator);
-
-					m_moveGenerator->reset(m_gameBoard, entityOnTurn->getPawnColor(), entityOnTurn->getLastPlayedPawn());
-					// swap entities' turn states
-					if (!entityOnTurn->getLastPlayedPawn() || m_moveGenerator->getPossibleMoves().empty())
-					{
-						swapEntityTurns(entityOnTurn);
-					}
-					m_moveGenerator->clear();
-
-					// Set next turn
-					setTurnState(TurnState::END);
-				}
-				catch (const std::exception& t_excep)
-				{
-					clearDraw();
-					Logger::message(MessageType::ERR, "\t      ", t_excep.what(), EndingDelimiter::NLINE);
-				}
 				break;
-			// TRY UNDO
-			case 'U':
-				try
-				{
-					Movement undoedMove = EventManager::getInstance().handleState({/*Empty*/}, GameHistoryState::UNDO);
-					fromPos = undoedMove.first;
-					toPos = undoedMove.second;
-
-					// call undo function
-					undoHelper(entityOnTurn, fromPos, toPos);
-
-					// Set next turn
-					setTurnState(TurnState::END);
-				}
-				catch (const std::exception& t_excep)
-				{
-					clearDraw();
-					Logger::message(MessageType::ERR, "\t      ", t_excep.what(), EndingDelimiter::NLINE);
-				}
-				break;
-			// TRY REDO
-			case 'R':
-				clearDraw();
-				Logger::message(MessageType::ERR, "\t      Redoing", std::to_string(EventManager::getInstance().redoStack.size()), EndingDelimiter::NLINE);
-				while (!EventManager::getInstance().redoStack.empty())
-				{
-					auto redo = EventManager::getInstance().redoStack.top();
-					auto redoFirst = std::to_string(redo.first.first) + std::to_string(redo.first.second);
-					auto redoSecond = std::to_string(redo.second.first) + std::to_string(redo.second.second);
-					Logger::message(MessageType::ERR, "\t      ", redoFirst + redoSecond, EndingDelimiter::NLINE);
-					EventManager::getInstance().redoStack.pop();
-				}
-				try
-				{
-					Movement redoedMove = EventManager::getInstance().handleState({ }, GameHistoryState::REDO);
-					fromPos = redoedMove.first;
-					toPos = redoedMove.second;
-
-					auto tempPawn = m_gameBoard->getBoardPawn(fromPos.first, fromPos.second);
-					m_gameBoard->getBoardPawn(fromPos.first, fromPos.second) = m_gameBoard->getBoardPawn(toPos.first, toPos.second);
-					m_gameBoard->getBoardPawn(toPos.first, toPos.second) = tempPawn;
-
-					m_moveGenerator->reset(m_gameBoard, entityOnTurn->getPawnColor(), entityOnTurn->getLastPlayedPawn());
-					// swap entities' turn states
-					if (!entityOnTurn->getLastPlayedPawn() || m_moveGenerator->getPossibleMoves().empty())
+				// TRY UNDO
+				case 'U':
+					try
 					{
-						swapEntityTurns(entityOnTurn);
-					}
-					m_moveGenerator->clear();
+						Movement undoedMove = EventManager::getInstance().handleState({/*Empty*/}, GameHistoryState::UNDO);
+						fromPos = undoedMove.first;
+						toPos = undoedMove.second;
 
-					// Set next turn
-					setTurnState(TurnState::END);
-				}
-				catch (const std::exception& t_excep)
-				{
+						// call undo function
+						undoHelper(entityOnTurn, fromPos, toPos);
+
+						// Set next turn
+						setTurnState(TurnState::END);
+					}
+					catch (const std::exception& t_excep)
+					{
+						clearDraw();
+						Logger::message(MessageType::ERR, "\t      ", t_excep.what(), EndingDelimiter::NLINE);
+					}
+				break;
+				// TRY REDO
+				case 'R':
 					clearDraw();
-					Logger::message(MessageType::ERR, "\t      ", t_excep.what(), EndingDelimiter::NLINE);
-				}
+					Logger::message(MessageType::ERR, "\t      Redoing", std::to_string(EventManager::getInstance().redoStack.size()), EndingDelimiter::NLINE);
+					while (!EventManager::getInstance().redoStack.empty())
+					{
+						auto redo = EventManager::getInstance().redoStack.top();
+						auto redoFirst = std::to_string(redo.first.first) + std::to_string(redo.first.second);
+						auto redoSecond = std::to_string(redo.second.first) + std::to_string(redo.second.second);
+						Logger::message(MessageType::ERR, "\t      ", redoFirst + redoSecond, EndingDelimiter::NLINE);
+						EventManager::getInstance().redoStack.pop();
+					}
+					try
+					{
+						Movement redoedMove = EventManager::getInstance().handleState({ }, GameHistoryState::REDO);
+						fromPos = redoedMove.first;
+						toPos = redoedMove.second;
+
+						auto tempPawn = m_gameBoard->getBoardPawn(fromPos.first, fromPos.second);
+						m_gameBoard->getBoardPawn(fromPos.first, fromPos.second) = m_gameBoard->getBoardPawn(toPos.first, toPos.second);
+						m_gameBoard->getBoardPawn(toPos.first, toPos.second) = tempPawn;
+
+						m_moveGenerator->reset(m_gameBoard, entityOnTurn->getPawnColor(), entityOnTurn->getLastPlayedPawn());
+						// swap entities' turn states
+						if (!entityOnTurn->getLastPlayedPawn() || m_moveGenerator->getPossibleMoves().empty())
+						{
+							swapEntityTurns(entityOnTurn);
+						}
+						m_moveGenerator->clear();
+
+						// Set next turn
+						setTurnState(TurnState::END);
+					}
+					catch (const std::exception& t_excep)
+					{
+						clearDraw();
+						Logger::message(MessageType::ERR, "\t      ", t_excep.what(), EndingDelimiter::NLINE);
+					}
 				break;
 			}
 		}
@@ -251,15 +273,16 @@ namespace CheckerZ
 		}
 	}
 
-	void Game::displayEntityData(std::shared_ptr<Entity::Entity> t_entity)
+	void Game::displayEntityData(std::shared_ptr<Entity::Entity>& t_entity)
 	{
 		Logger::message(MessageType::INF, "\t      ", t_entity->getName() + " |", EndingDelimiter::NONE);
-		Logger::message(MessageType::INF, "Color: ", t_entity->getPawnColor() + " |", EndingDelimiter::NONE);
+		Logger::message(MessageType::INF, "Color: ", t_entity->getPawnColor()/* + " |"*/, EndingDelimiter::NLINE);
+		//Logger::message(MessageType::INF, "Type: ", t_entity->getClassType() + " |", EndingDelimiter::NONE);
 	}
 
-	void Game::initMovesGenerator(std::shared_ptr<API::Utils::MovesGenerator> t_moveGenerator, std::shared_ptr<Entity::Entity> t_entity)
+	void Game::initMovesGenerator(std::shared_ptr<API::Utils::MovesGenerator>& t_moveGenerator, std::shared_ptr<Entity::Entity>& t_entity)
 	{
-		Logger::message(MessageType::INF, "Possible moves: ", std::to_string(m_moveGenerator->getPossibleMoves().size()));
+		//Logger::message(MessageType::INF, "Possible moves: ", std::to_string(m_moveGenerator->getPossibleMoves().size()));
 		m_moveGenerator->generatePossibleMoves(m_gameBoard, t_entity->getPawnColor());
 		
 		if (m_moveGenerator->getPossibleMoves().empty())
@@ -286,7 +309,7 @@ namespace CheckerZ
 		}
 	}
 
-	void Game::undoHelper(std::shared_ptr<Entity::Entity> t_entityOnTurn, Position fromPos, Position toPos)
+	void Game::undoHelper(std::shared_ptr<Entity::Entity>& t_entityOnTurn, Position fromPos, Position toPos)
 	{
 		// swapping
 		auto tempPawn = m_gameBoard->getBoardPawn(toPos.first, toPos.second);
@@ -322,7 +345,7 @@ namespace CheckerZ
 		m_moveGenerator->clear();
 	}
 
-	void Game::redoHelper(std::shared_ptr<Entity::Entity> t_entityOnTurn, Position fromPos, Position toPos)
+	void Game::redoHelper(std::shared_ptr<Entity::Entity>& t_entityOnTurn, Position fromPos, Position toPos)
 	{
 
 	}

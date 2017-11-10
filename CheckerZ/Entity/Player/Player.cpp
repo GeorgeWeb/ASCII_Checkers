@@ -6,7 +6,7 @@
 
 namespace CheckerZ { namespace Entity { namespace Player {
 
-	void Player::firePawnAction(const Position& t_posFrom, const Position& t_posTo, std::shared_ptr<API::Utils::MovesGenerator> t_moveGenerator)
+	void Player::firePawnAction(const Position& t_posFrom, const Position& t_posTo, std::shared_ptr<API::Utils::MovesGenerator>& t_moveGenerator)
 	{
 		// search t_posTo in generatePossibleMoves
 		// if exists such move variant

@@ -62,12 +62,12 @@ namespace CheckerZ
 			inline void printTitle() const { system("cls"); API::Utils::Logger::message(API::Utils::MessageType::INF, "\n\t\t\t", m_title); }
 			inline void clearDraw() const { printTitle(); m_gameBoard->display(); }
 			
-			void displayEntityData(std::shared_ptr<Entity::Entity> t_entity);
-			void initMovesGenerator(std::shared_ptr<API::Utils::MovesGenerator> t_moveGenerator, std::shared_ptr<Entity::Entity> t_entity);
+			void displayEntityData(std::shared_ptr<Entity::Entity>& t_entity);
+			void initMovesGenerator(std::shared_ptr<API::Utils::MovesGenerator>& t_moveGenerator, std::shared_ptr<Entity::Entity>& t_entity);
 			void swapEntityTurns(const std::shared_ptr<Entity::Entity>& t_entityOnTurn);
 
-			void undoHelper(std::shared_ptr<Entity::Entity> t_entityOnTurn, Position fromPos, Position toPos);
-			void redoHelper(std::shared_ptr<Entity::Entity> t_entityOnTurn, Position fromPos, Position toPos);
+			void undoHelper(std::shared_ptr<Entity::Entity>& t_entityOnTurn, Position fromPos, Position toPos);
+			void redoHelper(std::shared_ptr<Entity::Entity>& t_entityOnTurn, Position fromPos, Position toPos);
 
 		private:
 			Game(const Game&) = delete;

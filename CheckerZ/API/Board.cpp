@@ -29,8 +29,6 @@ namespace CheckerZ { namespace API {
 
 	void Board::swapPawns(Pawn& t_lhs, Pawn& t_rhs, bool canKill)
 	{
-		bool canEvolve = (t_lhs.getColor() == "Black" && t_lhs.getCoordY() == s_boardLen - 1) || (t_lhs.getColor() == "Red" && t_lhs.getCoordY() == 0);
-
 		// check if kill on jump is possible
 		if (canKill)
 		{
@@ -42,10 +40,11 @@ namespace CheckerZ { namespace API {
 		std::swap(t_lhs.getColor(), t_rhs.getColor());
 		t_lhs.getPos().swap(t_rhs.getPos());
 
+		bool canEvolve = (t_rhs.getColor() == "Black" && t_rhs.getCoordX() == s_boardLen - 1) || (t_rhs.getColor() == "Red" && t_rhs.getCoordX() == 0);
 		// check if evolving is possible after the move
 		if (canEvolve)
 		{
-			evolve(t_lhs);
+			evolve(t_rhs);
 		}
 	}
 
@@ -79,7 +78,7 @@ namespace CheckerZ { namespace API {
 			for (size_t col = 0; col < m_board.size(); col++)
 			{
 				auto& pawn = m_board[row][col];
-				
+				// if (row == 7 && col == 0) pawn.setValues(' ', "Empty", row, col); else if (row == 5 && col == 2) pawn.setValues('b', "Black", row, col); else
 				if (((row + col) % 2) == 0)
 					pawn.setValues(' ', "Empty", row, col);
 				else

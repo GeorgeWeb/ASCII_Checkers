@@ -11,8 +11,10 @@ namespace CheckerZ { namespace Entity { namespace Player {
 		public:
 			Player(const std::string& t_name, const std::string& t_pawnColor) : Entity(t_name, t_pawnColor) { };
 			~Player() = default;
+			
+			std::string getClassType() override { return std::string("Player"); }
 
-			void firePawnAction(const Position& t_posFrom, const Position& t_posTo, std::shared_ptr<API::Utils::MovesGenerator> moveGenerator) override;
+			void firePawnAction(const Position& t_posFrom, const Position& t_posTo, std::shared_ptr<API::Utils::MovesGenerator>& moveGenerator) override;
 	};
 
 } } }

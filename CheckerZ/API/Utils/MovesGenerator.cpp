@@ -2,6 +2,8 @@
 
 namespace CheckerZ { namespace API { namespace Utils {
 
+	// TODO: Fix King movement
+
 	void MovesGenerator::generatePossibleMoves(std::shared_ptr<Board> t_board, const std::string& t_color, std::shared_ptr<Pawn> t_lastPlayedPawn)
 	{
 		auto tempBoard = *t_board;
@@ -15,14 +17,16 @@ namespace CheckerZ { namespace API { namespace Utils {
 			{
 				if (t_lastPlayedPawn->isKing())
 				{
+					// check top jumps
 					checkLeftJump(tempBoard, x, y, "Top");
 					checkRightJump(tempBoard, x, y, "Top");
-
+					// check bottom jumps
 					checkLeftJump(tempBoard, x, y, "Bottom");
 					checkRightJump(tempBoard, x, y, "Bottom");
 				}
 				else
 				{
+					// check top jumps
 					checkLeftJump(tempBoard, x, y, "Top");
 					checkRightJump(tempBoard, x, y, "Top");
 				}
@@ -32,13 +36,16 @@ namespace CheckerZ { namespace API { namespace Utils {
 			{
 				if (t_lastPlayedPawn->isKing())
 				{
+					// check top jumps
 					checkLeftJump(tempBoard, x, y, "Top");
 					checkRightJump(tempBoard, x, y, "Top");
+					// check bottom jumps
 					checkLeftJump(tempBoard, x, y, "Bottom");
 					checkRightJump(tempBoard, x, y, "Bottom");
 				}
 				else
 				{
+					// check bottom jumps
 					checkLeftJump(tempBoard, x, y, "Bottom");
 					checkRightJump(tempBoard, x, y, "Bottom");
 				}
@@ -56,18 +63,20 @@ namespace CheckerZ { namespace API { namespace Utils {
 						{
 							if (tempBoard.getBoardPawn(x, y).isKing())
 							{
+								// check moves
 								checkLeftMove(tempBoard, x, y, "Top");
 								checkRightMove(tempBoard, x, y, "Top");
-								checkLeftJump(tempBoard, x, y, "Top");
-								checkRightJump(tempBoard, x, y, "Top");
-
 								checkLeftMove(tempBoard, x, y, "Bottom");
 								checkRightMove(tempBoard, x, y, "Bottom");
+								// check jumps
+								checkLeftJump(tempBoard, x, y, "Top");
+								checkRightJump(tempBoard, x, y, "Top");
 								checkLeftJump(tempBoard, x, y, "Bottom");
 								checkRightJump(tempBoard, x, y, "Bottom");
 							}
 							else
 							{
+								// check moves
 								checkLeftMove(tempBoard, x, y, "Top");
 								checkRightMove(tempBoard, x, y, "Top");
 								checkLeftJump(tempBoard, x, y, "Top");
@@ -86,18 +95,20 @@ namespace CheckerZ { namespace API { namespace Utils {
 						{
 							if (tempBoard.getBoardPawn(x, y).isKing())
 							{
+								// check moves
 								checkLeftMove(tempBoard, x, y, "Top");
 								checkRightMove(tempBoard, x, y, "Top");
-								checkLeftJump(tempBoard, x, y, "Top");
-								checkRightJump(tempBoard, x, y, "Top");
-
 								checkLeftMove(tempBoard, x, y, "Bottom");
 								checkRightMove(tempBoard, x, y, "Bottom");
+								// check jumps
+								checkLeftJump(tempBoard, x, y, "Top");
+								checkRightJump(tempBoard, x, y, "Top");
 								checkLeftJump(tempBoard, x, y, "Bottom");
 								checkRightJump(tempBoard, x, y, "Bottom");
 							}
 							else
 							{
+								// check moves
 								checkLeftMove(tempBoard, x, y, "Bottom");
 								checkRightMove(tempBoard, x, y, "Bottom");
 								checkLeftJump(tempBoard, x, y, "Bottom");
@@ -111,6 +122,9 @@ namespace CheckerZ { namespace API { namespace Utils {
 			default:
 				break;
 		}
+
+		// sort it to make searching it from Player or AI faster via binary search
+		std::sort(m_possibleMoves.begin(), m_possibleMoves.end());
 	}
 
 	void MovesGenerator::reset(std::shared_ptr<Board> t_board, const std::string & t_color, std::shared_ptr<Pawn> t_lastPlayedPawn)
@@ -128,7 +142,7 @@ namespace CheckerZ { namespace API { namespace Utils {
 		{
 			if (t_board.getGridInfo(x + 1, y - 1) == GridInfo::EMPTY)
 			{
-				m_possibleMoves.insert({ std::make_pair(x, y), std::make_pair(x + 1, y - 1) });
+				m_possibleMoves.push_back({ std::make_pair(x, y), std::make_pair(x + 1, y - 1) });
 			}
 		}
 
@@ -136,7 +150,7 @@ namespace CheckerZ { namespace API { namespace Utils {
 		{
 			if (t_board.getGridInfo(x - 1, y - 1) == GridInfo::EMPTY)
 			{
-				m_possibleMoves.insert({ std::make_pair(x, y), std::make_pair(x - 1, y - 1) });
+				m_possibleMoves.push_back({ std::make_pair(x, y), std::make_pair(x - 1, y - 1) });
 			}
 		}
 	}
@@ -147,7 +161,7 @@ namespace CheckerZ { namespace API { namespace Utils {
 		{
 			if (t_board.getGridInfo(x + 1, y + 1) == GridInfo::EMPTY)
 			{
-				m_possibleMoves.insert({ std::make_pair(x, y), std::make_pair(x + 1, y + 1) });
+				m_possibleMoves.push_back({ std::make_pair(x, y), std::make_pair(x + 1, y + 1) });
 			}
 		}
 
@@ -155,7 +169,7 @@ namespace CheckerZ { namespace API { namespace Utils {
 		{
 			if (t_board.getGridInfo(x - 1, y + 1) == GridInfo::EMPTY)
 			{
-				m_possibleMoves.insert({ std::make_pair(x, y), std::make_pair(x - 1, y + 1) });
+				m_possibleMoves.push_back({ std::make_pair(x, y), std::make_pair(x - 1, y + 1) });
 			}
 		}
 	}
@@ -166,7 +180,7 @@ namespace CheckerZ { namespace API { namespace Utils {
 		{
 			if (t_board.getGridInfo(x + 1, y - 1) == GridInfo::RED && t_board.getGridInfo(x + 2, y - 2) == GridInfo::EMPTY)
 			{
-				m_possibleMoves.insert({ std::make_pair(x, y), std::make_pair(x + 2, y - 2) });
+				m_possibleMoves.push_back({ std::make_pair(x, y), std::make_pair(x + 2, y - 2) });
 			}
 		}
 
@@ -174,7 +188,7 @@ namespace CheckerZ { namespace API { namespace Utils {
 		{
 			if (t_board.getGridInfo(x - 1, y - 1) == GridInfo::BLACK && t_board.getGridInfo(x - 2, y - 2) == GridInfo::EMPTY)
 			{
-				m_possibleMoves.insert({ std::make_pair(x, y), std::make_pair(x - 2, y - 2) });
+				m_possibleMoves.push_back({ std::make_pair(x, y), std::make_pair(x - 2, y - 2) });
 			}
 		}
 	}
@@ -185,7 +199,7 @@ namespace CheckerZ { namespace API { namespace Utils {
 		{
 			if (t_board.getGridInfo(x + 1, y + 1) == GridInfo::RED && t_board.getGridInfo(x + 2, y + 2) == GridInfo::EMPTY)
 			{
-				m_possibleMoves.insert({ std::make_pair(x, y), std::make_pair(x + 2, y + 2) });
+				m_possibleMoves.push_back({ std::make_pair(x, y), std::make_pair(x + 2, y + 2) });
 			}
 		}
 
@@ -193,7 +207,7 @@ namespace CheckerZ { namespace API { namespace Utils {
 		{
 			if (t_board.getGridInfo(x - 1, y + 1) == GridInfo::BLACK && t_board.getGridInfo(x - 2, y + 2) == GridInfo::EMPTY)
 			{
-				m_possibleMoves.insert({ std::make_pair(x, y), std::make_pair(x - 2, y + 2) });
+				m_possibleMoves.push_back({ std::make_pair(x, y), std::make_pair(x - 2, y + 2) });
 			}
 		}
 	}
