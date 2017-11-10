@@ -69,6 +69,8 @@ namespace CheckerZ
 			void undoHelper(std::shared_ptr<Entity::Entity>& t_entityOnTurn, Position fromPos, Position toPos);
 			void redoHelper(std::shared_ptr<Entity::Entity>& t_entityOnTurn, Position fromPos, Position toPos);
 
+			void delayHelper(double maxDelayTime);
+
 		private:
 			Game(const Game&) = delete;
 			Game(Game&&) = delete;

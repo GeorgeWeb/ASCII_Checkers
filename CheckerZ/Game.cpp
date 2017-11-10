@@ -1,5 +1,6 @@
 // project includes
 #include "Game.hpp"
+#include "API/Utils/Timer.hpp"
 
 // std::includes
 #include <iostream>
@@ -75,10 +76,9 @@ namespace CheckerZ
 		initMovesGenerator(m_moveGenerator, entityOnTurn);
 		if (entityOnTurn->getClassType() == "AI")
 		{
-			// TODO: Do AI movement action here
-			// ...
 			try
 			{
+				delayHelper(1.0);
 				EventManager::getInstance().entityPawnAction(entityOnTurn, m_moveGenerator);
 
 				m_moveGenerator->reset(m_gameBoard, entityOnTurn->getPawnColor(), entityOnTurn->getLastPlayedPawn());
@@ -348,5 +348,14 @@ namespace CheckerZ
 	void Game::redoHelper(std::shared_ptr<Entity::Entity>& t_entityOnTurn, Position fromPos, Position toPos)
 	{
 
+	}
+	
+	void Game::delayHelper(double maxDelayTime)
+	{
+		std::random_device rd;
+		std::mt19937 engine(rd());
+		std::uniform_real_distribution<double> dist(1.0, maxDelayTime);
+		auto delayTime = dist(engine);
+		Utils::Timer::applyTimeDelayInSeconds(delayTime);
 	}
 }

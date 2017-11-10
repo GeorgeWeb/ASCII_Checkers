@@ -123,6 +123,7 @@
     <ClInclude Include="API\Utils\MovesGenerator.hpp" />
     <ClInclude Include="API\Utils\Logger.hpp" />
     <ClInclude Include="API\Pawn.hpp" />
+    <ClInclude Include="API\Utils\Timer.hpp" />
     <ClInclude Include="Common.hpp" />
     <ClInclude Include="Entity\AI\AI.hpp" />
     <ClInclude Include="Entity\Entity.hpp" />

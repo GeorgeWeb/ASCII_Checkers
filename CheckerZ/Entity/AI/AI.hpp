@@ -28,7 +28,7 @@ namespace CheckerZ { namespace Entity { namespace AI {
 			void performRandomMove(std::deque<Movement>& t_possibleMoves)
 			{
 				std::random_device rd;
-				std::mt19937 engine;
+				std::mt19937 engine(rd());
 				std::uniform_int_distribution<size_t> dist(0, t_possibleMoves.size() - 1);
 				size_t randIdx = dist(engine);
 				Movement randMove = t_possibleMoves[randIdx];
