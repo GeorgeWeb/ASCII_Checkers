@@ -26,8 +26,13 @@ namespace CheckerZ { namespace Entity {
 			virtual ~Entity() = default;
 
 			// does the player action - move or take
-			virtual void firePawnAction(const Position& t_posFrom, const Position& t_posTo, std::shared_ptr<API::Utils::MovesGenerator> t_moveGenerator) = 0;
-			
+			// used for AI Entity
+			virtual void firePawnAction(std::shared_ptr<API::Utils::MovesGenerator>& t_moveGenerator) {};
+			// used for Human/Player Entity
+			virtual void firePawnAction(const Position& t_posFrom, const Position& t_posTo, std::shared_ptr<API::Utils::MovesGenerator>& t_moveGenerator) {};
+			// determine the type of Entity - AI/CPU or Human/Player
+			virtual std::string getClassType() = 0;
+
 			inline std::shared_ptr<API::Pawn>& getLastPlayedPawn() { return m_lastPlayedPawn; }
 
 			// turn regulation accessors (get/set)

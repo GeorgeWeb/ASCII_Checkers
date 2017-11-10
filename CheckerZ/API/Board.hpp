@@ -26,12 +26,13 @@ namespace CheckerZ { namespace API {
 
 	class Board final
 	{
-		template<class Type, const size_t Size>
-		using board = std::array<std::array<Type, Size>, Size>;
+		public:
+			template<class Type, const size_t Size>
+			using board = std::array<std::array<Type, Size>, Size>;
+			
+			static constexpr uint16 s_boardLen = 8;
 
 		private:
-			// TODO: boardX and boardY should become boardSize since it is always going to be a SQUARE!
-			static constexpr uint16 s_boardLen = 8;
 			// initialize board
 			board<Pawn, s_boardLen> m_board;
 
@@ -40,7 +41,8 @@ namespace CheckerZ { namespace API {
 			~Board() = default;
 
 			inline const board<Pawn, s_boardLen>& getBoard() const { return m_board; }
-			
+			inline void setBoard(const board<Pawn, s_boardLen>& t_board) { m_board = t_board; }
+
 			// easy fast getter
 			inline Pawn& getBoardPawn(const Position &position) { return m_board[position.first][position.second]; }
 			inline Pawn& getBoardPawn(size_t t_row, size_t t_col) { return m_board[t_row][t_col]; }

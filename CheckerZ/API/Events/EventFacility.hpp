@@ -17,9 +17,13 @@ namespace CheckerZ { namespace API { namespace Events {
 			explicit EventFacility() = default;
 			virtual ~EventFacility() = default;
 
+			// used for general system events
 			virtual void invoke() const { };
-			virtual void invoke(std::shared_ptr<Entity::Entity> t_entity, const Position& t_posFrom, const Position& t_posTo,
-				std::shared_ptr<API::Utils::MovesGenerator> moveGenerator) { };
+			// used for AI
+			virtual void invoke(std::shared_ptr<Entity::Entity>& t_entity, std::shared_ptr<API::Utils::MovesGenerator>& moveGenerator) { };
+			// used for player
+			virtual void invoke(std::shared_ptr<Entity::Entity>& t_entity, const Position& t_posFrom, const Position& t_posTo,
+				std::shared_ptr<API::Utils::MovesGenerator>& moveGenerator) { };
 		
 		protected:
 			virtual void initialize() = 0;

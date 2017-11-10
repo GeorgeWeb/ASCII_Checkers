@@ -16,6 +16,7 @@
 
 namespace CheckerZ
 {
+	// the game creation class
 	class Game final
 	{
 		enum class TurnState
@@ -41,6 +42,10 @@ namespace CheckerZ
 
 			// Moves generator
 			std::shared_ptr<API::Utils::MovesGenerator> m_moveGenerator;
+	
+			// game system/board handlers
+			std::stack<API::Board::board<API::Pawn, 8>> m_undoStack;
+			std::stack<API::Board::board<API::Pawn, 8>> m_redoStack;
 
 		public:
 			Game();
@@ -62,12 +67,16 @@ namespace CheckerZ
 			inline void printTitle() const { system("cls"); API::Utils::Logger::message(API::Utils::MessageType::INF, "\n\t\t\t", m_title); }
 			inline void clearDraw() const { printTitle(); m_gameBoard->display(); }
 			
-			void displayEntityData(std::shared_ptr<Entity::Entity> t_entity);
-			void initMovesGenerator(std::shared_ptr<API::Utils::MovesGenerator> t_moveGenerator, std::shared_ptr<Entity::Entity> t_entity);
+			void displayEntityData(std::shared_ptr<Entity::Entity>& t_entity);
+			void initMovesGenerator(std::shared_ptr<API::Utils::MovesGenerator>& t_moveGenerator, std::shared_ptr<Entity::Entity>& t_entity);
 			void swapEntityTurns(const std::shared_ptr<Entity::Entity>& t_entityOnTurn);
 
-			void undoHelper(std::shared_ptr<Entity::Entity> t_entityOnTurn, Position fromPos, Position toPos);
-			void redoHelper(std::shared_ptr<Entity::Entity> t_entityOnTurn, Position fromPos, Position toPos);
+			// Game helpers declaration
+			// game state (e.g. undo/redo ...) helpers
+			void undoHelper();
+			void redoHelper();
+			// timer helper
+			void delayHelper(double t_maxDelayTime);
 
 		private:
 			Game(const Game&) = delete;
