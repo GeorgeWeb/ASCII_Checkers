@@ -44,8 +44,8 @@ namespace CheckerZ
 			std::shared_ptr<API::Utils::MovesGenerator> m_moveGenerator;
 	
 			// game system/board handlers
-			std::stack<API::Board::board<API::Pawn, 8>> m_undoStack;
-			std::stack<API::Board::board<API::Pawn, 8>> m_redoStack;
+			std::stack<API::Board::board<API::Pawn, API::Board::s_boardLen>> m_undoStack;
+			std::stack<API::Board::board<API::Pawn, API::Board::s_boardLen>> m_redoStack;
 
 		public:
 			Game();

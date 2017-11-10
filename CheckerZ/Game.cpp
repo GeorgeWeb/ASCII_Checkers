@@ -80,9 +80,12 @@ namespace CheckerZ
 
 				// invoke the entityPawnAction event that moves the chosen pawn
 				EventManager::getInstance().entityPawnAction(entityOnTurn, m_moveGenerator);
+				
 				// push the current board in the undo stack on every move
 				m_undoStack.push(m_gameBoard->getBoard());
-				
+				// clear the redo stack
+				std::stack<Board::board<Pawn, Board::s_boardLen>>().swap(m_redoStack);
+
 				m_moveGenerator->reset(m_gameBoard, entityOnTurn->getPawnColor(), entityOnTurn->getLastPlayedPawn());
 				// swap entities' turn states
 				if (!entityOnTurn->getLastPlayedPawn() || m_moveGenerator->getPossibleMoves().empty())
@@ -158,6 +161,8 @@ namespace CheckerZ
 						
 						// push the current board in the undo stack on every move
 						m_undoStack.push(m_gameBoard->getBoard());
+						// clear the redo stack
+						std::stack<Board::board<Pawn, Board::s_boardLen>>().swap(m_redoStack);
 
 						m_moveGenerator->reset(m_gameBoard, entityOnTurn->getPawnColor(), entityOnTurn->getLastPlayedPawn());
 						// swap entities' turn states
@@ -277,7 +282,7 @@ namespace CheckerZ
 		if (m_undoStack.size() > 2)
 		{
 			// create temp board
-			Board::board<API::Pawn, 8> tempBoard;
+			Board::board<Pawn, Board::s_boardLen> tempBoard;
 
 			// save the current state of the board in the redo stack
 			m_redoStack.push(m_undoStack.top());
@@ -303,7 +308,7 @@ namespace CheckerZ
 		if(m_redoStack.size() > 0)
 		{ 
 			// create temp board
-			Board::board<API::Pawn, 8> tempBoard;
+			Board::board<Pawn, Board::s_boardLen> tempBoard;
 
 			// copy the board from the redo stack into the temp board
 			tempBoard = m_redoStack.top();
