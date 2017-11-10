@@ -17,18 +17,14 @@ namespace CheckerZ { namespace API { namespace Utils {
 			{
 				if (t_lastPlayedPawn->isKing())
 				{
-					// check top jumps
-					checkLeftJump(tempBoard, x, y, "Top");
-					checkRightJump(tempBoard, x, y, "Top");
-					// check bottom jumps
-					checkLeftJump(tempBoard, x, y, "Bottom");
-					checkRightJump(tempBoard, x, y, "Bottom");
+					// check king jumps
+					checkKingJumps(tempBoard, x, y, "Black");
 				}
 				else
 				{
-					// check top jumps
-					checkLeftJump(tempBoard, x, y, "Top");
-					checkRightJump(tempBoard, x, y, "Top");
+					// check jumps
+					checkLeftJump(tempBoard, x, y, "Black");
+					checkRightJump(tempBoard, x, y, "Black");
 				}
 			}
 			// Red player was on turn
@@ -36,18 +32,14 @@ namespace CheckerZ { namespace API { namespace Utils {
 			{
 				if (t_lastPlayedPawn->isKing())
 				{
-					// check top jumps
-					checkLeftJump(tempBoard, x, y, "Top");
-					checkRightJump(tempBoard, x, y, "Top");
-					// check bottom jumps
-					checkLeftJump(tempBoard, x, y, "Bottom");
-					checkRightJump(tempBoard, x, y, "Bottom");
+					// check king jumps
+					checkKingJumps(tempBoard, x, y, "Red");
 				}
 				else
 				{
-					// check bottom jumps
-					checkLeftJump(tempBoard, x, y, "Bottom");
-					checkRightJump(tempBoard, x, y, "Bottom");
+					// check jumps
+					checkLeftJump(tempBoard, x, y, "Red");
+					checkRightJump(tempBoard, x, y, "Red");
 				}
 			}
 		}
@@ -63,24 +55,22 @@ namespace CheckerZ { namespace API { namespace Utils {
 						{
 							if (tempBoard.getBoardPawn(x, y).isKing())
 							{
-								// check moves
-								checkLeftMove(tempBoard, x, y, "Top");
-								checkRightMove(tempBoard, x, y, "Top");
-								checkLeftMove(tempBoard, x, y, "Bottom");
-								checkRightMove(tempBoard, x, y, "Bottom");
-								// check jumps
-								checkLeftJump(tempBoard, x, y, "Top");
-								checkRightJump(tempBoard, x, y, "Top");
-								checkLeftJump(tempBoard, x, y, "Bottom");
-								checkRightJump(tempBoard, x, y, "Bottom");
+								// check king moves
+								checkLeftMove(tempBoard, x, y, "Black");
+								checkRightMove(tempBoard, x, y, "Black");
+								checkLeftMove(tempBoard, x, y, "Red");
+								checkRightMove(tempBoard, x, y, "Red");
+								// check king jumps
+								checkKingJumps(tempBoard, x, y, "Black");
 							}
 							else
 							{
 								// check moves
-								checkLeftMove(tempBoard, x, y, "Top");
-								checkRightMove(tempBoard, x, y, "Top");
-								checkLeftJump(tempBoard, x, y, "Top");
-								checkRightJump(tempBoard, x, y, "Top");
+								checkLeftMove(tempBoard, x, y, "Black");
+								checkRightMove(tempBoard, x, y, "Black");
+								// check jumps
+								checkLeftJump(tempBoard, x, y, "Black");
+								checkRightJump(tempBoard, x, y, "Black");
 							}
 						}
 					}
@@ -95,24 +85,22 @@ namespace CheckerZ { namespace API { namespace Utils {
 						{
 							if (tempBoard.getBoardPawn(x, y).isKing())
 							{
-								// check moves
-								checkLeftMove(tempBoard, x, y, "Top");
-								checkRightMove(tempBoard, x, y, "Top");
-								checkLeftMove(tempBoard, x, y, "Bottom");
-								checkRightMove(tempBoard, x, y, "Bottom");
-								// check jumps
-								checkLeftJump(tempBoard, x, y, "Top");
-								checkRightJump(tempBoard, x, y, "Top");
-								checkLeftJump(tempBoard, x, y, "Bottom");
-								checkRightJump(tempBoard, x, y, "Bottom");
+								// check king moves
+								checkLeftMove(tempBoard, x, y, "Red");
+								checkRightMove(tempBoard, x, y, "Red");
+								checkLeftMove(tempBoard, x, y, "Black");
+								checkRightMove(tempBoard, x, y, "Black");
+								// check king jumps
+								checkKingJumps(tempBoard, x, y, "Red");
 							}
 							else
 							{
 								// check moves
-								checkLeftMove(tempBoard, x, y, "Bottom");
-								checkRightMove(tempBoard, x, y, "Bottom");
-								checkLeftJump(tempBoard, x, y, "Bottom");
-								checkRightJump(tempBoard, x, y, "Bottom");
+								checkLeftMove(tempBoard, x, y, "Red");
+								checkRightMove(tempBoard, x, y, "Red");
+								// check jumps
+								checkLeftJump(tempBoard, x, y, "Red");
+								checkRightJump(tempBoard, x, y, "Red");
 							}
 						}
 					}
@@ -136,9 +124,62 @@ namespace CheckerZ { namespace API { namespace Utils {
 	// ------------------- //
 	// check moves helpers //
 	// ------------------- //
-	void MovesGenerator::checkLeftMove(Board& t_board, int x, int y, const std::string &t_pos)
+	void MovesGenerator::checkKingJumps(Board& t_board, int x, int y, const std::string& t_color)
+	{
+		// check left and right for black
+		if (t_color == "Black")
+		{
+			// top left
+			if (t_board.getGridInfo(x + 1, y - 1) == GridInfo::RED && t_board.getGridInfo(x + 2, y - 2) == GridInfo::EMPTY)
+			{
+				m_possibleMoves.push_back({ std::make_pair(x, y), std::make_pair(x + 2, y - 2) });
+			}
+			// top right
+			if (t_board.getGridInfo(x + 1, y + 1) == GridInfo::RED && t_board.getGridInfo(x + 2, y + 2) == GridInfo::EMPTY)
+			{
+				m_possibleMoves.push_back({ std::make_pair(x, y), std::make_pair(x + 2, y + 2) });
+			}
+			// bottom left
+			if (t_board.getGridInfo(x - 1, y - 1) == GridInfo::RED && t_board.getGridInfo(x - 2, y - 2) == GridInfo::EMPTY)
+			{
+				m_possibleMoves.push_back({ std::make_pair(x, y), std::make_pair(x - 2, y - 2) });
+			}
+			// bottom right
+			if (t_board.getGridInfo(x - 1, y + 1) == GridInfo::RED && t_board.getGridInfo(x - 2, y + 2) == GridInfo::EMPTY)
+			{
+				m_possibleMoves.push_back({ std::make_pair(x, y), std::make_pair(x - 2, y + 2) });
+			}
+		}
+		
+		// check left and right for red
+		if (t_color == "Red")
+		{
+			// bottom left
+			if (t_board.getGridInfo(x - 1, y - 1) == GridInfo::BLACK && t_board.getGridInfo(x - 2, y - 2) == GridInfo::EMPTY)
+			{
+				m_possibleMoves.push_back({ std::make_pair(x, y), std::make_pair(x - 2, y - 2) });
+			}
+			// bottom right
+			if (t_board.getGridInfo(x - 1, y + 1) == GridInfo::BLACK && t_board.getGridInfo(x - 2, y + 2) == GridInfo::EMPTY)
+			{
+				m_possibleMoves.push_back({ std::make_pair(x, y), std::make_pair(x - 2, y + 2) });
+			}
+			// top left
+			if (t_board.getGridInfo(x + 1, y - 1) == GridInfo::BLACK && t_board.getGridInfo(x + 2, y - 2) == GridInfo::EMPTY)
+			{
+				m_possibleMoves.push_back({ std::make_pair(x, y), std::make_pair(x + 2, y - 2) });
+			}
+			// top right
+			if (t_board.getGridInfo(x + 1, y + 1) == GridInfo::BLACK && t_board.getGridInfo(x + 2, y + 2) == GridInfo::EMPTY)
+			{
+				m_possibleMoves.push_back({ std::make_pair(x, y), std::make_pair(x + 2, y + 2) });
+			}
+		}
+	}
+
+	void MovesGenerator::checkLeftMove(Board& t_board, int x, int y, const std::string &t_color)
 	{		
-		if (t_pos == "Top")
+		if (t_color == "Black")
 		{
 			if (t_board.getGridInfo(x + 1, y - 1) == GridInfo::EMPTY)
 			{
@@ -146,7 +187,7 @@ namespace CheckerZ { namespace API { namespace Utils {
 			}
 		}
 
-		if (t_pos == "Bottom")
+		if (t_color == "Red")
 		{
 			if (t_board.getGridInfo(x - 1, y - 1) == GridInfo::EMPTY)
 			{
@@ -155,9 +196,9 @@ namespace CheckerZ { namespace API { namespace Utils {
 		}
 	}
 
-	void MovesGenerator::checkRightMove(Board& t_board, int x, int y, const std::string &t_pos)
+	void MovesGenerator::checkRightMove(Board& t_board, int x, int y, const std::string &t_color)
 	{
-		if (t_pos == "Top")
+		if (t_color == "Black")
 		{
 			if (t_board.getGridInfo(x + 1, y + 1) == GridInfo::EMPTY)
 			{
@@ -165,7 +206,7 @@ namespace CheckerZ { namespace API { namespace Utils {
 			}
 		}
 
-		if (t_pos == "Bottom")
+		if (t_color == "Red")
 		{
 			if (t_board.getGridInfo(x - 1, y + 1) == GridInfo::EMPTY)
 			{
@@ -174,17 +215,17 @@ namespace CheckerZ { namespace API { namespace Utils {
 		}
 	}
 
-	void MovesGenerator::checkLeftJump(Board& t_board, int x, int y, const std::string &t_pos)
+	void MovesGenerator::checkLeftJump(Board& t_board, int x, int y, const std::string &t_color)
 	{
-		if (t_pos == "Top")
+		if (t_color == "Black")
 		{
 			if (t_board.getGridInfo(x + 1, y - 1) == GridInfo::RED && t_board.getGridInfo(x + 2, y - 2) == GridInfo::EMPTY)
 			{
 				m_possibleMoves.push_back({ std::make_pair(x, y), std::make_pair(x + 2, y - 2) });
 			}
 		}
-
-		if (t_pos == "Bottom")
+		
+		if (t_color == "Red")
 		{
 			if (t_board.getGridInfo(x - 1, y - 1) == GridInfo::BLACK && t_board.getGridInfo(x - 2, y - 2) == GridInfo::EMPTY)
 			{
@@ -193,9 +234,9 @@ namespace CheckerZ { namespace API { namespace Utils {
 		}
 	}
 
-	void MovesGenerator::checkRightJump(Board& t_board, int x, int y, const std::string &t_pos)
+	void MovesGenerator::checkRightJump(Board& t_board, int x, int y, const std::string &t_color)
 	{
-		if (t_pos == "Top")
+		if (t_color == "Black")
 		{
 			if (t_board.getGridInfo(x + 1, y + 1) == GridInfo::RED && t_board.getGridInfo(x + 2, y + 2) == GridInfo::EMPTY)
 			{
@@ -203,7 +244,7 @@ namespace CheckerZ { namespace API { namespace Utils {
 			}
 		}
 
-		if (t_pos == "Bottom")
+		if (t_color == "Red")
 		{
 			if (t_board.getGridInfo(x - 1, y + 1) == GridInfo::BLACK && t_board.getGridInfo(x - 2, y + 2) == GridInfo::EMPTY)
 			{

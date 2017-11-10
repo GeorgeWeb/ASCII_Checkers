@@ -24,10 +24,13 @@ namespace CheckerZ { namespace API { namespace Utils {
 			inline void clear() { m_possibleMoves.clear(); }
 		
 		private:
-			void checkLeftMove(Board& t_board, int x, int y, const std::string& t_pos);
-			void checkRightMove(Board& t_board, int x, int y, const std::string& t_pos);
-			void checkLeftJump(Board& t_board, int x, int y, const std::string& t_pos);
-			void checkRightJump(Board& t_board, int x, int y, const std::string& t_pos);
+			// a special case jumping is checked for kings
+			void checkKingJumps(Board& t_board, int x, int y, const std::string& t_color);
+
+			void checkLeftMove(Board& t_board, int x, int y, const std::string& t_color);
+			void checkRightMove(Board& t_board, int x, int y, const std::string& t_color);
+			void checkLeftJump(Board& t_board, int x, int y, const std::string& t_color);
+			void checkRightJump(Board& t_board, int x, int y, const std::string& t_color);
 	};
 
 } } }

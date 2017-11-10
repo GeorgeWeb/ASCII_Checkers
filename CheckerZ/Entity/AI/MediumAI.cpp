@@ -15,7 +15,15 @@ namespace CheckerZ { namespace Entity { namespace AI {
 		{
 			uint32 order = std::abs(static_cast<int>(move.first.first - move.second.first) + std::abs(static_cast<int>(move.first.second - move.second.second)));
 			// make order higher if the pawn is a king
-			if (m_board->getBoardPawn(move.first).isKing()) order++;
+			if (m_board->getBoardPawn(move.first).isKing())
+			{
+				if (m_board->getBoardPawn(move.second).getColor() != m_board->getBoardPawn(move.first).getColor() 
+				 && m_board->getBoardPawn(move.second).getColor() != "Empty")
+					order += 2;
+				else
+					order += 1;
+			}
+
 			// populate the map
 			moveOrders.insert({ order, move });
 		});

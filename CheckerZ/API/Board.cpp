@@ -78,7 +78,10 @@ namespace CheckerZ { namespace API {
 			for (size_t col = 0; col < m_board.size(); col++)
 			{
 				auto& pawn = m_board[row][col];
-				// if (row == 7 && col == 0) pawn.setValues(' ', "Empty", row, col); else if (row == 5 && col == 2) pawn.setValues('b', "Black", row, col); else
+				
+				// Debug / Test
+				if (row == 6 && col == 1) pawn.setValues('B', "Black", row, col); else
+
 				if (((row + col) % 2) == 0)
 					pawn.setValues(' ', "Empty", row, col);
 				else

@@ -23,7 +23,8 @@ namespace CheckerZ { namespace Entity { namespace AI {
 			{
 				assert(std::is_sorted(t_moveGenerator->getPossibleMoves().begin(), t_moveGenerator->getPossibleMoves().end()));
 			}
-
+		
+		protected:
 			void performRandomMove(std::deque<Movement>& t_possibleMoves)
 			{
 				std::random_device rd;
