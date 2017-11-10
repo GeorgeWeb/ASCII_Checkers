@@ -136,7 +136,6 @@
     <ClCompile Include="API\Events\EventImpl\EntityPawnAction.cpp" />
     <ClCompile Include="API\Events\EventImpl\QuitGame.cpp" />
     <ClCompile Include="API\Events\EventImpl\WinGame.cpp" />
-    <ClCompile Include="API\Events\EventManager.cpp" />
     <ClCompile Include="API\Utils\MovesEvaluator.cpp" />
     <ClCompile Include="API\Utils\MovesGenerator.cpp" />
     <ClCompile Include="Entity\AI\HardAI.cpp" />

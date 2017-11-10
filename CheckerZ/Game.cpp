@@ -21,22 +21,19 @@ namespace CheckerZ
 		m_title("Checkers"),
 		m_gameBoard(std::make_shared<Board>()),
 		m_player1(std::make_shared<Player>("Gecata", "Black")),
-		//m_player2(std::make_shared<Player>("Player2", "Red")),
 		m_player2(std::make_shared<MediumAI>("NormBot", "Red")),
 		m_moveGenerator(std::make_shared<MovesGenerator>())
 	{ }
 
-	Game::~Game()
-	{ 
-		// TODO: free memory:
-		// board pointers in entities
-		// each entity
-	}
+	Game::~Game() { }
 
 	void Game::begin()
 	{
 		// populate the game board with data(squares)
 		m_gameBoard->populate();
+		
+		// push the board to the undo stack on start
+		m_undoStack.push(m_gameBoard->getBoard());
 
 		// adding pointer to the game board for each player in order to control the movement over it.
 		m_player1->setBoard(m_gameBoard);
@@ -78,9 +75,14 @@ namespace CheckerZ
 		{
 			try
 			{
+				// apply delay before taking action
 				delayHelper(1.0);
-				EventManager::getInstance().entityPawnAction(entityOnTurn, m_moveGenerator);
 
+				// invoke the entityPawnAction event that moves the chosen pawn
+				EventManager::getInstance().entityPawnAction(entityOnTurn, m_moveGenerator);
+				// push the current board in the undo stack on every move
+				m_undoStack.push(m_gameBoard->getBoard());
+				
 				m_moveGenerator->reset(m_gameBoard, entityOnTurn->getPawnColor(), entityOnTurn->getLastPlayedPawn());
 				// swap entities' turn states
 				if (!entityOnTurn->getLastPlayedPawn() || m_moveGenerator->getPossibleMoves().empty())
@@ -138,10 +140,6 @@ namespace CheckerZ
 			Position&& fromPos{ keyFrom - 'A', valueFrom - 1 };
 			Position&& toPos{ keyTo - 'A' , valueTo - 1 };
 
-			// insert first move on empty undo stack - always
-			if (EventManager::getInstance().undoStack.empty())
-				EventManager::getInstance().undoStack.push({ fromPos, toPos });
-
 			// capitalize command (for case sensitivity purposes)
 			for (auto& cmd : command) cmd = toupper(cmd);
 			// do action based on command
@@ -155,18 +153,11 @@ namespace CheckerZ
 				case 'M':
 					try
 					{
-						Movement doMove;
-						try
-						{
-							doMove = EventManager::getInstance().handleState({ fromPos, toPos });
-						}
-						catch (const std::exception& t_excep)
-						{
-							clearDraw();
-							Logger::message(MessageType::ERR, "\t      ", t_excep.what(), EndingDelimiter::NLINE);
-						}
-
-						EventManager::getInstance().entityPawnAction(entityOnTurn, doMove.first, doMove.second, m_moveGenerator);
+						// invoke the entityPawnAction event that moves the chosen pawn
+						EventManager::getInstance().entityPawnAction(entityOnTurn, fromPos, toPos, m_moveGenerator);
+						
+						// push the current board in the undo stack on every move
+						m_undoStack.push(m_gameBoard->getBoard());
 
 						m_moveGenerator->reset(m_gameBoard, entityOnTurn->getPawnColor(), entityOnTurn->getLastPlayedPawn());
 						// swap entities' turn states
@@ -189,13 +180,9 @@ namespace CheckerZ
 				case 'U':
 					try
 					{
-						Movement undoedMove = EventManager::getInstance().handleState({/*Empty*/}, GameHistoryState::UNDO);
-						fromPos = undoedMove.first;
-						toPos = undoedMove.second;
-
-						// call undo function
-						undoHelper(entityOnTurn, fromPos, toPos);
-
+						// call undo helper function
+						undoHelper();
+					
 						// Set next turn
 						setTurnState(TurnState::END);
 					}
@@ -207,33 +194,10 @@ namespace CheckerZ
 				break;
 				// TRY REDO
 				case 'R':
-					clearDraw();
-					Logger::message(MessageType::ERR, "\t      Redoing", std::to_string(EventManager::getInstance().redoStack.size()), EndingDelimiter::NLINE);
-					while (!EventManager::getInstance().redoStack.empty())
-					{
-						auto redo = EventManager::getInstance().redoStack.top();
-						auto redoFirst = std::to_string(redo.first.first) + std::to_string(redo.first.second);
-						auto redoSecond = std::to_string(redo.second.first) + std::to_string(redo.second.second);
-						Logger::message(MessageType::ERR, "\t      ", redoFirst + redoSecond, EndingDelimiter::NLINE);
-						EventManager::getInstance().redoStack.pop();
-					}
 					try
 					{
-						Movement redoedMove = EventManager::getInstance().handleState({ }, GameHistoryState::REDO);
-						fromPos = redoedMove.first;
-						toPos = redoedMove.second;
-
-						auto tempPawn = m_gameBoard->getBoardPawn(fromPos.first, fromPos.second);
-						m_gameBoard->getBoardPawn(fromPos.first, fromPos.second) = m_gameBoard->getBoardPawn(toPos.first, toPos.second);
-						m_gameBoard->getBoardPawn(toPos.first, toPos.second) = tempPawn;
-
-						m_moveGenerator->reset(m_gameBoard, entityOnTurn->getPawnColor(), entityOnTurn->getLastPlayedPawn());
-						// swap entities' turn states
-						if (!entityOnTurn->getLastPlayedPawn() || m_moveGenerator->getPossibleMoves().empty())
-						{
-							swapEntityTurns(entityOnTurn);
-						}
-						m_moveGenerator->clear();
+						// call redo helper function
+						redoHelper();
 
 						// Set next turn
 						setTurnState(TurnState::END);
@@ -277,12 +241,10 @@ namespace CheckerZ
 	{
 		Logger::message(MessageType::INF, "\t      ", t_entity->getName() + " |", EndingDelimiter::NONE);
 		Logger::message(MessageType::INF, "Color: ", t_entity->getPawnColor()/* + " |"*/, EndingDelimiter::NLINE);
-		//Logger::message(MessageType::INF, "Type: ", t_entity->getClassType() + " |", EndingDelimiter::NONE);
 	}
 
 	void Game::initMovesGenerator(std::shared_ptr<API::Utils::MovesGenerator>& t_moveGenerator, std::shared_ptr<Entity::Entity>& t_entity)
 	{
-		//Logger::message(MessageType::INF, "Possible moves: ", std::to_string(m_moveGenerator->getPossibleMoves().size()));
 		m_moveGenerator->generatePossibleMoves(m_gameBoard, t_entity->getPawnColor());
 		
 		if (m_moveGenerator->getPossibleMoves().empty())
@@ -309,53 +271,65 @@ namespace CheckerZ
 		}
 	}
 
-	void Game::undoHelper(std::shared_ptr<Entity::Entity>& t_entityOnTurn, Position fromPos, Position toPos)
+	// Game helpers definition/implementation
+	void Game::undoHelper()
 	{
-		// swapping
-		auto tempPawn = m_gameBoard->getBoardPawn(toPos.first, toPos.second);
-		m_gameBoard->getBoardPawn(toPos.first, toPos.second) = m_gameBoard->getBoardPawn(fromPos.first, fromPos.second);
-		m_gameBoard->getBoardPawn(fromPos.first, fromPos.second) = tempPawn;
-
-		// undo again to get to my turn
-		if (EventManager::getInstance().undoStack.size() > 1)
+		if (m_undoStack.size() > 2)
 		{
-			Movement undoedMove = EventManager::getInstance().handleState({}, GameHistoryState::UNDO);
-			fromPos = undoedMove.first;
-			toPos = undoedMove.second;
+			// create temp board
+			Board::board<API::Pawn, 8> tempBoard;
 
-			// swapping
-			auto tempPawn = m_gameBoard->getBoardPawn(toPos.first, toPos.second);
-			m_gameBoard->getBoardPawn(toPos.first, toPos.second) = m_gameBoard->getBoardPawn(fromPos.first, fromPos.second);
-			m_gameBoard->getBoardPawn(fromPos.first, fromPos.second) = tempPawn;
-
-			m_moveGenerator->reset(m_gameBoard, t_entityOnTurn->getPawnColor(), t_entityOnTurn->getLastPlayedPawn());
-			// swap entities' turn states
-			if (!t_entityOnTurn->getLastPlayedPawn() || m_moveGenerator->getPossibleMoves().empty())
-			{
-				swapEntityTurns(t_entityOnTurn);
-			}
-			m_moveGenerator->clear();
+			// save the current state of the board in the redo stack
+			m_redoStack.push(m_undoStack.top());
+			
+			// remove it from the undo stack before display
+			m_undoStack.pop();
+			m_undoStack.pop();
+			
+			// copy the board from the undo stack into the temp board
+			tempBoard = m_undoStack.top();
+			
+			// copy the temp board into the game board
+			m_gameBoard->setBoard(tempBoard);
 		}
-		m_moveGenerator->reset(m_gameBoard, t_entityOnTurn->getPawnColor(), t_entityOnTurn->getLastPlayedPawn());
-		// swap entities' turn states
-		if (!t_entityOnTurn->getLastPlayedPawn() || m_moveGenerator->getPossibleMoves().empty())
+		else
 		{
-			swapEntityTurns(t_entityOnTurn);
+			throw std::logic_error("There's nothing to undo.");
 		}
-		m_moveGenerator->clear();
 	}
 
-	void Game::redoHelper(std::shared_ptr<Entity::Entity>& t_entityOnTurn, Position fromPos, Position toPos)
+	void Game::redoHelper()
 	{
+		if(m_redoStack.size() > 0)
+		{ 
+			// create temp board
+			Board::board<API::Pawn, 8> tempBoard;
 
+			// copy the board from the redo stack into the temp board
+			tempBoard = m_redoStack.top();
+
+			// save the current state of the board in the undo stack
+			m_undoStack.push(m_redoStack.top());
+
+			// copy the temp board into the game board
+			m_gameBoard->setBoard(tempBoard);
+
+			// remove it from the redo stack after display
+			m_redoStack.pop();
+		}
+		else
+		{
+			throw std::logic_error("There's nothing to redo.");
+		}
 	}
 	
-	void Game::delayHelper(double maxDelayTime)
+	void Game::delayHelper(double t_maxDelayTime)
 	{
 		std::random_device rd;
 		std::mt19937 engine(rd());
-		std::uniform_real_distribution<double> dist(1.0, maxDelayTime);
+		std::uniform_real_distribution<double> dist(1.0, t_maxDelayTime);
 		auto delayTime = dist(engine);
-		Utils::Timer::applyTimeDelayInSeconds(delayTime);
+		Utils::Timer::getInstance().applyTimeDelayInSeconds(delayTime);
 	}
+
 }

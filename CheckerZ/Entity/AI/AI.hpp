@@ -2,6 +2,7 @@
 #define AI_HPP
 
 #include "../Entity.hpp"
+#include "../../API/Events/EventManager.hpp"
 
 // std::includes
 #include <cassert>
@@ -32,8 +33,10 @@ namespace CheckerZ { namespace Entity { namespace AI {
 				std::uniform_int_distribution<size_t> dist(0, t_possibleMoves.size() - 1);
 				size_t randIdx = dist(engine);
 				Movement randMove = t_possibleMoves[randIdx];
+				Position fromPos = randMove.first;
+				Position toPos = randMove.second;
 				// do movement
-				m_board->move(randMove.first, randMove.second);
+				m_board->move(fromPos, toPos);
 			}
 	};
 	

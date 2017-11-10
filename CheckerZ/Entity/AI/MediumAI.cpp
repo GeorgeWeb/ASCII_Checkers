@@ -7,7 +7,8 @@ namespace CheckerZ { namespace Entity { namespace AI {
 	{
 		AI::firePawnAction(t_moveGenerator);
 		
-		// Greedy algorithm!!! ...
+		// A custom 'offensive' greedy algorithm
+		
 		std::map<uint16, Movement> moveOrders;
 		auto possibleMoves = t_moveGenerator->getPossibleMoves();
 
@@ -73,7 +74,10 @@ namespace CheckerZ { namespace Entity { namespace AI {
 			// 6 - take a king with a king
 			// 7 - take a king with a pawn
 			auto maxOrderMove = moveOrders.crbegin()->second;
-			m_board->move(maxOrderMove.first, maxOrderMove.second);
+			Position fromPos = maxOrderMove.first;
+			Position toPos = maxOrderMove.second;
+			// do movement
+			m_board->move(fromPos, toPos);
 		}
 		else
 		{

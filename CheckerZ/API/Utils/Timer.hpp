@@ -11,10 +11,16 @@ namespace CheckerZ { namespace API { namespace Utils {
 
 	// A very basic, non cross-platform timer class
 	// used basically to apply delay on AI actions
-	class Timer
+	class Timer final
 	{
 		public:
-			static void applyTimeDelayInSeconds(double delayTime)
+			static Timer& getInstance()
+			{
+				static Timer theInstance{};
+				return theInstance;
+			}
+
+			void applyTimeDelayInSeconds(double t_delayTime) const
 			{
 				clock_t startTime = clock(); //Start timer
 				double timePassed;
@@ -24,13 +30,17 @@ namespace CheckerZ { namespace API { namespace Utils {
 				{
 					timePassed = (clock() - startTime) / CLOCKS_PER_SEC;
 					// stop the timer after the delayed time has passed
-					if (timePassed >= delayTime)
+					if (timePassed >= t_delayTime)
 						flag = false;
 				}
 
 			}
 		private:
 			Timer() = delete;
+			Timer(const Timer&) = delete;
+			Timer(Timer&&) = delete;
+			Timer operator=(const Timer&) = delete;
+			Timer operator=(Timer&&) = delete;
 	};
 
 } } }

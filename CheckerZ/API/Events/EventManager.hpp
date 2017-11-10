@@ -17,22 +17,8 @@ namespace CheckerZ { namespace API { namespace Events {
 	* Used as an API for events creation and invoking/calling.
 	*/
 
-	enum class GameHistoryState
-	{
-		DO,
-		UNDO,
-		REDO,
-		REPLAY
-	};
-
 	class EventManager final
 	{
-		public:
-			std::deque<Movement> gameHistory;
-
-			std::stack<Movement> undoStack;
-			std::stack<Movement> redoStack;
-
 		public:
 			static EventManager &getInstance()
 			{
@@ -62,13 +48,6 @@ namespace CheckerZ { namespace API { namespace Events {
 			{
 				EventFactory::create(GameSystemState::ACTION)->invoke(t_entity, t_posFrom, t_posTo, moveGenerator);
 			}
-
-			Movement handleState(Movement t_move, GameHistoryState t_historyState = GameHistoryState::DO);
-		
-		private:
-			Movement manageUndo();
-			Movement manageRedo();
-			void manageReplay();
 
 		private:
 			EventManager() = delete;
