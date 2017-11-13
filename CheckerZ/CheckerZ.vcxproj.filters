@@ -66,10 +66,16 @@
     <ClInclude Include="Entity\AI\AI.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="API\Utils\MovesEvaluator.hpp">
+    <ClInclude Include="API\Utils\Timer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="API\Utils\Timer.hpp">
+    <ClInclude Include="API\Events\EventImpl\LoadGame.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="API\Events\EventImpl\SaveGame.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="API\Utils\FileIO.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -98,9 +104,6 @@
     <ClCompile Include="API\Utils\MovesGenerator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="API\Utils\MovesEvaluator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Entity\AI\EasyAI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -108,6 +111,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Entity\AI\HardAI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="API\Events\EventImpl\SaveGame.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="API\Events\EventImpl\LoadGame.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="API\Utils\FileIO.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

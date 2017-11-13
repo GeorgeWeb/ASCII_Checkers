@@ -19,11 +19,11 @@ namespace CheckerZ { namespace Entity {
 			bool m_hasTurn = false;
 		
 		public:
-			// Must be the only usable constructor !!!
-			Entity(const std::string& t_name, const std::string& t_pawnColor) : 
-				m_name(t_name), 
-				m_pawnColor(t_pawnColor) { }
+			Entity() = default;
 			virtual ~Entity() = default;
+
+			void setName(const std::string& t_name) { m_name = t_name; }
+			void setColor(const std::string& t_pawnColor) { m_pawnColor = t_pawnColor; }
 
 			// does the player action - move or take
 			// used for AI Entity
@@ -45,10 +45,6 @@ namespace CheckerZ { namespace Entity {
 			
 			// assign the game board to the entity object
 			inline void setBoard(std::shared_ptr<API::Board> t_board) { m_board = t_board; }
-			
-		private:
-			// force Entity instantiatoin with its description parameters
-			Entity() = delete;
 	};
 
 } }

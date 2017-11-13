@@ -116,10 +116,12 @@
     <ClInclude Include="API\Events\EventFactory.hpp" />
     <ClInclude Include="API\Events\EventImpl\events.h" />
     <ClInclude Include="API\Events\EventImpl\EntityPawnAction.hpp" />
+    <ClInclude Include="API\Events\EventImpl\LoadGame.hpp" />
     <ClInclude Include="API\Events\EventImpl\QuitGame.hpp" />
+    <ClInclude Include="API\Events\EventImpl\SaveGame.hpp" />
     <ClInclude Include="API\Events\EventManager.hpp" />
     <ClInclude Include="API\Events\EventImpl\WinGame.hpp" />
-    <ClInclude Include="API\Utils\MovesEvaluator.hpp" />
+    <ClInclude Include="API\Utils\FileIO.hpp" />
     <ClInclude Include="API\Utils\MovesGenerator.hpp" />
     <ClInclude Include="API\Utils\Logger.hpp" />
     <ClInclude Include="API\Pawn.hpp" />
@@ -134,9 +136,11 @@
   <ItemGroup>
     <ClCompile Include="API\Board.cpp" />
     <ClCompile Include="API\Events\EventImpl\EntityPawnAction.cpp" />
+    <ClCompile Include="API\Events\EventImpl\LoadGame.cpp" />
     <ClCompile Include="API\Events\EventImpl\QuitGame.cpp" />
+    <ClCompile Include="API\Events\EventImpl\SaveGame.cpp" />
     <ClCompile Include="API\Events\EventImpl\WinGame.cpp" />
-    <ClCompile Include="API\Utils\MovesEvaluator.cpp" />
+    <ClCompile Include="API\Utils\FileIO.cpp" />
     <ClCompile Include="API\Utils\MovesGenerator.cpp" />
     <ClCompile Include="Entity\AI\HardAI.cpp" />
     <ClCompile Include="Entity\AI\MediumAI.cpp" />

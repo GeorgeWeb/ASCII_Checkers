@@ -16,11 +16,10 @@ namespace CheckerZ { namespace API { namespace Events {
 	* Single header class - Implemented as a Singleton
 	* Used as an API for events creation and invoking/calling.
 	*/
-
 	class EventManager final
 	{
 		public:
-			static EventManager &getInstance()
+			static EventManager& getInstance()
 			{
 				static EventManager theInstance{};
 				return theInstance;
@@ -29,6 +28,16 @@ namespace CheckerZ { namespace API { namespace Events {
 			inline void winGame() const
 			{
 				EventFactory::create(GameSystemState::WIN)->invoke();
+			}
+
+			inline void loadGame(std::vector<char>& t_buffer) const
+			{
+				EventFactory::create(GameSystemState::LOAD)->invoke(t_buffer);
+			}
+
+			inline void saveGame(std::vector<char>& t_buffer) const
+			{
+				EventFactory::create(GameSystemState::SAVE)->invoke(t_buffer);
 			}
 
 			inline void quitGame() const

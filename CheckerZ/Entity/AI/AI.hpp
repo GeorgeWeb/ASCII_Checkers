@@ -15,7 +15,7 @@ namespace CheckerZ { namespace Entity { namespace AI {
 	class AI : public Entity
 	{
 		public: 
-			AI(const std::string& t_name, const std::string& t_pawnColor) : Entity(t_name, t_pawnColor) { }
+			AI() : Entity() { }
 			virtual ~AI() = default;
 
 			std::string getClassType() override { return std::string("AI"); }
@@ -44,7 +44,7 @@ namespace CheckerZ { namespace Entity { namespace AI {
 	class EasyAI final : public AI
 	{
 		public:
-			EasyAI(const std::string& t_name, const std::string& t_pawnColor) : AI(t_name, t_pawnColor) { }
+			EasyAI() : AI() { }
 			~EasyAI() = default;
 
 			void firePawnAction(std::shared_ptr<API::Utils::MovesGenerator>& t_moveGenerator) override;
@@ -54,7 +54,7 @@ namespace CheckerZ { namespace Entity { namespace AI {
 	class MediumAI final : public AI
 	{
 		public:
-			MediumAI(const std::string& t_name, const std::string& t_pawnColor) : AI(t_name, t_pawnColor) { }
+			MediumAI() : AI() { }
 			~MediumAI() = default;
 
 			void firePawnAction(std::shared_ptr<API::Utils::MovesGenerator>& t_moveGenerator) override;
@@ -64,7 +64,7 @@ namespace CheckerZ { namespace Entity { namespace AI {
 	class HardAI final : public AI
 	{
 		public:
-			HardAI(const std::string& t_name, const std::string& t_pawnColor) : AI(t_name, t_pawnColor) { }
+			HardAI() : AI() { }
 			~HardAI() = default;
 
 			void firePawnAction(std::shared_ptr<API::Utils::MovesGenerator>& t_moveGenerator) override;
