@@ -20,7 +20,7 @@ namespace CheckerZ { namespace API { namespace Events {
 	class EventManager final
 	{
 		public:
-			static EventManager &getInstance()
+			static EventManager& getInstance()
 			{
 				static EventManager theInstance{};
 				return theInstance;
@@ -29,6 +29,16 @@ namespace CheckerZ { namespace API { namespace Events {
 			inline void winGame() const
 			{
 				EventFactory::create(GameSystemState::WIN)->invoke();
+			}
+
+			inline void loadGame() const
+			{
+				EventFactory::create(GameSystemState::LOAD)->invoke();
+			}
+
+			inline void saveGame() const
+			{
+				EventFactory::create(GameSystemState::SAVE)->invoke();
 			}
 
 			inline void quitGame() const

@@ -76,75 +76,31 @@ namespace CheckerZ
 			try
 			{
 				// apply delay before taking action
-				delayHelper(1.0);
+				delayHelper(5.0);
 
 				// invoke the entityPawnAction event that moves the chosen pawn
 				EventManager::getInstance().entityPawnAction(entityOnTurn, m_moveGenerator);
 				
-				// push the current board in the undo stack on every move
-				m_undoStack.push(m_gameBoard->getBoard());
-				// clear the redo stack
-				std::stack<Board::board<Pawn, Board::s_boardLen>>().swap(m_redoStack);
-
-				m_moveGenerator->reset(m_gameBoard, entityOnTurn->getPawnColor(), entityOnTurn->getLastPlayedPawn());
-				// swap entities' turn states
-				if (!entityOnTurn->getLastPlayedPawn() || m_moveGenerator->getPossibleMoves().empty())
-				{
-					swapEntityTurns(entityOnTurn);
-				}
-				m_moveGenerator->clear();
-
-				// Set next turn
-				setTurnState(TurnState::END);
+				// handle the end of turn						
+				endTurn(entityOnTurn, m_moveGenerator);
 			}
 			catch (const std::exception& t_excep)
 			{
 				clearDraw();
-				Logger::message(MessageType::ERR, "\t      ", t_excep.what(), EndingDelimiter::NLINE);
+				Logger::message(MessageType::ERR, "\t      ", t_excep.what());
 			}
 		}
 		else
 		{
-			// read the input for movement/action:
-			Logger::message(MessageType::INF, "\t      Command:", EndingDelimiter::SPACE);
 			// init readers & read from input
 			std::string command = "";
-			std::cin >> command;
-			// input command correctness check
-			if (command.size() > 4)
-			{
-				clearDraw();
-				Logger::message(MessageType::INF, "\t      Invalid input. Try again(4 chars: e.g. MOVE or UNDO or REDO!");
-				return;
-			}
-
 			// readers for input Position pairs
 			uint8 keyFrom{ '\0' }, keyTo{ '\0' };
 			uint32 valueFrom{ 0 }, valueTo{ 0 };
 
-			command[0] = islower(command[0]) ? toupper(command[0]) : command[0];
-			if (toupper(command[0]) == 'M')
-			{
-				std::cin >> keyFrom >> valueFrom >> keyTo >> valueTo;
-				// discard any case sensitivity ...
-				keyFrom = islower(keyFrom) ? toupper(keyFrom) : keyFrom;
-				keyTo = islower(keyTo) ? toupper(keyTo) : keyTo;
-				// check if input's in the valid character and numeric boundary
-				if (keyFrom < 'A' || keyFrom > 'H' || valueFrom < 1 || valueTo > 8)
-				{
-					clearDraw();
-					// read the input for movement/action:
-					Logger::message(MessageType::INF, "\t      Invalid input. Try again (A-H and 1-8)!");
-					return;
-				}
-			}
-
-			// save the input in Position pairs
-			Position&& fromPos{ keyFrom - 'A', valueFrom - 1 };
-			Position&& toPos{ keyTo - 'A' , valueTo - 1 };
-
-			// capitalize command (for case sensitivity purposes)
-			for (auto& cmd : command) cmd = toupper(cmd);
+			// read the player input and save it in the above variables
+			readInput(*this, command, keyFrom, keyTo, valueFrom, valueTo);
+			
 			// do action based on command
 			switch (command[0])
 			{
@@ -156,29 +112,20 @@ namespace CheckerZ
 				case 'M':
 					try
 					{
+						// save the input in Position pairs
+						Position&& fromPos{ keyFrom - 'A', valueFrom - 1 };
+						Position&& toPos{ keyTo - 'A' , valueTo - 1 };
+
 						// invoke the entityPawnAction event that moves the chosen pawn
 						EventManager::getInstance().entityPawnAction(entityOnTurn, fromPos, toPos, m_moveGenerator);
-						
-						// push the current board in the undo stack on every move
-						m_undoStack.push(m_gameBoard->getBoard());
-						// clear the redo stack
-						std::stack<Board::board<Pawn, Board::s_boardLen>>().swap(m_redoStack);
 
-						m_moveGenerator->reset(m_gameBoard, entityOnTurn->getPawnColor(), entityOnTurn->getLastPlayedPawn());
-						// swap entities' turn states
-						if (!entityOnTurn->getLastPlayedPawn() || m_moveGenerator->getPossibleMoves().empty())
-						{
-							swapEntityTurns(entityOnTurn);
-						}
-						m_moveGenerator->clear();
-
-						// Set next turn
-						setTurnState(TurnState::END);
+						// handle the end of turn						
+						endTurn(entityOnTurn, m_moveGenerator);
 					}
 					catch (const std::exception& t_excep)
 					{
 						clearDraw();
-						Logger::message(MessageType::ERR, "\t      ", t_excep.what(), EndingDelimiter::NLINE);
+						Logger::message(MessageType::ERR, "\t      ", t_excep.what());
 					}
 				break;
 				// TRY UNDO
@@ -194,7 +141,7 @@ namespace CheckerZ
 					catch (const std::exception& t_excep)
 					{
 						clearDraw();
-						Logger::message(MessageType::ERR, "\t      ", t_excep.what(), EndingDelimiter::NLINE);
+						Logger::message(MessageType::ERR, "\t      ", t_excep.what());
 					}
 				break;
 				// TRY REDO
@@ -210,7 +157,33 @@ namespace CheckerZ
 					catch (const std::exception& t_excep)
 					{
 						clearDraw();
-						Logger::message(MessageType::ERR, "\t      ", t_excep.what(), EndingDelimiter::NLINE);
+						Logger::message(MessageType::ERR, "\t      ", t_excep.what());
+					}
+				break;
+				// TRY SAVE
+				case 'S':
+					try
+					{
+						// make it take Game&
+						EventManager::getInstance().saveGame();
+					}
+					catch (const std::exception& t_excep)
+					{
+						clearDraw();
+						Logger::message(MessageType::ERR, "\t      ", t_excep.what());
+					}
+				break;
+				// TRY QUIT/EXIT
+				case 'Q':
+				case 'E':
+					try
+					{
+						EventManager::getInstance().quitGame();
+					}
+					catch (const std::exception& t_excep)
+					{
+						clearDraw();
+						Logger::message(MessageType::ERR, "\t      ", t_excep.what());
 					}
 				break;
 			}
@@ -225,20 +198,35 @@ namespace CheckerZ
 	}
 
 	void Game::end()
-	{
-		// call quit event if there's a win
-		if (m_gameState == GameSystemState::QUIT)
-			EventManager::getInstance().quitGame();
-
+	{		
 		// check game states
 		switch (m_gameState)
 		{
-			// ask if the player wants to exit the game,
-			// then set the m_gameState to GameSystemState::QUIT
+			// Try to call the win event and set the m_gameState to GameSystemState::QUIT
 			case GameSystemState::WIN:
-				EventManager::getInstance().winGame();
-				setGameState(GameSystemState::QUIT);
-				break;
+				try
+				{
+					EventManager::getInstance().winGame();
+					setGameState(GameSystemState::QUIT);
+				}
+				catch (const std::exception& t_excep)
+				{
+					clearDraw();
+					Logger::message(MessageType::ERR, "\t      ", t_excep.what());
+				}
+			break;
+			// Try to call quit event if there's a win
+			case GameSystemState::QUIT:
+				try
+				{
+					EventManager::getInstance().quitGame();
+				}
+				catch (const std::exception& t_excep)
+				{
+					clearDraw();
+					Logger::message(MessageType::ERR, "\t      ", t_excep.what());
+				}
+			break;
 		}
 	}
 
@@ -274,6 +262,30 @@ namespace CheckerZ
 			m_player1->setTurn(m_player2->hasTurn());
 			m_player2->setTurn(!m_player2->hasTurn());
 		}
+	}
+
+	void Game::endTurn(const std::shared_ptr<Entity::Entity>& t_entity, std::shared_ptr<API::Utils::MovesGenerator>& t_moveGenerator)
+	{
+		// push the current board in the undo stack on every move
+		m_undoStack.push(m_gameBoard->getBoard());
+		
+		// clear the redo stack
+		std::stack<Board::board<Pawn, Board::s_boardLen>>().swap(m_redoStack);
+		
+		// check if it possible to continue the turn with the pawn that was played
+		m_moveGenerator->reset(m_gameBoard, t_entity->getPawnColor(), t_entity->getLastPlayedPawn());
+
+		// swap entities' turn states
+		if (!t_entity->getLastPlayedPawn() || m_moveGenerator->getPossibleMoves().empty())
+		{
+			swapEntityTurns(t_entity);
+		}
+
+		// empty the moves container before ending
+		m_moveGenerator->clear();
+
+		// Set next turn
+		setTurnState(TurnState::END);
 	}
 
 	// Game helpers definition/implementation
@@ -335,6 +347,45 @@ namespace CheckerZ
 		std::uniform_real_distribution<double> dist(1.0, t_maxDelayTime);
 		auto delayTime = dist(engine);
 		Utils::Timer::getInstance().applyTimeDelayInSeconds(delayTime);
+	}
+
+	void readInput(Game& game, std::string& command, uint8& keyFrom, uint8& keyTo, uint32& valueFrom, uint32& valueTo)
+	{
+		// read the input for movement/action:
+		Logger::message(MessageType::INF, "\t      Command:", EndingDelimiter::SPACE);
+		std::cin >> command;
+
+		// input command correctness check
+		if (command.size() > 4)
+		{
+			game.clearDraw();
+			Logger::message(MessageType::INF, "\t      Invalid input. Try again(4 chars: e.g. MOVE or UNDO or REDO!");
+			return;
+		}
+
+		command[0] = islower(command[0]) ? toupper(command[0]) : command[0];
+		if (toupper(command[0]) == 'M')
+		{
+			std::cin >> keyFrom >> valueFrom >> keyTo >> valueTo;
+			// discard any case sensitivity ...
+			keyFrom = islower(keyFrom) ? toupper(keyFrom) : keyFrom;
+			keyTo = islower(keyTo) ? toupper(keyTo) : keyTo;
+			// check if input's in the valid character and numeric boundary
+			if (keyFrom < 'A' || keyFrom > 'H' || valueFrom < 1 || valueTo > 8)
+			{
+				game.clearDraw();
+				// read the input for movement/action:
+				Logger::message(MessageType::INF, "\t      Invalid input. Try again (A-H and 1-8)!");
+				return;
+			}
+		}
+
+		// capitalize command (for case sensitivity purposes)
+		for (auto& cmd : command) cmd = toupper(cmd);
+	}
+
+	void readInput(const Game & game)
+	{
 	}
 
 }

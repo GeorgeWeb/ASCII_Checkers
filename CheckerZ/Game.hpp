@@ -61,16 +61,19 @@ namespace CheckerZ
 			void draw();
 			void end();
 				
+			// public helpers
+			inline void clearDraw() { printTitle(); m_gameBoard->display(); }
+			friend void readInput(Game& game, std::string& command, uint8& keyFrom, uint8& keyTo, uint32& valueFrom, uint32& valueTo);
+
 		private:
 			inline void setGameState(const API::Events::GameSystemState& t_newState) { m_gameState = t_newState; }
 			inline void setTurnState(const TurnState& t_newState) { m_turnState = t_newState; }
 			inline void printTitle() const { system("cls"); API::Utils::Logger::message(API::Utils::MessageType::INF, "\n\t\t\t", m_title); }
-			inline void clearDraw() const { printTitle(); m_gameBoard->display(); }
 			
 			void displayEntityData(std::shared_ptr<Entity::Entity>& t_entity);
 			void initMovesGenerator(std::shared_ptr<API::Utils::MovesGenerator>& t_moveGenerator, std::shared_ptr<Entity::Entity>& t_entity);
 			void swapEntityTurns(const std::shared_ptr<Entity::Entity>& t_entityOnTurn);
-
+			void endTurn(const std::shared_ptr<Entity::Entity>& t_entity, std::shared_ptr<API::Utils::MovesGenerator>& t_moveGenerator);
 			// Game helpers declaration
 			// game state (e.g. undo/redo ...) helpers
 			void undoHelper();

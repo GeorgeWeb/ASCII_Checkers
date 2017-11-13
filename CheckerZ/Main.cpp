@@ -12,11 +12,28 @@ void runGame(Game& t_game);
 
 auto main(void) -> int32
 {
-	Game game;
-	game.setTitle("<A GAME OF CHECKERS>");
+	std::string choice;
+	API::Utils::Logger::message(API::Utils::MessageType::ERR, "(LOAD an existing game) OR (START a new one) - (load/start):", API::Utils::EndingDelimiter::SPACE);
+	std::cin >> choice;
 	
-	runGame(game);
-	
+	for (auto& ch : choice) ch = toupper(ch);	
+	if (choice == "LOAD")
+	{
+		std::string filePath = "";
+		API::Events::EventManager::getInstance().loadGame();
+		// TODO: ... game set board, etc.
+	}
+	else if (choice == "START")
+	{	
+		Game game;
+		game.setTitle("<A GAME OF CHECKERS>");
+		runGame(game);
+	}
+	else
+	{
+		API::Utils::Logger::message(API::Utils::MessageType::ERR, "Error: you have typed an invalid command.");
+	}
+
 	return EXIT_SUCCESS;
 }
 
