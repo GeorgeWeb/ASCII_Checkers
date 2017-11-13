@@ -12,7 +12,7 @@ namespace CheckerZ { namespace API { namespace Utils {
 			throw std::runtime_error("Error finding path: " + filePath);
 
 		// write to the file
-		file.write((char*)&(buffer[0]), buffer.size());
+		file.write(&buffer[0], buffer.size());
 
 		// handle memory
 		file.close();
@@ -32,12 +32,12 @@ namespace CheckerZ { namespace API { namespace Utils {
 		int fileSize = file.tellg();
 		file.seekg(0, std::ios::beg);
 
-		// reduce the file size by any header bytes (if present)
+		// resize the file | reduce size by any header bytes (if present)
 		fileSize -= file.tellg();
 		buffer.resize(fileSize);
 		
 		// read from the file
-		file.read((char*)&(buffer[0]), fileSize);
+		file.read(&buffer[0], fileSize);
 
 		// handle memory
 		file.close();

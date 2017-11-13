@@ -53,11 +53,20 @@ namespace CheckerZ
 		for (auto& cmd : t_command) cmd = toupper(cmd);
 	}
 
-	void saveGame(Game& t_game, const std::string& t_filePath)
+	void saveGame(Game& t_game)
 	{
+		std::vector<char> boardData;
 
+		std::for_each(t_game.getGameBoard()->getBoard().begin(), t_game.getGameBoard()->getBoard().end(), [&](auto grid)
+		{
+			std::for_each(grid.cbegin(), grid.cend(), [&](auto pawn)
+			{
+				boardData.push_back(pawn.getMesh());
+			});
+		});
+
+		EventManager::getInstance().saveGame(boardData);
 	}
-
 	#pragma endregion
 
 	Game::Game() :
@@ -213,7 +222,7 @@ namespace CheckerZ
 				case 'S':
 					try
 					{
-						saveGame(*this, "");
+						saveGame(*this);
 					}
 					catch (const std::exception& t_excep)
 					{

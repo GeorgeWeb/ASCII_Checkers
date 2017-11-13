@@ -9,7 +9,7 @@ using namespace CheckerZ::API::Utils;
 // simulate the game loop
 void runGame(Game& t_game);
 // loads game data from a save file into the current game object
-void CheckerZ::loadGame(Game& t_game, const std::string& t_filePath);
+void CheckerZ::loadGame(Game& t_game);
 
 #pragma endregion
 
@@ -22,11 +22,10 @@ auto main(void) -> int32
 	for (auto& ch : choice) ch = toupper(ch);	
 	if (choice == "LOAD")
 	{
-		std::string filePath = "";
-		// TODO: ... game set board, etc.
 		Game game;
-		loadGame(game, filePath);
-		runGame(game);
+		loadGame(game);
+		//runGame(game);
+		std::string filePath = ""; std::cin >> filePath;
 	}
 	else if (choice == "START")
 	{	
@@ -67,10 +66,32 @@ void runGame(Game& t_game)
 	}
 }
 
-void CheckerZ::loadGame(Game& t_game, const std::string& t_filePath)
+void CheckerZ::loadGame(Game& t_game)
 {
-	// API::Events::EventManager::getInstance().loadGame();
+	std::vector<char> gameBoardData;
+	API::Events::EventManager::getInstance().loadGame(gameBoardData);
 	t_game.setTitle("<A GAME OF CHECKERS>");
+
+	for (auto data : gameBoardData)
+	{
+		Logger::message(MessageType::INF, "pawn: " + data);
+	}
+	
+	/*
+	CheckerZ::API::Board::board<CheckerZ::API::Pawn, CheckerZ::API::Board::s_boardLen> loadedBoard;
+
+	int i = 0;
+	for (size_t row = 0; row < 8; row++)
+	{
+		for (size_t col = 0; col < 8; col++)
+		{
+			loadedBoard[row][col].getMesh() = gameBoardData[i];
+			i++;
+		}
+	}
+	
+	t_game.getGameBoard()->setBoard(loadedBoard);
+	*/
 }
 
 #pragma endregion

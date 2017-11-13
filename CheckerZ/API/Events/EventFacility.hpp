@@ -19,6 +19,8 @@ namespace CheckerZ { namespace API { namespace Events {
 
 			// used for general system events
 			virtual void invoke() const { };
+			// used for loading/saving a game
+			virtual void invoke(std::vector<char>& t_buffer) const { };
 			// used for AI
 			virtual void invoke(std::shared_ptr<Entity::Entity>& t_entity, std::shared_ptr<API::Utils::MovesGenerator>& moveGenerator) { };
 			// used for player

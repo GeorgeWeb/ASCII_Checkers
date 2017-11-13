@@ -65,12 +65,13 @@ namespace CheckerZ
 			// public helpers //
 			// -------------- //
 			inline void clearDraw() { printTitle(); m_gameBoard->display(); }
+			// friend helper functions
 			// reads the command input from the player to play the game or change the game state
 			friend void readInput(Game& t_game, std::string& t_command, uint8& t_keyFrom, uint8& t_keyTo, uint32& t_valueFrom, uint32& t_valueTo);
 			// loads game data from a save file into the current game object
-			friend void loadGame(Game &t_game, const std::string& t_filePath);
+			friend void loadGame(Game &t_game);
 			// saves the current game's data into a file
-			friend void saveGame(Game& t_game, const std::string& t_filePath);
+			friend void saveGame(Game& t_game);
 		
 		private:
 			inline void setGameState(const API::Events::GameSystemState& t_newState) { m_gameState = t_newState; }

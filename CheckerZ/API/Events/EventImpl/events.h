@@ -7,4 +7,4 @@
 #include "SaveGame.hpp"
 #include "QuitGame.hpp"
 
-#endif
+#endif !EVENTS_H
