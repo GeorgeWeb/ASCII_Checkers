@@ -2,38 +2,45 @@
 
 namespace CheckerZ { namespace API { namespace Utils {
 
-	bool FileIO::writeFile(const std::string& filePath, std::vector<char>& buffer)
+	void FileIO::writeFile(const std::string& filePath, std::vector<char>& buffer)
 	{
-		return false;
+		// open file for writing (binary mode)
+		std::ofstream file(filePath, std::ios::binary);
+		
+		// error checking the path
+		if (file.fail())
+			throw std::runtime_error("Error finding path: " + filePath);
+
+		// write to the file
+		file.write((char*)&(buffer[0]), buffer.size());
+
+		// handle memory
+		file.close();
 	}
 
-	bool FileIO::readFile(const std::string& filePath, std::vector<char>& buffer)
+	void FileIO::readFile(const std::string& filePath, std::vector<char>& buffer)
 	{
+		// open file for reading (binary mode)
 		std::ifstream file(filePath, std::ios::binary);
 
 		// error checking the path
 		if (file.fail())
-		{
 			throw std::runtime_error("Error finding path: " + filePath);
-			return false;
-		}
-
-		// seek to the end
-		file.seekg(0, std::ios::end);
 
 		// get the file size
+		file.seekg(0, std::ios::end);
 		int fileSize = file.tellg();
 		file.seekg(0, std::ios::beg);
 
 		// reduce the file size by any header bytes (if present)
 		fileSize -= file.tellg();
-
 		buffer.resize(fileSize);
+		
+		// read from the file
 		file.read((char*)&(buffer[0]), fileSize);
 
+		// handle memory
 		file.close();
-
-		return true;
 	}
 
 } } }

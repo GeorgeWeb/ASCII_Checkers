@@ -2,26 +2,31 @@
 #include "Game.hpp"
 
 using namespace CheckerZ;
+using namespace CheckerZ::API::Utils;
 
 #pragma region HELPERS DECLARATIONS
 
 // simulate the game loop
 void runGame(Game& t_game);
+// loads game data from a save file into the current game object
+void CheckerZ::loadGame(Game& t_game, const std::string& t_filePath);
 
 #pragma endregion
 
 auto main(void) -> int32
 {
 	std::string choice;
-	API::Utils::Logger::message(API::Utils::MessageType::ERR, "(LOAD an existing game) OR (START a new one) - (load/start):", API::Utils::EndingDelimiter::SPACE);
+	Logger::message(MessageType::ERR, "(LOAD an existing game) OR (START a new one) - (load/start):", EndingDelimiter::SPACE);
 	std::cin >> choice;
 	
 	for (auto& ch : choice) ch = toupper(ch);	
 	if (choice == "LOAD")
 	{
 		std::string filePath = "";
-		API::Events::EventManager::getInstance().loadGame();
 		// TODO: ... game set board, etc.
+		Game game;
+		loadGame(game, filePath);
+		runGame(game);
 	}
 	else if (choice == "START")
 	{	
@@ -31,7 +36,7 @@ auto main(void) -> int32
 	}
 	else
 	{
-		API::Utils::Logger::message(API::Utils::MessageType::ERR, "Error: you have typed an invalid command.");
+		Logger::message(MessageType::ERR, "Error: you have typed an invalid command.");
 	}
 
 	return EXIT_SUCCESS;
@@ -60,6 +65,12 @@ void runGame(Game& t_game)
 		// check for win condition & exit the loop
 		t_game.end();
 	}
+}
+
+void CheckerZ::loadGame(Game& t_game, const std::string& t_filePath)
+{
+	// API::Events::EventManager::getInstance().loadGame();
+	t_game.setTitle("<A GAME OF CHECKERS>");
 }
 
 #pragma endregion

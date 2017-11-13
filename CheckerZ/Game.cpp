@@ -17,18 +17,67 @@ namespace CheckerZ
 	using namespace Entity::Player;
 	using namespace Entity::AI;
 
+	#pragma region Friend helper functions definition/implementation
+	void readInput(Game& t_game, std::string& t_command, uint8& t_keyFrom, uint8& t_keyTo, uint32& t_valueFrom, uint32& t_valueTo)
+	{
+		// read the input for movement/action:
+		Logger::message(MessageType::INF, "\t      Command:", EndingDelimiter::SPACE);
+		std::cin >> t_command;
+
+		// input command correctness check
+		if (t_command.size() > 4)
+		{
+			t_game.clearDraw();
+			Logger::message(MessageType::INF, "\t      Invalid input. Try again(4 chars: e.g. MOVE or UNDO or REDO!");
+			return;
+		}
+
+		t_command[0] = islower(t_command[0]) ? toupper(t_command[0]) : t_command[0];
+		if (toupper(t_command[0]) == 'M')
+		{
+			std::cin >> t_keyFrom >> t_valueFrom >> t_keyTo >> t_valueTo;
+			// discard any case sensitivity ...
+			t_keyFrom = islower(t_keyFrom) ? toupper(t_keyFrom) : t_keyFrom;
+			t_keyTo = islower(t_keyTo) ? toupper(t_keyTo) : t_keyTo;
+			// check if input's in the valid character and numeric boundary
+			if (t_keyFrom < 'A' || t_keyFrom > 'H' || t_valueFrom < 1 || t_valueTo > t_game.m_gameBoard->s_boardLen)
+			{
+				t_game.clearDraw();
+				// read the input for movement/action:
+				Logger::message(MessageType::INF, "\t      Invalid input. Try again (A-H and 1-8)!");
+				return;
+			}
+		}
+
+		// capitalize command (for case sensitivity purposes)
+		for (auto& cmd : t_command) cmd = toupper(cmd);
+	}
+
+	void saveGame(Game& t_game, const std::string& t_filePath)
+	{
+
+	}
+
+	#pragma endregion
+
 	Game::Game() :
 		m_title("Checkers"),
 		m_gameBoard(std::make_shared<Board>()),
-		m_player1(std::make_shared<Player>("Gecata", "Black")),
-		m_player2(std::make_shared<MediumAI>("NormBot", "Red")),
-		m_moveGenerator(std::make_shared<MovesGenerator>())
+		m_moveGenerator(std::make_shared<MovesGenerator>()),
+		m_player1(std::make_shared<Player>()),
+		m_player2(std::make_shared<EasyAI>())
 	{ }
 
 	Game::~Game() { }
 
 	void Game::begin()
 	{
+		// set name and color *temp
+		m_player1->setName("Gecata");
+		m_player1->setColor("Black");
+		m_player2->setName("SomeBot");
+		m_player2->setColor("Red");
+
 		// populate the game board with data(squares)
 		m_gameBoard->populate();
 		
@@ -38,7 +87,7 @@ namespace CheckerZ
 		// adding pointer to the game board for each player in order to control the movement over it.
 		m_player1->setBoard(m_gameBoard);
 		m_player2->setBoard(m_gameBoard);
-
+		
 		// Choose first entity to begin
 		m_player1->setTurn(true);
 
@@ -164,8 +213,7 @@ namespace CheckerZ
 				case 'S':
 					try
 					{
-						// make it take Game&
-						EventManager::getInstance().saveGame();
+						saveGame(*this, "");
 					}
 					catch (const std::exception& t_excep)
 					{
@@ -178,7 +226,7 @@ namespace CheckerZ
 				case 'E':
 					try
 					{
-						EventManager::getInstance().quitGame();
+						quitHelper();
 					}
 					catch (const std::exception& t_excep)
 					{
@@ -206,7 +254,7 @@ namespace CheckerZ
 			case GameSystemState::WIN:
 				try
 				{
-					EventManager::getInstance().winGame();
+					winHelper();
 					setGameState(GameSystemState::QUIT);
 				}
 				catch (const std::exception& t_excep)
@@ -339,6 +387,16 @@ namespace CheckerZ
 			throw std::logic_error("There's nothing to redo.");
 		}
 	}
+
+	void Game::winHelper()
+	{
+		EventManager::getInstance().winGame();
+	}
+
+	void Game::quitHelper()
+	{
+		EventManager::getInstance().quitGame();
+	}
 	
 	void Game::delayHelper(double t_maxDelayTime)
 	{
@@ -347,45 +405,6 @@ namespace CheckerZ
 		std::uniform_real_distribution<double> dist(1.0, t_maxDelayTime);
 		auto delayTime = dist(engine);
 		Utils::Timer::getInstance().applyTimeDelayInSeconds(delayTime);
-	}
-
-	void readInput(Game& game, std::string& command, uint8& keyFrom, uint8& keyTo, uint32& valueFrom, uint32& valueTo)
-	{
-		// read the input for movement/action:
-		Logger::message(MessageType::INF, "\t      Command:", EndingDelimiter::SPACE);
-		std::cin >> command;
-
-		// input command correctness check
-		if (command.size() > 4)
-		{
-			game.clearDraw();
-			Logger::message(MessageType::INF, "\t      Invalid input. Try again(4 chars: e.g. MOVE or UNDO or REDO!");
-			return;
-		}
-
-		command[0] = islower(command[0]) ? toupper(command[0]) : command[0];
-		if (toupper(command[0]) == 'M')
-		{
-			std::cin >> keyFrom >> valueFrom >> keyTo >> valueTo;
-			// discard any case sensitivity ...
-			keyFrom = islower(keyFrom) ? toupper(keyFrom) : keyFrom;
-			keyTo = islower(keyTo) ? toupper(keyTo) : keyTo;
-			// check if input's in the valid character and numeric boundary
-			if (keyFrom < 'A' || keyFrom > 'H' || valueFrom < 1 || valueTo > 8)
-			{
-				game.clearDraw();
-				// read the input for movement/action:
-				Logger::message(MessageType::INF, "\t      Invalid input. Try again (A-H and 1-8)!");
-				return;
-			}
-		}
-
-		// capitalize command (for case sensitivity purposes)
-		for (auto& cmd : command) cmd = toupper(cmd);
-	}
-
-	void readInput(const Game & game)
-	{
 	}
 
 }

@@ -9,7 +9,7 @@ namespace CheckerZ { namespace Entity { namespace Player {
 	class Player final : public Entity
 	{
 		public:
-			Player(const std::string& t_name, const std::string& t_pawnColor) : Entity(t_name, t_pawnColor) { };
+			Player() : Entity() { };
 			~Player() = default;
 			
 			std::string getClassType() override { return std::string("Player"); }

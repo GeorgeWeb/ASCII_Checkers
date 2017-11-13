@@ -53,18 +53,25 @@ namespace CheckerZ
 			
 			inline bool getIsRunning() const { return m_gameState == API::Events::GameSystemState::RUN || m_gameState == API::Events::GameSystemState::WIN; }
 			inline bool getNextTurn() const { return m_turnState == TurnState::END; }
-			
+			inline const std::shared_ptr<API::Board>& getGameBoard() { return m_gameBoard; }
 			inline void setTitle(const std::string& t_title) { m_title = t_title; }
 
 			void begin();
 			void update();
 			void draw();
 			void end();
-				
-			// public helpers
+			
+			// -------------- //
+			// public helpers //
+			// -------------- //
 			inline void clearDraw() { printTitle(); m_gameBoard->display(); }
-			friend void readInput(Game& game, std::string& command, uint8& keyFrom, uint8& keyTo, uint32& valueFrom, uint32& valueTo);
-
+			// reads the command input from the player to play the game or change the game state
+			friend void readInput(Game& t_game, std::string& t_command, uint8& t_keyFrom, uint8& t_keyTo, uint32& t_valueFrom, uint32& t_valueTo);
+			// loads game data from a save file into the current game object
+			friend void loadGame(Game &t_game, const std::string& t_filePath);
+			// saves the current game's data into a file
+			friend void saveGame(Game& t_game, const std::string& t_filePath);
+		
 		private:
 			inline void setGameState(const API::Events::GameSystemState& t_newState) { m_gameState = t_newState; }
 			inline void setTurnState(const TurnState& t_newState) { m_turnState = t_newState; }
@@ -74,16 +81,17 @@ namespace CheckerZ
 			void initMovesGenerator(std::shared_ptr<API::Utils::MovesGenerator>& t_moveGenerator, std::shared_ptr<Entity::Entity>& t_entity);
 			void swapEntityTurns(const std::shared_ptr<Entity::Entity>& t_entityOnTurn);
 			void endTurn(const std::shared_ptr<Entity::Entity>& t_entity, std::shared_ptr<API::Utils::MovesGenerator>& t_moveGenerator);
-			// Game helpers declaration
+			
+			// -------------------- //
+			// private game helpers //
+			// -------------------- //
 			// game state (e.g. undo/redo ...) helpers
 			void undoHelper();
 			void redoHelper();
+			void winHelper();
+			void quitHelper();
 			// timer helper
 			void delayHelper(double t_maxDelayTime);
-
-		private:
-			Game(const Game&) = delete;
-			Game(Game&&) = delete;
 	};
 }
 

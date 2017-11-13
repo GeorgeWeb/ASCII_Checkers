@@ -18,8 +18,8 @@ namespace CheckerZ { namespace API { namespace Utils {
 			return theInstance;
 		}
 
-		bool writeFile(const std::string& filePath, std::vector<char>& buffer);
-		bool readFile(const std::string& filePath, std::vector<char>& buffer);
+		void writeFile(const std::string& filePath, std::vector<char>& buffer);
+		void readFile(const std::string& filePath, std::vector<char>& buffer);
 
 	private:
 		FileIO() = delete;
