@@ -16,6 +16,14 @@
 
 namespace CheckerZ
 {
+	enum PlayerType
+	{
+		HUMAN		= 0,
+		EASY_CPU	= 1,
+		MEDIUM_CPU	= 2,
+		HARD_CPU	= 3
+	};
+
 	// the game creation class
 	class Game final
 	{
@@ -34,8 +42,8 @@ namespace CheckerZ
 			TurnState m_turnState;
 			
 			// Players
-			std::shared_ptr<Entity::Entity> m_player1;
-			std::shared_ptr<Entity::Entity> m_player2;
+			std::shared_ptr<Entity::Entity> m_redPlayer; ///> always first
+			std::shared_ptr<Entity::Entity> m_blackPlayer;
 
 			// Board
 			std::shared_ptr<API::Board> m_gameBoard;
@@ -55,6 +63,10 @@ namespace CheckerZ
 			inline bool getNextTurn() const { return m_turnState == TurnState::END; }
 			inline const std::shared_ptr<API::Board>& getGameBoard() { return m_gameBoard; }
 			inline void setTitle(const std::string& t_title) { m_title = t_title; }
+			
+			// player info setters
+			void setRedPlayer(PlayerType t_playerType, const std::string& t_name = "");
+			void setBlackPlayer(PlayerType t_playerType, const std::string& t_name = "");
 
 			void begin();
 			void update();
@@ -89,7 +101,7 @@ namespace CheckerZ
 			// game state (e.g. undo/redo ...) helpers
 			void undoHelper();
 			void redoHelper();
-			void winHelper();
+			void winHelper(API::Events::GameSystemState& t_finalGameState);
 			void quitHelper();
 			// timer helper
 			void delayHelper(double t_maxDelayTime);

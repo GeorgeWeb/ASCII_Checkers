@@ -96,7 +96,7 @@ namespace CheckerZ { namespace API {
 			}
 		}
 	}
-	
+
 	void Board::display() const
 	{
 		std::cout << "\n";

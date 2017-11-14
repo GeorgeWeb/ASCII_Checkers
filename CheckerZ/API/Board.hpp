@@ -51,7 +51,6 @@ namespace CheckerZ { namespace API {
 
 			// This function will be called after every move
 			void populate();
-			void populate(const board<Pawn, s_boardLen>& t_board);
 			// This function will be called after every move
 			void display() const;
 			

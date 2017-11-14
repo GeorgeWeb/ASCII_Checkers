@@ -7,8 +7,13 @@ namespace CheckerZ { namespace Entity { namespace AI {
 		AI::firePawnAction(t_moveGenerator);
 		
 		auto possibleMoves = t_moveGenerator->getPossibleMoves();
+
+		// break out if there's no more possible moves
+		if (possibleMoves.empty())
+			return;
+
 		// do a random move
-		performRandomMove(possibleMoves);
+		randomMove(possibleMoves);
 	}
 
 } } }

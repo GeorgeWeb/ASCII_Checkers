@@ -111,7 +111,7 @@ namespace CheckerZ { namespace API { namespace Utils {
 				break;
 		}
 
-		// sort it to make searching it from Player or AI faster via binary search
+		// sort the list to make searching it from Player or AI faster via binary search
 		std::sort(m_possibleMoves.begin(), m_possibleMoves.end());
 	}
 
