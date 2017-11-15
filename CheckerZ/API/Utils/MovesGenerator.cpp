@@ -6,7 +6,7 @@ namespace CheckerZ { namespace API { namespace Utils {
 
 	void MovesGenerator::generatePossibleMoves(std::shared_ptr<Board> t_board, const std::string& t_color, std::shared_ptr<Pawn> t_lastPlayedPawn)
 	{
-		auto tempBoard = *t_board;
+		Board tempBoard = *t_board;
 		
 		if (t_lastPlayedPawn && t_lastPlayedPawn->getColor() == t_color)
 		{

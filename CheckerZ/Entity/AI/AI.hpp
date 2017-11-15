@@ -24,7 +24,7 @@ namespace CheckerZ { namespace Entity { namespace AI {
 			{
 				assert(std::is_sorted(t_moveGenerator->getPossibleMoves().begin(), t_moveGenerator->getPossibleMoves().end()));
 			}
-		
+
 		protected:
 			void randomMove(std::deque<Movement>& t_possibleMoves)
 			{
@@ -83,7 +83,7 @@ namespace CheckerZ { namespace Entity { namespace AI {
 
 		private:
 			// movement max-min getter
-			Movement maximin(const API::Board& t_board, uint32 t_depth);
+			Movement maximin(API::Board t_board, uint32 t_depth);
 			
 			// min-max getter
 			int32 MIN(API::Board t_board, uint32 t_depth, Movement t_move);

@@ -1,5 +1,6 @@
 #include "AI.hpp"
-#include <limits>
+
+#define MAX_LEVEL 2
 
 namespace CheckerZ { namespace Entity { namespace AI {
 
@@ -14,22 +15,22 @@ namespace CheckerZ { namespace Entity { namespace AI {
 		if (possibleMoves.empty())
 			return;
 
-		// minimax (maximin) algorithm (with alpha-beta cutoffs)
+		// minimax (maximin) algorithm
 
 		auto maximinMove = maximin(*m_board, 0);
 		Position fromPos = maximinMove.first;
 		Position toPos = maximinMove.second;
 		// do movement
-		//move(fromPos, toPos);
-		m_board->move(fromPos, toPos);
+		move(fromPos, toPos);
 	}
 
-	Movement HardAI::maximin(const API::Board& t_board, uint32 t_depth)
+	Movement HardAI::maximin(API::Board t_board, uint32 t_depth)
 	{
 		API::Utils::MovesGenerator moveGenerator;
 
 		// get all valid/possible moves in from the generator
-		moveGenerator.generatePossibleMoves(m_board, m_pawnColor, m_lastPlayedPawn);
+		auto p_board = std::make_shared<API::Board>(); *p_board = t_board;
+		moveGenerator.generatePossibleMoves(p_board, m_pawnColor, m_lastPlayedPawn);
 		auto possibleMoves = moveGenerator.getPossibleMoves();
 
 		// break out if there's no more possible moves
@@ -41,10 +42,7 @@ namespace CheckerZ { namespace Entity { namespace AI {
 		size_t count = 0;
 		for (auto posMove : possibleMoves)
 		{
-			API::Board board;
-			board.setBoard(t_board.getBoard());
-
-			scores[count] = MIN(board, t_depth + 1, posMove);
+			scores[count] = MIN(t_board, t_depth + 1, posMove);
 			count++;
 		}
 
@@ -66,23 +64,23 @@ namespace CheckerZ { namespace Entity { namespace AI {
 
 	int32 HardAI::MIN(API::Board t_board, uint32 t_depth, Movement t_move)
 	{
+		// apply test move on the temp board
 		t_board.move(t_move.first, t_move.second);
 
 		API::Utils::MovesGenerator moveGenerator;
 
 		auto color = (m_pawnColor == "Red") ? "Black" : "Red";
 		// get all valid/possible moves in from the generator
-		moveGenerator.generatePossibleMoves(m_board, color, m_lastPlayedPawn);
+		auto p_board = std::make_shared<API::Board>(); *p_board = t_board;
+		moveGenerator.generatePossibleMoves(p_board, color, m_lastPlayedPawn);
 
 		auto possibleMoves = moveGenerator.getPossibleMoves();
 
 		if (possibleMoves.empty())
-		{
-			return hasFoundEnemy(t_board, color) ? 1000 : -1000;
-		}
+			return hasFoundEnemy(t_board, color) ? 10000 : -10000;
 		
 		std::array<int32, 32> scores;
-		for (int i = 0; i < scores.size(); i++) scores[i] = 0;
+		for (int32 i = 0; i < scores.size(); i++) scores[i] = 0;
 		size_t count = 0;
 		for (auto posMove : possibleMoves)
 		{
@@ -90,28 +88,30 @@ namespace CheckerZ { namespace Entity { namespace AI {
 			count++;
 		}
 
-		std::stable_sort(scores.begin(), scores.end(), std::less<int32>());
+		std::sort(scores.begin(), scores.end(), std::less<int32>());
 		return scores[0];
 	}
 
 	int32 HardAI::MAX(API::Board t_board, uint32 t_depth, Movement t_move)
 	{
+		// apply test move on the temp board
 		t_board.move(t_move.first, t_move.second);
 
 		API::Utils::MovesGenerator moveGenerator;
 
-		if (t_depth >= 2)
+		if (t_depth >= MAX_LEVEL)
 			return calculateBoard(t_board);
 
 		// get all valid/possible moves in from the generator
-		moveGenerator.generatePossibleMoves(m_board, m_pawnColor, m_lastPlayedPawn);
+		auto p_board = std::make_shared<API::Board>(); *p_board = t_board;
+		moveGenerator.generatePossibleMoves(p_board, m_pawnColor, m_lastPlayedPawn);
 		auto possibleMoves = moveGenerator.getPossibleMoves();
 
 		if (possibleMoves.empty())
-			return hasFoundEnemy(t_board, m_pawnColor) ? 1000 : -1000;
+			return hasFoundEnemy(t_board, m_pawnColor) ? 10000 : -10000;
 		
 		std::array<int32, 32> scores;
-		for (int i = 0; i < scores.size(); i++) scores[i] = 0;
+		for (int32 i = 0; i < scores.size(); i++) scores[i] = 0;
 		size_t count = 0;
 		for (auto posMove : possibleMoves)
 		{
@@ -119,7 +119,7 @@ namespace CheckerZ { namespace Entity { namespace AI {
 			count++;
 		}
 
-		std::stable_sort(scores.begin(), scores.end(), std::greater<int32>());
+		std::sort(scores.begin(), scores.end(), std::greater<int32>());
 		return scores[0];
 	}
 
@@ -127,10 +127,12 @@ namespace CheckerZ { namespace Entity { namespace AI {
 	{
 		int32 score = 0;
 
-		// color/side helpers
 		auto myColor = m_pawnColor;
 		auto enemyColor = (myColor == "Red") ? "Black" : "Red";
 		auto emptyColor = "Empty";
+
+		API::Utils::MovesGenerator moveGenerator;
+		auto p_board = std::make_shared<API::Board>(); *p_board = t_board;
 
 		// evaluate the game board at its current state
 		for (size_t row = 0; row < t_board.getBoard().size(); row++)
@@ -141,40 +143,107 @@ namespace CheckerZ { namespace Entity { namespace AI {
 				auto pawnMesh = pawn.getMesh();
 				auto pawnColor = pawn.getColor();
 
-				// TODO: implement these!!!!
-				API::Pawn middlePawn;
-				API::Pawn postJumpPawn;
+				// own pawn - DON'T CARE
+				/*
+				if (pawnColor == myColor && !pawn.isKing())
+					score += 0;
+				*/
 
-				// own pawn +5
-				if (pawnColor == myColor && islower(pawnMesh))
-					score += 5;
-				// enemy pawn -5
-				else if (pawnColor == enemyColor && islower(pawnMesh))
-					score -= 5;
-				// own king +10
-				else if (pawnColor == myColor && isupper(pawnMesh))
-					score += 10;
-				// enemy king -10
-				else if (pawnColor == enemyColor && isupper(pawnMesh))
+				// enemy pawn
+				if (pawnColor == enemyColor && !pawn.isKing())
 					score -= 10;
-				// enemy pawn I can take +13
-				else if (pawnColor == myColor && middlePawn.getColor() == enemyColor && islower(middlePawn.getMesh()) && postJumpPawn.getColor() == emptyColor)
-					score += 13;
-				// own pawn can be taken by enemy -15
-				else if (pawnColor == enemyColor && middlePawn.getColor() == myColor && islower(middlePawn.getMesh()) && postJumpPawn.getColor() == emptyColor)
-					score -= 15;
-				// enemy king I can take +22
-				else if (pawnColor == myColor && middlePawn.getColor() == enemyColor && isupper(middlePawn.getMesh()) && postJumpPawn.getColor() == emptyColor)
-					score += 13;
-				// own king can be taken by enemy -26
-				else if (pawnColor == enemyColor && middlePawn.getColor() == myColor && isupper(middlePawn.getMesh()) && postJumpPawn.getColor() == emptyColor)
-					score -= 15;
+				
+				// own king - DON'T CARE
+				/*
+				if (pawnColor == myColor && pawn.isKing())
+					score += 0;
+				*/
 
-				// own pawn close to wall +7
-				// enemy pawn close to wall -8
+				// enemy king
+				if (pawnColor == enemyColor && pawn.isKing())
+					score -= 20;
+
+				// own pawn close to wall - DON'T CARE
+				/*
+				if (pawnColor == myColor && !pawn.isKing() && (pawn.getCoordX() == t_board.s_boardLen - 1 || pawn.getCoordX() == 0))
+				score += 0;
+				*/
+
+				// enemy pawn close to wall
+				if (pawnColor == enemyColor && !pawn.isKing() && (pawn.getCoordX() == t_board.s_boardLen - 1 || pawn.getCoordX() == 0))
+					score -= 7;
 			}
 		}
 
+		// get all valid/possible moves in from the generator for my self
+		moveGenerator.generatePossibleMoves(p_board, m_pawnColor, m_lastPlayedPawn);
+		auto myPossibleMoves = moveGenerator.getPossibleMoves();
+
+		if (myPossibleMoves.empty())
+			return hasFoundEnemy(t_board, myColor) ? 10000 : -10000;
+
+		// possible actions I can do
+		for (auto move : myPossibleMoves)
+		{
+			auto action = std::abs(static_cast<int>(move.first.first - move.second.first) + std::abs(static_cast<int>(move.first.second - move.second.second)));
+			auto isJump = action == 4;
+
+			auto startPawn = t_board.getBoardPawn(move.first);
+			auto endPawn = t_board.getBoardPawn(move.second);
+			auto midPawn = t_board.getBoard()[(t_board.getBoardPawn(move.first).getCoordX() + t_board.getBoardPawn(move.second).getCoordX()) / 2]
+										     [(t_board.getBoardPawn(move.first).getCoordY() + t_board.getBoardPawn(move.second).getCoordY()) / 2];
+
+			// Helper evaluation data:
+			auto startColor = startPawn.getColor();
+			auto endColor = endPawn.getColor();
+			auto midColor = midPawn.getColor();
+
+			if (isJump)
+			{
+				// enemy pawn I can take
+				if (startColor == myColor && midColor == enemyColor && !midPawn.isKing() && endColor == emptyColor)
+					score += 30;
+
+				// enemy king I can take
+				if (startColor == myColor && midColor == enemyColor && midPawn.isKing() && endColor == emptyColor)
+					score += 50;
+			}
+		}
+		
+		// get all valid/possible moves in from the generator for the enemy
+		moveGenerator.generatePossibleMoves(p_board, enemyColor, m_lastPlayedPawn);
+		auto enemyPossibleMoves = moveGenerator.getPossibleMoves();
+
+		if (enemyPossibleMoves.empty())
+			return hasFoundEnemy(t_board, enemyColor) ? 1000 : -1000;
+
+		// possible actions enemy can do
+		for (auto move : enemyPossibleMoves)
+		{
+			auto action = std::abs(static_cast<int>(move.first.first - move.second.first) + std::abs(static_cast<int>(move.first.second - move.second.second)));
+			auto isJump = action == 4;
+
+			auto startPawn = t_board.getBoardPawn(move.first);
+			auto endPawn = t_board.getBoardPawn(move.second);
+			auto midPawn = t_board.getBoard()[(t_board.getBoardPawn(move.first).getCoordX() + t_board.getBoardPawn(move.second).getCoordX()) / 2]
+									     	 [(t_board.getBoardPawn(move.first).getCoordY() + t_board.getBoardPawn(move.second).getCoordY()) / 2];
+
+			// Helper evaluation data:
+			auto startColor = startPawn.getColor();
+			auto endColor = endPawn.getColor();
+			auto midColor = midPawn.getColor();
+			
+			if (isJump)
+			{
+				// own pawn can be taken by enemy
+				if (startColor == enemyColor && midColor == myColor && !midPawn.isKing() && endColor == emptyColor)
+					score -= 30;
+
+				// own king can be taken by enemy
+				if (startColor == enemyColor && midColor == myColor && midPawn.isKing() && endColor == emptyColor)
+					score -= 50;
+			}
+		}
 		return score;
 	}
 

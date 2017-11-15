@@ -87,9 +87,9 @@ namespace CheckerZ
 
 	Game::~Game() { }
 
-	void Game::setRedPlayer(PlayerType t_playerType, const std::string& t_name)
+	void Game::setRedPlayer(PlayerType t_playerType, double t_speed, const std::string& t_name)
 	{
-		if(t_playerType == HUMAN)
+		if (t_playerType == HUMAN)
 			m_redPlayer = std::make_shared<Player>();
 		else if (t_playerType == EASY_CPU)
 			m_redPlayer = std::make_shared<EasyAI>();
@@ -99,10 +99,11 @@ namespace CheckerZ
 			m_redPlayer = std::make_shared<HardAI>();
 		
 		m_redPlayer->setColor("Red");
+		if (t_speed != 0.0) m_redPlayer->setSpeed(t_speed);
 		if (!t_name.empty()) m_redPlayer->setName(t_name);
 	}
 
-	void Game::setBlackPlayer(PlayerType t_playerType, const std::string& t_name)
+	void Game::setBlackPlayer(PlayerType t_playerType, double t_speed, const std::string& t_name)
 	{
 		if (t_playerType == HUMAN)
 			m_blackPlayer = std::make_shared<Player>();
@@ -114,6 +115,7 @@ namespace CheckerZ
 			m_blackPlayer = std::make_shared<HardAI>();
 
 		m_blackPlayer->setColor("Black");
+		if (t_speed != 0.0) m_redPlayer->setSpeed(t_speed);
 		if (!t_name.empty()) m_blackPlayer->setName(t_name);
 	}
 
@@ -124,6 +126,7 @@ namespace CheckerZ
 		
 		// push the board to the undo stack on start
 		m_undoStack.push(m_gameBoard->getBoard());
+		m_gameBoard->s_boardHistory.push_back(m_gameBoard->getBoard());
 
 		// adding pointer to the game board for each player in order to control the movement over it.
 		assert(m_redPlayer != nullptr);
@@ -155,13 +158,6 @@ namespace CheckerZ
 		std::cout << "\n";
 		// get the entity who is on turn
 		auto entityOnTurn = m_redPlayer->hasTurn() ? m_redPlayer : m_blackPlayer->hasTurn() ? m_blackPlayer : nullptr;
-		if (entityOnTurn == nullptr)
-		{
-			Logger::message(MessageType::ERR, "\t      There's problem with reckognizing the entity that is on turn.");
-			return;
-		}
-		
-
 		
 		displayEntityData(entityOnTurn);
 		initMovesGenerator(m_moveGenerator, entityOnTurn);
@@ -170,8 +166,9 @@ namespace CheckerZ
 			try
 			{
 				// apply delay before taking action
-				delayHelper(1.0);
-
+				double delayTime = entityOnTurn->getSpeed();
+				delayTime = delayTime < 1.0 ? 0.0 : delayTime;
+				delayHelper(delayTime);
 				// invoke the entityPawnAction event that moves the chosen pawn
 				EventManager::getInstance().entityPawnAction(entityOnTurn, m_moveGenerator);
 				
@@ -363,7 +360,8 @@ namespace CheckerZ
 	{
 		// push the current board in the undo stack on every move
 		m_undoStack.push(m_gameBoard->getBoard());
-		
+		m_gameBoard->s_boardHistory.push_back(m_undoStack.top());
+
 		// clear the redo stack
 		std::stack<Board::board<Pawn, Board::s_boardLen>>().swap(m_redoStack);
 		
@@ -413,7 +411,7 @@ namespace CheckerZ
 	void Game::redoHelper()
 	{
 		if(m_redoStack.size() > 0)
-		{ 
+		{
 			// create temp board
 			Board::board<Pawn, Board::s_boardLen> tempBoard;
 
@@ -438,7 +436,10 @@ namespace CheckerZ
 
 	void Game::winHelper(GameSystemState& t_finalGameState)
 	{
-		EventManager::getInstance().winGame(t_finalGameState, m_gameBoard);
+		// get the entity who is on turn
+		auto entityOnTurn = m_redPlayer->hasTurn() ? m_redPlayer : m_blackPlayer->hasTurn() ? m_blackPlayer : nullptr;
+
+		EventManager::getInstance().winGame(t_finalGameState, m_gameBoard, entityOnTurn);
 	}
 
 	void Game::quitHelper()
@@ -450,7 +451,7 @@ namespace CheckerZ
 	{
 		std::random_device rd;
 		std::mt19937 engine(rd());
-		std::uniform_real_distribution<double> dist(1.0, t_maxDelayTime);
+		std::uniform_real_distribution<double> dist(0.0, t_maxDelayTime);
 		auto delayTime = dist(engine);
 		Utils::Timer::getInstance().applyTimeDelayInSeconds(delayTime);
 	}

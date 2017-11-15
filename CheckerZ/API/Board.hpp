@@ -7,6 +7,7 @@
 // std::includes
 #include <array>
 #include <algorithm>
+#include <deque>
 
 namespace CheckerZ { namespace API {
 
@@ -31,6 +32,9 @@ namespace CheckerZ { namespace API {
 			using board = std::array<std::array<Type, Size>, Size>;
 			
 			static constexpr uint16 s_boardLen = 8;
+
+			// ...
+			static std::deque<board<Pawn, s_boardLen>> s_boardHistory;
 
 		private:
 			// initialize board

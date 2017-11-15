@@ -25,9 +25,9 @@ namespace CheckerZ { namespace API { namespace Events {
 				return theInstance;
 			}
 
-			inline void winGame(GameSystemState& t_finalGameState, std::shared_ptr<Board>& t_board) const
+			inline void winGame(GameSystemState& t_finalGameState, std::shared_ptr<Board>& t_board, const std::shared_ptr<Entity::Entity>& t_player) const
 			{
-				EventFactory::create(GameSystemState::WIN)->invoke(t_finalGameState, t_board);
+				EventFactory::create(GameSystemState::WIN)->invoke(t_finalGameState, t_board, t_player);
 			}
 
 			inline void loadGame(std::vector<char>& t_buffer, const std::string& t_file = "") const

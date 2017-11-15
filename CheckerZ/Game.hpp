@@ -14,6 +14,12 @@
 #include <stack>
 #include <queue>
 
+// AI speed defines
+constexpr double SLOW = 5.0;
+constexpr double NORMAL = 3.0;
+constexpr double FAST = 1.0;
+constexpr double LIGHTNING = 0.1;
+
 namespace CheckerZ
 {
 	enum PlayerType
@@ -53,7 +59,7 @@ namespace CheckerZ
 	
 			// game system/board handlers
 			std::stack<API::Board::board<API::Pawn, API::Board::s_boardLen>> m_undoStack;
-			std::stack<API::Board::board<API::Pawn, API::Board::s_boardLen>> m_redoStack;
+			std::stack<API::Board::board<API::Pawn, API::Board::s_boardLen>> m_redoStack;			
 
 		public:
 			Game();
@@ -63,10 +69,10 @@ namespace CheckerZ
 			inline bool getNextTurn() const { return m_turnState == TurnState::END; }
 			inline const std::shared_ptr<API::Board>& getGameBoard() { return m_gameBoard; }
 			inline void setTitle(const std::string& t_title) { m_title = t_title; }
-			
+
 			// player info setters
-			void setRedPlayer(PlayerType t_playerType, const std::string& t_name = "");
-			void setBlackPlayer(PlayerType t_playerType, const std::string& t_name = "");
+			void setRedPlayer(PlayerType t_playerType, double t_speed = 0.0, const std::string& t_name = "");
+			void setBlackPlayer(PlayerType t_playerType, double t_speed = 0.0, const std::string& t_name = "");
 
 			void begin();
 			void update();
@@ -84,7 +90,7 @@ namespace CheckerZ
 			friend void loadGame(Game &t_game);
 			// saves the current game's data into a file
 			friend void saveGame(Game& t_game);
-		
+
 		private:
 			inline void setGameState(const API::Events::GameSystemState& t_newState) { m_gameState = t_newState; }
 			inline void setTurnState(const TurnState& t_newState) { m_turnState = t_newState; }
@@ -101,6 +107,7 @@ namespace CheckerZ
 			// game state (e.g. undo/redo ...) helpers
 			void undoHelper();
 			void redoHelper();
+			
 			void winHelper(API::Events::GameSystemState& t_finalGameState);
 			void quitHelper();
 			// timer helper

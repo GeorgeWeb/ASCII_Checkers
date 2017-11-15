@@ -11,7 +11,7 @@ namespace CheckerZ { namespace API { namespace Events { namespace EventImpl {
 			explicit WinGame();
 			~WinGame() = default;
 
-			void invoke(GameSystemState& t_finalGameState, std::shared_ptr<Board>& t_board) const override;
+			void invoke(GameSystemState& t_finalGameState, std::shared_ptr<Board>& t_board, const std::shared_ptr<Entity::Entity>& t_player) const override;
 
 		private:
 			void initialize() override;

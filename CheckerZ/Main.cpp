@@ -84,123 +84,163 @@ bool chooseDifficulty(int& t_difficulty)
 
 	return false;
 }
+
+bool chooseSpeed(double& t_speed)
+{
+	int selectSpeed = 0;
+	std::cout << "\t\t\t\t\t\tSelect movement speed for the Bot\n";
+	std::cout << "\t\t\t\t\t\t[1] - Slow\n";
+	std::cout << "\t\t\t\t\t\t[2] - Normal\n";
+	std::cout << "\t\t\t\t\t\t[3] - Fast\n";
+	std::cout << "\t\t\t\t\t\t[4] - Lightning\n";
+	std::cout << "\t\t\t\t\t\tSpeed: ";
+	std::cin >> selectSpeed;
+	std::cout << "\n";
+
+	if (selectSpeed == 1) t_speed = SLOW;
+	else if (selectSpeed == 2) t_speed = NORMAL;
+	else if (selectSpeed == 3) t_speed = FAST;
+	else if (selectSpeed == 4) t_speed = LIGHTNING;
+	else return true;
+
+	return false;
+}
 #pragma endregion
 
 auto main(void) -> int32
-{
-	std::string choice;
-	Logger::message(MessageType::INF, "\t\t\t\tLOAD an existing game OR START a new one\n");
-	Logger::message(MessageType::INF, "\t\t\t\tload/start:", EndingDelimiter::SPACE);
-	std::cin >> choice;
-	
-	for (auto& ch : choice) ch = toupper(ch);	
-	if (choice == "LOAD")
-	{
-		Game game;
-		loadGame(game);
-		//runGame(game);
-		std::string filePath = ""; std::cin >> filePath;
-	}
-	else if (choice == "START")
-	{	
-		Game game;
+{	
+	Logger::message(MessageType::INF, "\n\t\t\t\tLOAD an existing game OR START a new one\n");
 
-		std::string errMsg = "";
-		bool isMenuOn = true;
-		while (isMenuOn)
+	std::string choice;
+	bool hasStarted = false;
+	while (!hasStarted)
+	{
+		choice = "";
+		Logger::message(MessageType::INF, "\t\t\t\tload/start/exit:", EndingDelimiter::SPACE);
+		std::cin >> choice;
+		// make all letters capital for easier comparison
+		for (auto& ch : choice) ch = toupper(ch);
+		if (choice == "LOAD")
 		{
 			system("cls");
-			printStartMenuDialog();
-			
-			if(!errMsg.empty())
-				Logger::message(MessageType::ERR, "\n", errMsg);
+			Logger::message(MessageType::INF, "\n\t\t\t\tLOAD an existing game OR START a new one\n");
+			Logger::message(MessageType::ERR, "\t\t\t\tMESSAGE: This feature is not fully implemented => unavailable.\n");
+			hasStarted = false;
+		}
+		else if (choice == "START")
+		{
+			hasStarted = true;
 
-			int mode = 0;
-			std::cout << "\n\t\t\t\t\t\tChoose game mode: "; std::cin >> mode;
-			GameMode gameMode = static_cast<GameMode>(mode);
-			
-			std::string color = "";
-			std::string name = "";
-			int difficulty = 0;
+			Game game;
 
-			switch (gameMode)
+			std::string errMsg = "";
+			bool isMenuOn = true;
+			while (isMenuOn)
 			{
+				system("cls");
+				printStartMenuDialog();
+
+				if (!errMsg.empty())
+					Logger::message(MessageType::ERR, "\n", errMsg);
+
+				int mode = 0;
+				std::cout << "\n\t\t\t\t\t\tChoose game mode: "; std::cin >> mode;
+				GameMode gameMode = static_cast<GameMode>(mode);
+
+				std::string color = "";
+				std::string name = "";
+				int difficulty = 0;
+				double speed = 0.0;
+
+				switch (gameMode)
+				{
 				case HumanVSHuman:
 					system("cls");
 					printPreferencesDialog();
-				
+
 					// first human choosing
 					isMenuOn = chooseColor(color);	if (isMenuOn) break;
 					isMenuOn = chooseName(name);	if (isMenuOn) break;
 					// set the values of the player
 					if (color[0] == 'r')
 					{
-						game.setRedPlayer(HUMAN, name);
-						
+						game.setRedPlayer(HUMAN, 0.0, name);
+
 						// second human choosing
 						std::cout << "\n\t\t\t\t\t\tNext player's color is going to be black.\n";
 						isMenuOn = chooseName(name);	if (isMenuOn) break;
-						game.setBlackPlayer(HUMAN, name);
+						game.setBlackPlayer(HUMAN, 0.0, name);
 					}
 					else if (color[0] == 'b')
 					{
-						game.setBlackPlayer(HUMAN, name);
+						game.setBlackPlayer(HUMAN, 0.0, name);
 
 						std::cout << "\n\t\t\t\t\t\tNext player's color is going to be red.\n";
 						isMenuOn = chooseName(name);	if (isMenuOn) break;
-						game.setRedPlayer(HUMAN, name);
+						game.setRedPlayer(HUMAN, 0.0, name);
 					}
-					
+
 					break;
 				case HumanVSMachine:
 					system("cls");
 					printPreferencesDialog();
-					
+
 					// Human choosing
 					isMenuOn = chooseColor(color);				if (isMenuOn) break;
 					isMenuOn = chooseName(name);				if (isMenuOn) break;
 					isMenuOn = chooseDifficulty(difficulty);	if (isMenuOn) break;
+					isMenuOn = chooseSpeed(speed);				if (isMenuOn) break;
 
 					// set the values of the player
 					if (color[0] == 'r')
 					{
-						game.setRedPlayer(HUMAN, name);
-						game.setBlackPlayer(static_cast<PlayerType>(difficulty));
+						game.setRedPlayer(HUMAN, 0.0, name);
+						game.setBlackPlayer(static_cast<PlayerType>(difficulty), speed);
 					}
 					else if (color[0] == 'b')
 					{
-						game.setRedPlayer(static_cast<PlayerType>(difficulty));
-						game.setBlackPlayer(HUMAN, name);
+						game.setRedPlayer(static_cast<PlayerType>(difficulty), speed);
+						game.setBlackPlayer(HUMAN, 0.0, name);
 					}
 
 					break;
 				case MachineVMachine:
 					system("cls");
 					printPreferencesDialog();
-					
+
 					// AIbot 1
 					isMenuOn = chooseDifficulty(difficulty);	if (isMenuOn) break;
-					game.setRedPlayer(static_cast<PlayerType>(difficulty));
+					isMenuOn = chooseSpeed(speed);				if (isMenuOn) break;
+					game.setRedPlayer(static_cast<PlayerType>(difficulty), speed);
 
 					// AIbot 2
 					isMenuOn = chooseDifficulty(difficulty);	if (isMenuOn) break;
-					game.setBlackPlayer(static_cast<PlayerType>(difficulty));
-					
+					isMenuOn = chooseSpeed(speed);				if (isMenuOn) break;
+					game.setBlackPlayer(static_cast<PlayerType>(difficulty), speed);
+
 					break;
 				default:
 					errMsg = "\t\t\t\t\t\tInvalid input. Try choosing again.";
-					
+
 					isMenuOn = true;
 					break;
+				}
 			}
-		}
 
-		game.setTitle("<A GAME OF CHECKERS>");
-		runGame(game);
-	}
-	else
-	{
-		Logger::message(MessageType::ERR, "Error: you have typed an invalid command.");
+			game.setTitle("<A GAME OF CHECKERS>");
+			runGame(game);
+		}
+		else if (choice == "EXIT")
+		{
+			break;
+		}
+		else
+		{
+			system("cls");
+			Logger::message(MessageType::INF, "\n\t\t\t\tLOAD an existing game OR START a new one\n");
+			Logger::message(MessageType::ERR, "\t\t\t\tMESSAGE: You have typed an invalid command. Try again!\n");
+			hasStarted = false;
+		}
 	}
 
 	return EXIT_SUCCESS;

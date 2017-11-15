@@ -16,6 +16,8 @@ namespace CheckerZ { namespace API { namespace Events { namespace EventImpl {
 
 	void SaveGame::invoke(std::vector<char>& t_buffer, const std::string& t_outputFile) const
 	{
+		// TODO: Revise proper Serialization for good implementation of this!!!
+
 		std::string outputDir;
 		Utils::Logger::message(Utils::MessageType::INF, "\t      Name your save: ", Utils::EndingDelimiter::SPACE);
 		std::cin >> outputDir;
