@@ -1,4 +1,4 @@
-# ASCII_Checkers
+# Modern C++ Checkers game with ASCII art
 An ASCII Checkers Game with optimal AI : Data Structures &amp; Algorithms - Coursework
 
 [![Build status](https://ci.appveyor.com/api/projects/status/86jebt7qqtrw5mfj/branch/master?svg=true)](https://ci.appveyor.com/project/GeorgeWeb/ascii-checkers/branch/master)
