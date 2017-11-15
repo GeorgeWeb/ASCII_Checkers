@@ -28,7 +28,7 @@ namespace CheckerZ
 		if (t_command.size() > 4)
 		{
 			t_game.clearDraw();
-			Logger::message(MessageType::INF, "\t      Invalid input. Try again(4 chars: e.g. MOVE or UNDO or REDO!");
+			Logger::message(MessageType::INF, "\t      Invalid input. Try again(e.g. - start with move.");
 			return;
 		}
 
@@ -44,7 +44,7 @@ namespace CheckerZ
 			{
 				t_game.clearDraw();
 				// read the input for movement/action:
-				Logger::message(MessageType::INF, "\t      Invalid input. Try again (A-H and 1-8)!");
+				Logger::message(MessageType::INF, "\t      Invalid input. Try again (A-H and 1-8).");
 				return;
 			}
 		}
@@ -55,8 +55,10 @@ namespace CheckerZ
 
 	void saveGame(Game& t_game)
 	{
-		std::vector<char> boardData;
+		std::vector<char> serializableData;
 
+		// push board data in a buffer
+		std::vector<char> boardData;
 		std::for_each(t_game.getGameBoard()->getBoard().begin(), t_game.getGameBoard()->getBoard().end(), [&](auto grid)
 		{
 			std::for_each(grid.cbegin(), grid.cend(), [&](auto pawn)
@@ -64,41 +66,76 @@ namespace CheckerZ
 				boardData.push_back(pawn.getMesh());
 			});
 		});
+		serializableData.insert(serializableData.end(), boardData.begin(), boardData.end());
 
-		EventManager::getInstance().saveGame(boardData);
+		// push players state in a buffer
+		std::vector<char> playersData;
+		std::copy(t_game.m_redPlayer->getName().begin(), t_game.m_redPlayer->getName().end(), std::back_inserter(playersData));
+		std::copy(t_game.m_blackPlayer->getName().begin(), t_game.m_blackPlayer->getName().end(), std::back_inserter(playersData));
+		serializableData.insert(serializableData.end(), playersData.begin(), playersData.end());
+
+		// call save game event for all data sets / buffers
+		EventManager::getInstance().saveGame(serializableData, "savedGame.check");
 	}
 	#pragma endregion
 
 	Game::Game() :
 		m_title("Checkers"),
 		m_gameBoard(std::make_shared<Board>()),
-		m_moveGenerator(std::make_shared<MovesGenerator>()),
-		m_player1(std::make_shared<Player>()),
-		m_player2(std::make_shared<EasyAI>())
+		m_moveGenerator(std::make_shared<MovesGenerator>())
 	{ }
 
 	Game::~Game() { }
 
+	void Game::setRedPlayer(PlayerType t_playerType, double t_speed, const std::string& t_name)
+	{
+		if (t_playerType == HUMAN)
+			m_redPlayer = std::make_shared<Player>();
+		else if (t_playerType == EASY_CPU)
+			m_redPlayer = std::make_shared<EasyAI>();
+		else if (t_playerType == MEDIUM_CPU)
+			m_redPlayer = std::make_shared<MediumAI>();
+		else if (t_playerType == HARD_CPU)
+			m_redPlayer = std::make_shared<HardAI>();
+		
+		m_redPlayer->setColor("Red");
+		if (t_speed != 0.0) m_redPlayer->setSpeed(t_speed);
+		if (!t_name.empty()) m_redPlayer->setName(t_name);
+	}
+
+	void Game::setBlackPlayer(PlayerType t_playerType, double t_speed, const std::string& t_name)
+	{
+		if (t_playerType == HUMAN)
+			m_blackPlayer = std::make_shared<Player>();
+		else if (t_playerType == EASY_CPU)
+			m_blackPlayer = std::make_shared<EasyAI>();
+		else if (t_playerType == MEDIUM_CPU)
+			m_blackPlayer = std::make_shared<MediumAI>();
+		else if (t_playerType == HARD_CPU)
+			m_blackPlayer = std::make_shared<HardAI>();
+
+		m_blackPlayer->setColor("Black");
+		if (t_speed != 0.0) m_redPlayer->setSpeed(t_speed);
+		if (!t_name.empty()) m_blackPlayer->setName(t_name);
+	}
+
 	void Game::begin()
 	{
-		// set name and color *temp
-		m_player1->setName("Gecata");
-		m_player1->setColor("Black");
-		m_player2->setName("SomeBot");
-		m_player2->setColor("Red");
-
 		// populate the game board with data(squares)
 		m_gameBoard->populate();
 		
 		// push the board to the undo stack on start
 		m_undoStack.push(m_gameBoard->getBoard());
+		m_gameBoard->s_boardHistory.push_back(m_gameBoard->getBoard());
 
 		// adding pointer to the game board for each player in order to control the movement over it.
-		m_player1->setBoard(m_gameBoard);
-		m_player2->setBoard(m_gameBoard);
+		assert(m_redPlayer != nullptr);
+		m_redPlayer->setBoard(m_gameBoard);
+		assert(m_blackPlayer != nullptr);
+		m_blackPlayer->setBoard(m_gameBoard);
 		
 		// Choose first entity to begin
-		m_player1->setTurn(true);
+		m_redPlayer->setTurn(true);
 
 		// start the game loop
 		setGameState(GameSystemState::RUN);
@@ -120,12 +157,7 @@ namespace CheckerZ
 		// ---------------------- //
 		std::cout << "\n";
 		// get the entity who is on turn
-		auto entityOnTurn = m_player1->hasTurn() ? m_player1 : m_player2->hasTurn() ? m_player2 : nullptr;
-		if (entityOnTurn == nullptr)
-		{
-			Logger::message(MessageType::ERR, "\t      There's problem with reckognizing the entity that is on turn.");
-			return;
-		}
+		auto entityOnTurn = m_redPlayer->hasTurn() ? m_redPlayer : m_blackPlayer->hasTurn() ? m_blackPlayer : nullptr;
 		
 		displayEntityData(entityOnTurn);
 		initMovesGenerator(m_moveGenerator, entityOnTurn);
@@ -134,8 +166,9 @@ namespace CheckerZ
 			try
 			{
 				// apply delay before taking action
-				delayHelper(5.0);
-
+				double delayTime = entityOnTurn->getSpeed();
+				delayTime = delayTime < 1.0 ? 0.0 : delayTime;
+				delayHelper(delayTime);
 				// invoke the entityPawnAction event that moves the chosen pawn
 				EventManager::getInstance().entityPawnAction(entityOnTurn, m_moveGenerator);
 				
@@ -165,6 +198,7 @@ namespace CheckerZ
 				default:
 					clearDraw();
 					Logger::message(MessageType::ERR, "\t      Unkown command.");
+					return;
 				break;
 				// TRY MOVEMENT
 				case 'M':
@@ -263,8 +297,9 @@ namespace CheckerZ
 			case GameSystemState::WIN:
 				try
 				{
-					winHelper();
-					setGameState(GameSystemState::QUIT);
+					GameSystemState finalGameState;
+					winHelper(finalGameState);
+					setGameState(finalGameState);
 				}
 				catch (const std::exception& t_excep)
 				{
@@ -309,15 +344,15 @@ namespace CheckerZ
 
 	void Game::swapEntityTurns(const std::shared_ptr<Entity::Entity>& t_entityOnTurn)
 	{
-		if (t_entityOnTurn->hasTurn() == m_player1->hasTurn())
+		if (t_entityOnTurn->hasTurn() == m_redPlayer->hasTurn())
 		{
-			m_player2->setTurn(m_player1->hasTurn());
-			m_player1->setTurn(!m_player1->hasTurn());
+			m_blackPlayer->setTurn(m_redPlayer->hasTurn());
+			m_redPlayer->setTurn(!m_redPlayer->hasTurn());
 		}
 		else
 		{
-			m_player1->setTurn(m_player2->hasTurn());
-			m_player2->setTurn(!m_player2->hasTurn());
+			m_redPlayer->setTurn(m_blackPlayer->hasTurn());
+			m_blackPlayer->setTurn(!m_blackPlayer->hasTurn());
 		}
 	}
 
@@ -325,7 +360,8 @@ namespace CheckerZ
 	{
 		// push the current board in the undo stack on every move
 		m_undoStack.push(m_gameBoard->getBoard());
-		
+		m_gameBoard->s_boardHistory.push_back(m_undoStack.top());
+
 		// clear the redo stack
 		std::stack<Board::board<Pawn, Board::s_boardLen>>().swap(m_redoStack);
 		
@@ -375,7 +411,7 @@ namespace CheckerZ
 	void Game::redoHelper()
 	{
 		if(m_redoStack.size() > 0)
-		{ 
+		{
 			// create temp board
 			Board::board<Pawn, Board::s_boardLen> tempBoard;
 
@@ -383,6 +419,7 @@ namespace CheckerZ
 			tempBoard = m_redoStack.top();
 
 			// save the current state of the board in the undo stack
+			m_undoStack.push(m_redoStack.top());
 			m_undoStack.push(m_redoStack.top());
 
 			// copy the temp board into the game board
@@ -397,9 +434,12 @@ namespace CheckerZ
 		}
 	}
 
-	void Game::winHelper()
+	void Game::winHelper(GameSystemState& t_finalGameState)
 	{
-		EventManager::getInstance().winGame();
+		// get the entity who is on turn
+		auto entityOnTurn = m_redPlayer->hasTurn() ? m_redPlayer : m_blackPlayer->hasTurn() ? m_blackPlayer : nullptr;
+
+		EventManager::getInstance().winGame(t_finalGameState, m_gameBoard, entityOnTurn);
 	}
 
 	void Game::quitHelper()
@@ -411,7 +451,7 @@ namespace CheckerZ
 	{
 		std::random_device rd;
 		std::mt19937 engine(rd());
-		std::uniform_real_distribution<double> dist(1.0, t_maxDelayTime);
+		std::uniform_real_distribution<double> dist(0.0, t_maxDelayTime);
 		auto delayTime = dist(engine);
 		Utils::Timer::getInstance().applyTimeDelayInSeconds(delayTime);
 	}

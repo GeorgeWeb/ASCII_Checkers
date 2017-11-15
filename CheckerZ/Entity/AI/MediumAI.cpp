@@ -7,10 +7,14 @@ namespace CheckerZ { namespace Entity { namespace AI {
 	{
 		AI::firePawnAction(t_moveGenerator);
 		
-		// A custom 'offensive' greedy algorithm
+		// custom 'offensive' greedy algorithm
 		
 		std::map<uint16, Movement> moveOrders;
 		auto possibleMoves = t_moveGenerator->getPossibleMoves();
+
+		// break out if there's no more possible moves
+		if (possibleMoves.empty())
+			return;
 
 		std::for_each(possibleMoves.begin(), possibleMoves.end(), [&](const Movement& move)
 		{
@@ -62,7 +66,7 @@ namespace CheckerZ { namespace Entity { namespace AI {
 		});
 
 		// the maximum element | the most swift move of all in the set of possible movements
-		auto maxOrderValue = moveOrders.crbegin()->first;
+		auto maxOrderValue = moveOrders.rbegin()->first;
 
 		if (maxOrderValue > 2)
 		{
@@ -77,13 +81,13 @@ namespace CheckerZ { namespace Entity { namespace AI {
 			Position fromPos = maxOrderMove.first;
 			Position toPos = maxOrderMove.second;
 			// do movement
-			m_board->move(fromPos, toPos);
+			move(fromPos, toPos);
 		}
 		else
 		{
 			// do a random move (no other option left)
 			// order value for such: 2
-			performRandomMove(possibleMoves);
+			randomMove(possibleMoves);
 		}
 	}
 

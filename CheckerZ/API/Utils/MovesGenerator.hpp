@@ -12,6 +12,7 @@ namespace CheckerZ { namespace API { namespace Utils {
 	class MovesGenerator
 	{
 		private:
+			// queue-styled list of all possible moves
 			std::deque<Movement> m_possibleMoves;
 
 		public:

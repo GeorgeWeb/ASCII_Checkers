@@ -11,7 +11,7 @@ namespace CheckerZ { namespace API { namespace Events { namespace EventImpl {
 		explicit LoadGame();
 		~LoadGame() = default;
 
-		void invoke(std::vector<char>& t_buffer) const override;
+		void invoke(std::vector<char>& t_buffer, const std::string& t_inputFile = "") const override;
 
 	private:
 		void initialize() override;

@@ -7,6 +7,7 @@
 // std::includes
 #include <array>
 #include <algorithm>
+#include <deque>
 
 namespace CheckerZ { namespace API {
 
@@ -32,6 +33,9 @@ namespace CheckerZ { namespace API {
 			
 			static constexpr uint16 s_boardLen = 8;
 
+			// ...
+			static std::deque<board<Pawn, s_boardLen>> s_boardHistory;
+
 		private:
 			// initialize board
 			board<Pawn, s_boardLen> m_board;
@@ -51,7 +55,6 @@ namespace CheckerZ { namespace API {
 
 			// This function will be called after every move
 			void populate();
-			void populate(const board<Pawn, s_boardLen>& t_board);
 			// This function will be called after every move
 			void display() const;
 			
