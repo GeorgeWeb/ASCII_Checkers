@@ -10,6 +10,8 @@ namespace CheckerZ { namespace API {
 	bool operator==(Pawn& t_lhs, Pawn& t_rhs);
 	bool operator!=(Pawn& t_lhs, Pawn& t_rhs);
 
+	std::deque<Board::board<Pawn, Board::s_boardLen>> Board::s_boardHistory;
+
 	ActionState Board::move(const Position &t_posFrom, const Position& t_posTo)
 	{
 		ActionState state;
@@ -96,7 +98,7 @@ namespace CheckerZ { namespace API {
 			}
 		}
 	}
-	
+
 	void Board::display() const
 	{
 		std::cout << "\n";

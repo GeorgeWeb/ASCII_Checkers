@@ -7,4 +7,18 @@
 #include "SaveGame.hpp"
 #include "QuitGame.hpp"
 
+namespace CheckerZ { namespace API { namespace Events {
+
+	enum class GameSystemState
+	{
+		RUN,  ///> non-callable
+		ACTION,
+		WIN,
+		LOAD,
+		SAVE,
+		QUIT,
+	};
+
+} } }
+
 #endif !EVENTS_H

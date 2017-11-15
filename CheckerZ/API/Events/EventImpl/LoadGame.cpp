@@ -13,7 +13,7 @@ namespace CheckerZ { namespace API { namespace Events { namespace EventImpl {
 
 	}
 
-	void LoadGame::invoke(std::vector<char>& t_buffer) const
+	void LoadGame::invoke(std::vector<char>& t_buffer, const std::string& t_inputFile) const
 	{
 		try
 		{

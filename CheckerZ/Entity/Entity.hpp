@@ -17,13 +17,18 @@ namespace CheckerZ { namespace Entity {
 			std::shared_ptr<API::Pawn> m_lastPlayedPawn = nullptr;
 			// entity's turn state
 			bool m_hasTurn = false;
-		
+			double m_speed;
+
 		public:
 			Entity() = default;
 			virtual ~Entity() = default;
 
-			void setName(const std::string& t_name) { m_name = t_name; }
-			void setColor(const std::string& t_pawnColor) { m_pawnColor = t_pawnColor; }
+			inline void setName(const std::string& t_name) { m_name = t_name; }
+			inline void setColor(const std::string& t_pawnColor) { m_pawnColor = t_pawnColor; }
+
+			// used for setting the game speed for an AI entity
+			inline void setSpeed(double t_speed) { m_speed = t_speed; }
+			inline double getSpeed() { return m_speed; }
 
 			// does the player action - move or take
 			// used for AI Entity

@@ -1,5 +1,6 @@
 #include "SaveGame.hpp"
 #include "../../Utils/FileIO.hpp"
+#include <windows.h>
 
 namespace CheckerZ { namespace API { namespace Events { namespace EventImpl {
 
@@ -13,21 +14,31 @@ namespace CheckerZ { namespace API { namespace Events { namespace EventImpl {
 
 	}
 
-	void SaveGame::invoke(std::vector<char>& t_buffer) const
+	void SaveGame::invoke(std::vector<char>& t_buffer, const std::string& t_outputFile) const
 	{
-		std::string filePath;
+		// TODO: Revise proper Serialization for good implementation of this!!!
 
+		std::string outputDir;
 		Utils::Logger::message(Utils::MessageType::INF, "\t      Name your save: ", Utils::EndingDelimiter::SPACE);
-		std::cin >> filePath;
+		std::cin >> outputDir;
 		
-		try
+		std::string fullOutputDir = "saves/" + outputDir;
+		// create directory named after the save name (if not exists)
+		if (CreateDirectory(fullOutputDir.c_str(), NULL) || ERROR_ALREADY_EXISTS == GetLastError())
 		{
-			// write to the chosen file name
-			Utils::FileIO::getInstance().writeFile(filePath, t_buffer);
+			try
+			{
+				// write to the chosen file name
+				Utils::FileIO::getInstance().writeFile(fullOutputDir + "/" + t_outputFile, t_buffer);
+			}
+			catch (const std::exception& t_excep)
+			{
+				throw std::runtime_error(t_excep.what());
+			}
 		}
-		catch (const std::exception& t_excep)
+		else
 		{
-			throw std::runtime_error(t_excep.what());
+			throw std::runtime_error("\t      Error: a save with this name already exists.");
 		}
 	}
 

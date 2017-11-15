@@ -5,16 +5,6 @@
 
 namespace CheckerZ { namespace API { namespace Events {
 
-	enum class GameSystemState
-	{
-		RUN,  ///> non-callable
-		ACTION,
-		WIN,
-		LOAD,
-		SAVE,
-		QUIT,
-	};
-
 	class EventFactory final
 	{
 		public:
