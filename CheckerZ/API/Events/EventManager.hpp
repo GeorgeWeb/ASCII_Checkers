@@ -30,14 +30,14 @@ namespace CheckerZ { namespace API { namespace Events {
 				EventFactory::create(GameSystemState::WIN)->invoke(t_finalGameState, t_board);
 			}
 
-			inline void loadGame(std::vector<char>& t_buffer) const
+			inline void loadGame(std::vector<char>& t_buffer, const std::string& t_file = "") const
 			{
 				EventFactory::create(GameSystemState::LOAD)->invoke(t_buffer);
 			}
 
-			inline void saveGame(std::vector<char>& t_buffer) const
+			inline void saveGame(std::vector<char>& t_buffer, const std::string& t_file) const
 			{
-				EventFactory::create(GameSystemState::SAVE)->invoke(t_buffer);
+				EventFactory::create(GameSystemState::SAVE)->invoke(t_buffer, t_file);
 			}
 
 			inline void quitGame() const

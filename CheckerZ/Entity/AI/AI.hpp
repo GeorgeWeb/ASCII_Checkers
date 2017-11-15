@@ -82,13 +82,18 @@ namespace CheckerZ { namespace Entity { namespace AI {
 			void firePawnAction(std::shared_ptr<API::Utils::MovesGenerator>& t_moveGenerator) override;
 
 		private:
-			void scoredMove(Position& t_fromPos, Position& t_toPos, int32 t_score);
+			// movement max-min getter
+			Movement maximin(const API::Board& t_board, uint32 t_depth);
 			
-			// min-max getters
-			inline int32 getMin(const int32 t_first, const int32 t_second) { return t_first < t_second ? t_first : t_second; }
-			inline int32 getMax(const int32 t_first, const int32 t_second) { return t_first > t_second ? t_first : t_second; }
+			// min-max getter
+			int32 MIN(API::Board t_board, uint32 t_depth, Movement t_move);
+			int32 MAX(API::Board t_board, uint32 t_depth, Movement t_move);
 
-			Movement* minimax(std::deque<Movement> t_validMovesList, uint32 t_depth, bool t_isMax);
+			// function that evaluates the game board and returns score
+			int32 calculateBoard(API::Board t_board);
+
+			// ...
+			bool hasFoundEnemy(API::Board t_board, const std::string& t_color) const;
 	};
 
 } } }

@@ -55,8 +55,10 @@ namespace CheckerZ
 
 	void saveGame(Game& t_game)
 	{
-		std::vector<char> boardData;
+		std::vector<char> serializableData;
 
+		// push board data in a buffer
+		std::vector<char> boardData;
 		std::for_each(t_game.getGameBoard()->getBoard().begin(), t_game.getGameBoard()->getBoard().end(), [&](auto grid)
 		{
 			std::for_each(grid.cbegin(), grid.cend(), [&](auto pawn)
@@ -64,8 +66,16 @@ namespace CheckerZ
 				boardData.push_back(pawn.getMesh());
 			});
 		});
+		serializableData.insert(serializableData.end(), boardData.begin(), boardData.end());
 
-		EventManager::getInstance().saveGame(boardData);
+		// push players state in a buffer
+		std::vector<char> playersData;
+		std::copy(t_game.m_redPlayer->getName().begin(), t_game.m_redPlayer->getName().end(), std::back_inserter(playersData));
+		std::copy(t_game.m_blackPlayer->getName().begin(), t_game.m_blackPlayer->getName().end(), std::back_inserter(playersData));
+		serializableData.insert(serializableData.end(), playersData.begin(), playersData.end());
+
+		// call save game event for all data sets / buffers
+		EventManager::getInstance().saveGame(serializableData, "savedGame.check");
 	}
 	#pragma endregion
 

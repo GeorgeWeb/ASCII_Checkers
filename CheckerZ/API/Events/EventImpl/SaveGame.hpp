@@ -11,7 +11,7 @@ namespace CheckerZ { namespace API { namespace Events { namespace EventImpl {
 		explicit SaveGame();
 		~SaveGame() = default;
 
-		void invoke(std::vector<char>& t_buffer) const override;
+		void invoke(std::vector<char>& t_buffer, const std::string& t_outputFile) const override;
 
 	private:
 		void initialize() override;
