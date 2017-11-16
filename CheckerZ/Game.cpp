@@ -8,9 +8,6 @@
 
 namespace CheckerZ
 {
-	// TODO: CREATE A CMake ASAP !!!
-	// TODO: SetState as a template function for all StateTypes
-
 	using namespace API;
 	using namespace Utils;
 	using namespace Events;
@@ -337,13 +334,14 @@ namespace CheckerZ
 			// ----------- //
 			// LOSE / WIN //
 			// ---------- //
-			m_gameState = GameSystemState::WIN;
+			setGameState(GameSystemState::WIN);
 			return;
 		}
 	}
 
 	void Game::swapEntityTurns(const std::shared_ptr<Entity::Entity>& t_entityOnTurn)
 	{
+		// self-explanatory - just swap the hasTurn boolean values of both players
 		if (t_entityOnTurn->hasTurn() == m_redPlayer->hasTurn())
 		{
 			m_blackPlayer->setTurn(m_redPlayer->hasTurn());
@@ -365,20 +363,34 @@ namespace CheckerZ
 		// clear the redo stack
 		std::stack<Board::board<Pawn, Board::s_boardLen>>().swap(m_redoStack);
 		
-		// check if it possible to continue the turn with the pawn that was played
-		m_moveGenerator->reset(m_gameBoard, t_entity->getPawnColor(), t_entity->getLastPlayedPawn());
+		// CHECK WIN CONDITION
+		// check if the next player on turn has lost
+		m_moveGenerator->reset(m_gameBoard, t_entity->getPawnColor() == "Red" ? "Black" : "Red", nullptr);
 
-		// swap entities' turn states
-		if (!t_entity->getLastPlayedPawn() || m_moveGenerator->getPossibleMoves().empty())
+		if (m_moveGenerator->getPossibleMoves().empty())
 		{
-			swapEntityTurns(t_entity);
+			// clear the memory from the possible moves container
+			m_moveGenerator->clear();
+			// set win event
+			setGameState(GameSystemState::WIN);
+			return;
 		}
+		else
+		{
+			// CHECK IF CAN TAKE AGAIN WITH THE SAME PAWN CONDITION
+			// check if it possible to continue the turn with the pawn that was played
+			m_moveGenerator->reset(m_gameBoard, t_entity->getPawnColor(), t_entity->getLastPlayedPawn());
 
-		// empty the moves container before ending
-		m_moveGenerator->clear();
+			// swap entities' turn states
+			if (!t_entity->getLastPlayedPawn() || m_moveGenerator->getPossibleMoves().empty())
+				swapEntityTurns(t_entity);
 
-		// Set next turn
-		setTurnState(TurnState::END);
+			// empty the moves container before ending
+			m_moveGenerator->clear();
+
+			// Set next turn
+			setTurnState(TurnState::END);
+		}
 	}
 
 	// Game helpers definition/implementation
@@ -401,6 +413,10 @@ namespace CheckerZ
 			
 			// copy the temp board into the game board
 			m_gameBoard->setBoard(tempBoard);
+
+			// discard the last moves from the gameHistory queue on undo
+			m_gameBoard->s_boardHistory.pop_back();
+			m_gameBoard->s_boardHistory.pop_back();
 		}
 		else
 		{
@@ -427,6 +443,10 @@ namespace CheckerZ
 
 			// remove it from the redo stack after display
 			m_redoStack.pop();
+
+			// save the moves in the gameHistory deque's back since these are the last current ones
+			m_gameBoard->s_boardHistory.push_back(m_undoStack.top());
+			m_gameBoard->s_boardHistory.push_back(m_undoStack.top());
 		}
 		else
 		{
@@ -439,6 +459,7 @@ namespace CheckerZ
 		// get the entity who is on turn
 		auto entityOnTurn = m_redPlayer->hasTurn() ? m_redPlayer : m_blackPlayer->hasTurn() ? m_blackPlayer : nullptr;
 
+		// invoke the winGame event
 		EventManager::getInstance().winGame(t_finalGameState, m_gameBoard, entityOnTurn);
 	}
 
@@ -449,6 +470,7 @@ namespace CheckerZ
 	
 	void Game::delayHelper(double t_maxDelayTime)
 	{
+		// generate random delayTime number in the range of 0 to the passed argument
 		std::random_device rd;
 		std::mt19937 engine(rd());
 		std::uniform_real_distribution<double> dist(0.0, t_maxDelayTime);
