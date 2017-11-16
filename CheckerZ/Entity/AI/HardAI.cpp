@@ -36,7 +36,8 @@ namespace CheckerZ { namespace Entity { namespace AI {
 		// break out if there's no more possible moves
 		if (possibleMoves.empty())
 			return Movement{ {0, 0}, {0, 0} };
-
+		
+		// populate with scores for every possible move
 		std::array<int32, 32> scores;
 		for (int i = 0; i < scores.size(); i++) scores[i] = 0;
 		size_t count = 0;
@@ -76,9 +77,11 @@ namespace CheckerZ { namespace Entity { namespace AI {
 
 		auto possibleMoves = moveGenerator.getPossibleMoves();
 
+		// if no possible moves return an enormously big score
 		if (possibleMoves.empty())
 			return hasFoundEnemy(t_board, color) ? 10000 : -10000;
 		
+		// populate with scores for every possible move
 		std::array<int32, 32> scores;
 		for (int32 i = 0; i < scores.size(); i++) scores[i] = 0;
 		size_t count = 0;
@@ -99,6 +102,7 @@ namespace CheckerZ { namespace Entity { namespace AI {
 
 		API::Utils::MovesGenerator moveGenerator;
 
+		// exit recursion
 		if (t_depth >= MAX_LEVEL)
 			return calculateBoard(t_board);
 
@@ -107,9 +111,11 @@ namespace CheckerZ { namespace Entity { namespace AI {
 		moveGenerator.generatePossibleMoves(p_board, m_pawnColor, m_lastPlayedPawn);
 		auto possibleMoves = moveGenerator.getPossibleMoves();
 
+		// if no possible moves return an enormously big score
 		if (possibleMoves.empty())
 			return hasFoundEnemy(t_board, m_pawnColor) ? 10000 : -10000;
 		
+		// populate with scores for every possible move
 		std::array<int32, 32> scores;
 		for (int32 i = 0; i < scores.size(); i++) scores[i] = 0;
 		size_t count = 0;
