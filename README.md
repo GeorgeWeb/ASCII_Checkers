@@ -1,6 +1,6 @@
 # Modern C++ Checkers game with ASCII art
 
-This project implements a game of checkers with an optimal AI playability.<br/>
+This project implements a game of checkers with an optimal AI functionality.<br/>
 It was given as a final coursework for my Data Structures &amp; Algorithms module at university.<br/>
 A freedom of language choice was given so C++ was my language of choice for this one.
 
