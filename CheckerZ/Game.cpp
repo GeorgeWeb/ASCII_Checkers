@@ -373,7 +373,6 @@ namespace CheckerZ
 			m_moveGenerator->clear();
 			// set win event
 			setGameState(GameSystemState::WIN);
-			return;
 		}
 		else
 		{
@@ -387,10 +386,10 @@ namespace CheckerZ
 
 			// empty the moves container before ending
 			m_moveGenerator->clear();
-
-			// Set next turn
-			setTurnState(TurnState::END);
 		}
+
+		// Set next turn
+		setTurnState(TurnState::END);
 	}
 
 	// Game helpers definition/implementation
