@@ -17,5 +17,5 @@ Realtime <strong>CI</strong> feedback from <strong>appveyor.com</strong><br/>
 - implement alpha-beta prunning in the minimax algorithm for AI
 - add a decent amount of unit tests ASAP
 - implement good Serialization in C++
-- add C++Amp for faster and more robust AI algorithm processing
+- add C++Amp/OpenCL for faster and more robust AI algorithm processing
 - create a cross-platform build system using CMake
