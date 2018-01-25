@@ -2,8 +2,6 @@
 
 namespace CheckerZ { namespace API { namespace Utils {
 
-	// TODO: Fix King movement
-
 	void MovesGenerator::generatePossibleMoves(std::shared_ptr<Board> t_board, const std::string& t_color, std::shared_ptr<Pawn> t_lastPlayedPawn)
 	{
 		Board tempBoard = *t_board;
