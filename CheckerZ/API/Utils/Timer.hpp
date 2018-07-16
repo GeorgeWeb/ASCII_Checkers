@@ -44,4 +44,4 @@ namespace CheckerZ { namespace API { namespace Utils {
 	};
 
 } } }
-#endif !TIMER_HPP
+#endif // !TIMER_HPP
